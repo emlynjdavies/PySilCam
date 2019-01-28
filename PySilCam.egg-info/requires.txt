@@ -1,0 +1,11 @@
+docopt
+configparser
+numpy
+pandas
+matplotlib
+imageio
+scikit-image
+pygame
+tflearn
+sphinx
+tqdm

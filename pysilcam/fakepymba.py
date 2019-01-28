@@ -14,7 +14,8 @@ import pandas as pd
 
 #Handle potential Python 2.7 and Python 3
 try:
-    import __builtin__
+    # import __builtin__
+    import builtins as __builtin__
 except ImportError:
     import builtins as __builtin__
 
