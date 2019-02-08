@@ -85,7 +85,7 @@ def load_model(model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl')
     return model, class_labels
 
 # Define the neural network
-def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl'):
+def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model', model_file='plankton-classifier.tfl'):
     '''
     Load the trained tensorflow model version 2
 
@@ -97,8 +97,10 @@ def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model/particle-clas
         model (tf model object) : loaded tfl model from load_model()
     '''
 
-    path, filename = os.path.split(model_path)
-    header = pd.read_csv(os.path.join(path, 'header.tfl.txt'))
+    #path, filename = os.path.split(model_path)
+    check_point_file = os.path.join(model_path, model_file)
+    print("check_point_file",check_point_file)
+    header = pd.read_csv(os.path.join(model_path, 'header.tfl.txt'))
     OUTPUTS = len(header.columns)
     class_labels = header.columns
 
@@ -138,19 +140,19 @@ def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model/particle-clas
     # 3: Convolution layer with 64 filters
     print('Step 3: Convolution again')
     net = conv_2d(net, 64, 3, activation='relu')
-    #conv_2 = net
+    conv_2 = net
 
 
     # Step 4: Convolution yet again
     print('Step 3: Convolution yet again x4')
     net = conv_2d(net, 64, 3, activation='relu')
-    #conv_3 = net
+    conv_3 = net
     net = conv_2d(net, 64, 3, activation='relu')
-    #conv_4 = net
+    conv_4 = net
     net = conv_2d(net, 64, 3, activation='relu')
-    #conv_5 = net
+    conv_5 = net
     net = conv_2d(net, 64, 3, activation='relu')
-    #conv_6 = net
+    conv_6 = net
 
     # Step 5: Max pooling layer
     print('Step 5: Max pooling')
@@ -171,11 +173,11 @@ def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model/particle-clas
     net = regression(net, optimizer='adam', learning_rate=0.001, loss='categorical_crossentropy')
 
     # Wrap the network in a model object
-    model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=model_path)
+    model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=check_point_file)
 
     model.load(model_path)
-    #conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
-    return model, conv_1, class_labels
+    conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
+    return model, conv_arr, class_labels
 
 def predict(img, model):
     '''

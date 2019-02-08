@@ -71,7 +71,7 @@ trainX, trainY = image_preloader(trainset_file, image_shape=(IMXY, IMXY, 3),   m
 #show_digit(30)
 
 # Build the model
-model, conv_arr, class_labels = sccl.load_model2(IMXY, MODEL_FILE)
+model, conv_arr, class_labels = sccl.load_model2(IMXY, MODEL_PATH)
 
 #model = build_model()
 
