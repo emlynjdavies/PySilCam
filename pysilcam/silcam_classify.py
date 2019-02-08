@@ -84,6 +84,99 @@ def load_model(model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl')
 
     return model, class_labels
 
+# Define the neural network
+def load_model2(IMXY='32', model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl'):
+    '''
+    Load the trained tensorflow model version 2
+
+    Args:
+        model_path (str)        : path to particle-classifier e.g.
+                                  '/mnt/ARRAY/classifier/model/particle-classifier.tfl'
+
+    Returns:
+        model (tf model object) : loaded tfl model from load_model()
+    '''
+
+    path, filename = os.path.split(model_path)
+    header = pd.read_csv(os.path.join(path, 'header.tfl.txt'))
+    OUTPUTS = len(header.columns)
+    class_labels = header.columns
+
+    print("Build the model...")
+    # This resets all parameters and variables, leave this here
+    tf.reset_default_graph()
+    # Include the input layer, hidden layer(s), and set how you want to train the model
+    inputsize = IMXY * IMXY * 3;
+    # outputsize = pd.read_csv(header, header=None).shape[1] #np.shape(get_classes())[1]
+    print("Inputlayer-size: %d" %(inputsize))
+
+    # normalisation of images
+    print("Normalisation of images...")
+    img_prep = ImagePreprocessing()
+    img_prep.add_featurewise_zero_center()
+    img_prep.add_featurewise_stdnorm()
+
+    # Create extra synthetic training data by flipping & rotating images
+    print("Data augmentation...")
+    img_aug = ImageAugmentation()
+    img_aug.add_random_flip_leftright()
+    img_aug.add_random_rotation(max_angle=25.)
+    img_aug.add_random_blur(sigma_max=3.)
+
+    # Define the network architecture
+    print("Define the network architecture...")
+    net = input_data(shape=[None, IMXY, IMXY, 3],
+                     data_preprocessing=img_prep,
+                     data_augmentation=img_aug);
+    # 1: Convolution layer with 32 filters, each 3x3x3
+    print('Step 1: Convolution layer with 32 filters, each 3x3x3')
+    net = conv_2d(net, 32, 3, activation='relu', name='conv_1')
+    conv_1 = net
+    # 2: Max pooling layer
+    print('Step 2: Max pooling')
+    net = max_pool_2d(net, 2)
+    # 3: Convolution layer with 64 filters
+    print('Step 3: Convolution again')
+    net = conv_2d(net, 64, 3, activation='relu')
+    #conv_2 = net
+
+
+    # Step 4: Convolution yet again
+    print('Step 3: Convolution yet again x4')
+    net = conv_2d(net, 64, 3, activation='relu')
+    #conv_3 = net
+    net = conv_2d(net, 64, 3, activation='relu')
+    #conv_4 = net
+    net = conv_2d(net, 64, 3, activation='relu')
+    #conv_5 = net
+    net = conv_2d(net, 64, 3, activation='relu')
+    #conv_6 = net
+
+    # Step 5: Max pooling layer
+    print('Step 5: Max pooling')
+    net = max_pool_2d(net, 2)
+
+    # Step 6: Fully-connected 512 node neural network
+    print('Step 6: Fully-connected 512 node neural network')
+    net = fully_connected(net, 512, activation='relu')
+
+    # Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
+    print('Step 7: Dropout - throw away some data randomly during training to prevent over-fitting')
+    net = dropout(net, 0.75)
+
+    # Step 8: Fully-connected neural network with outputs to make the final prediction
+    net = fully_connected(net, (OUTPUTS+1), activation='softmax')
+
+    # Tell tflearn how we want to train the network
+    net = regression(net, optimizer='adam', learning_rate=0.001, loss='categorical_crossentropy')
+
+    # Wrap the network in a model object
+    model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=model_path)
+
+    model.load(model_path)
+    #conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
+    return model, conv_1, class_labels
+
 def predict(img, model):
     '''
     Use tensorflow model to classify particles
