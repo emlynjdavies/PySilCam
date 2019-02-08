@@ -98,7 +98,7 @@ print(testY[select].argmax(axis=0))
 # Build the model
 print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
 
-model, conv_arr, class_labels = sccl.load_model2(IMXY, MODEL_PATH, CHECK_POINT_FILE)
+model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
 # Training
 print("start training ...")
 # model.fit(trainX, trainY, validation_set=0.1, show_metric=True, batch_size=50, n_epoch=50)
