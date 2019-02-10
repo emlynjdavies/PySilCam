@@ -85,19 +85,21 @@ def load_model(model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl')
     return model, class_labels
 
 # Define the neural network
-def build_model(IMXY='32', model_path='/mnt/ARRAY/classifier/model', model_file='plankton-classifier.tfl'):
+def build_model(IMXY='32', model_path='/mnt/ARRAY/classifier/model',
+                model_file='plankton-classifier.tfl'):
     '''
     Load the trained tensorflow model version 2
 
     Args:
+        IMXY                    : input image size
         model_path (str)        : path to particle-classifier e.g.
                                   '/mnt/ARRAY/classifier/model/particle-classifier.tfl'
-
+        model_file              : model file name
     Returns:
         model (tf model object) : loaded tfl model from load_model()
+        conv_arr                : convolution layer array for evaluation
+        class_labels            : list of class labels
     '''
-
-    #path, filename = os.path.split(model_path)
     check_point_file = os.path.join(model_path, model_file)
     print("check_point_file", check_point_file)
     header = pd.read_csv(os.path.join(model_path, 'header.tfl.txt'))
@@ -175,7 +177,8 @@ def build_model(IMXY='32', model_path='/mnt/ARRAY/classifier/model', model_file=
     # Wrap the network in a model object
     model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=check_point_file)
 
-    #model.load(model_path)
+    #if mode == 'evaluate':
+    #    model.load(check_point_file)
     conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
     return model, conv_arr, class_labels
 

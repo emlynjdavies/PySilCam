@@ -19,7 +19,7 @@ import math
 import pysilcam.silcam_classify as sccl
 # -----------------------------
 DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
-MODEL_PATH = 'Z:/DATA/model/model002'
+MODEL_PATH = 'Z:/DATA/model/model003'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that contains the list of images of the training dataset along with their classes
 testset_file = os.path.join(MODEL_PATH,"imagelist_test.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -71,26 +71,28 @@ trainX, trainY = image_preloader(trainset_file, image_shape=(IMXY, IMXY, 3),   m
 #show_digit(30)
 
 # Build the model
-model, conv_arr, class_labels = sccl.load_model2(IMXY, MODEL_PATH)
-
+model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, MODEL_FILE)
+print ('MODEL ', model)
 #model = build_model()
 
 
 # Load Model
 print("Loading ...")
-#model = model.load(MODEL_FILE, weights_only=True)
-print ('MODEL ', model)
+model_file = os.path.join(MODEL_PATH, MODEL_FILE)
+print(model_file)
+#model = model.load(model_file)
+#print ('MODEL ', model)
 print ('CONV_ARR ', conv_arr)
 #for a in conv_arr:
 #    print(conv_arr)
 print("class_labels ",class_labels)
 # Evaluate model
-#score = model.evaluate(testX, testY)
-#print('Test accuarcy: %0.4f%%' % (score[0] * 100))
+score = model.evaluate(testX, testY)
+print('Test accuarcy: %0.4f%%' % (score[0] * 100))
 
 # Run the model on one example
-#prediction = model.predict([testX[0]])
-#print("Prediction: %s" % str(prediction[0]))
+prediction = model.predict([testX[0]])
+print("Prediction: %s" % str(prediction[0]))
 
 # Build the model
 # model, conv_1 = build_model()
