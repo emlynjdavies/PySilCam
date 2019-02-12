@@ -178,7 +178,7 @@ def build_model(IMXY='32', model_path='/mnt/ARRAY/classifier/model',
     model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=check_point_file)
 
     #if mode == 'evaluate':
-    #    model.load(check_point_file)
+        #model.load(check_point_file)
     conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
     return model, conv_arr, class_labels
 
