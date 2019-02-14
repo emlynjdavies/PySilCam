@@ -280,7 +280,7 @@ def silcam_process(config_filename, datapath, multiProcess=True, realtime=False,
     # If only one core is available, no multiprocessing will be done
     multiProcess = multiProcess and (multiprocessing.cpu_count() > 1)
 
-    print('* Commencing image acquisition and processing')
+    print('* Commencing image acquisition and processing', multiProcess)
 
     # initialise realtime stats class regardless of whether it is used later
     rts = scog.rt_stats(settings)
@@ -362,19 +362,35 @@ def silcam_process(config_filename, datapath, multiProcess=True, realtime=False,
         nnmodel = []
         nnmodel, class_labels = sccl.load_model(model_path=settings.NNClassify.model_path)
 
+        # --------------------------------------------------------------------------
+        #print('building model...')
+        #path, filename = os.path.split(settings.NNClassify.model_path)
+        #nnmodel, conv_arr, class_labels = sccl.build_model(32, path, filename)
+        # Load Model
+        #print("Loading model ...")
+        #nnmodel.load(os.path.join(path, filename))
+        #print('MODEL Loaded ', nnmodel)
+        # --------------------------------------------------------------------------
+        print('bggen ', bggen)
+
         # iterate on the bggen generator to obtain images
         for i, (timestamp, imc, imraw) in enumerate(bggen):
             # handle errors if the loop function fails for any reason
+            print('i, timestamp, imc, imraw ', i, timestamp, imc, imraw)
             if (nbImages != None):
                 if (nbImages <= i):
+                    print('nbImages <= i')
                     break
-
+            print('i, timestamp, imc', i, timestamp, imc)
             image = (i, timestamp, imc)
             # one single image is processed at a time
+            print('processImage...')
             stats_all = processImage(nnmodel, class_labels, image, settings, logger, gui)
 
+            print('stats_all')
             if (not stats_all is None): # if frame processed
                 # write the image into the csv file
+                print('stats_all ...', stats_all)
                 writeCSV( datafilename, stats_all)
 
     print('PROCESSING COMPLETE.')

@@ -1,31 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="3" tests="8" time="43.406"><testcase classname="pysilcam.tests.test_background" file="pysilcam\tests\test_background.py" line="6" name="test_background_aquire" time="3.2031023502349854"><system-out>using fakepymba
-ExposureTimeAbs = 180
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="3" tests="8" time="8.077"><testcase classname="pysilcam.tests.test_background" file="pysilcam\tests\test_background.py" line="6" name="test_background_aquire" time="3.1088459491729736"><system-out>using fakepymba
 PixelFormat = RGB8Packed
-AcquisitionMode = SingleFrame
-AcquisitionFrameRateAbs = 1
-SyncOutPolarity = Normal
-GVSPPacketSize = 1500
-StrobeDuration = 800
-configversion = 1
-TriggerSource = FixedRate
-StrobeDurationMode = Controlled
 SyncOutSource = Strobe1
-StrobeSource = FrameTriggerReady
-StrobeDelay = 0
+AcquisitionMode = SingleFrame
 SyncOutSelector = SyncOut1
-</system-out></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="5" name="test_config_parser" time="0.0"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="19" name="test_settings" time="0.0"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="32" name="test_camera_config_parser" time="0.015625476837158203"></testcase><testcase classname="pysilcam.tests.test_process" file="pysilcam\tests\test_process.py" line="8" name="test_output_files" time="0.0"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_silcam-aquire" file="pysilcam\tests\test_silcam-aquire.py" line="5" name="test_acquire_five_frames" time="1.5312633514404297"><system-out>using fakepymba
+StrobeDurationMode = Controlled
+StrobeSource = FrameTriggerReady
+StrobeDuration = 800
+GVSPPacketSize = 1500
+TriggerSource = FixedRate
+configversion = 1
+AcquisitionFrameRateAbs = 1
+StrobeDelay = 0
 ExposureTimeAbs = 180
-PixelFormat = RGB8Packed
-AcquisitionMode = SingleFrame
-AcquisitionFrameRateAbs = 1
 SyncOutPolarity = Normal
-GVSPPacketSize = 1500
-StrobeDuration = 800
-configversion = 1
-TriggerSource = FixedRate
-StrobeDurationMode = Controlled
+</system-out></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="5" name="test_config_parser" time="0.0"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="19" name="test_settings" time="0.015620231628417969"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="32" name="test_camera_config_parser" time="0.0"></testcase><testcase classname="pysilcam.tests.test_process" file="pysilcam\tests\test_process.py" line="8" name="test_output_files" time="0.0"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_silcam-aquire" file="pysilcam\tests\test_silcam-aquire.py" line="5" name="test_acquire_five_frames" time="1.5310020446777344"><system-out>using fakepymba
+PixelFormat = RGB8Packed
 SyncOutSource = Strobe1
-StrobeSource = FrameTriggerReady
-StrobeDelay = 0
+AcquisitionMode = SingleFrame
 SyncOutSelector = SyncOut1
-</system-out></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="12" name="test_big_standards" time="0.0156097412109375"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="55" name="test_small_standards" time="0.0"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase></testsuite>
+StrobeDurationMode = Controlled
+StrobeSource = FrameTriggerReady
+StrobeDuration = 800
+GVSPPacketSize = 1500
+TriggerSource = FixedRate
+configversion = 1
+AcquisitionFrameRateAbs = 1
+StrobeDelay = 0
+ExposureTimeAbs = 180
+SyncOutPolarity = Normal
+</system-out></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="12" name="test_big_standards" time="0.01560831069946289"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="55" name="test_small_standards" time="0.0"><skipped message="test path not accessible" type="pytest.skip">d:\projects\ailaron\src\silcam\.eggs\pytest-4.1.1-py3.5.egg\_pytest\nose.py:27: test path not accessible</skipped></testcase></testsuite>
