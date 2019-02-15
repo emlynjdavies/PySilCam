@@ -59,10 +59,12 @@ class Camera:
         logger.debug('Ending camera capture')
 
     def getFrame(self):
+        print('getFrame...')
         #time.sleep(1.0/FPS)
         if 'PYSILCAM_REALTIME_DATA' in os.environ.keys():
             return RealtimeFrame()
         else:
+            #print('return Frame()')
             return Frame()
 
     def revokeAllFrames(self):
@@ -77,7 +79,13 @@ class Frame:
         if 'PYSILCAM_TESTDATA' in os.environ.keys():
             offset = int(os.environ.get('PYSILCAM_OFFSET', 0))
             path = os.environ['PYSILCAM_TESTDATA']
+            #print('path ...', path)
             path = path.replace('\ ',' ') # handle spaces (not sure on windows behaviour)
+            #print('path ...', path)
+            path = os.path.join(path, 'RAW')  # add the 'RAW' directory to the path to list the files, otherwise an error occured no file was found
+            #for f in sorted(os.listdir(path)):
+            #    print('f ', f)
+
             self.files = [os.path.join(path, f)
                           for f in sorted(os.listdir(path))
                           if f.endswith('.silc')][offset:]

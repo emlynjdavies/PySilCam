@@ -64,17 +64,23 @@ def _configure_camera(camera, config_file=None):
     # Read the configiration values from default config file
     defaultpath = os.path.dirname(os.path.abspath(__file__))
     defaultfile = os.path.join(defaultpath,'camera_config_defaults.ini')
+    #print('defaultpath ', defaultpath)
+    #print('defaultfile ', defaultfile)
     config = load_camera_config(defaultfile)
 
     # Read the configiration values from users config file
     # The values found in this file, overrides those fro the default file
     # The rest keep the values from the defaults file
     config = load_camera_config(config_file, config)
+    #print('config_file ', config_file)
+    #print('config ', config)
+    print('PRINTING CONFIG:ITEMS()')
 
     #If a config is specified, override those values
     for k, v in config.items():
         print(k,'=',v)
         setattr(camera, k, v)
+    print('camera ',camera)
 
     return camera
 
