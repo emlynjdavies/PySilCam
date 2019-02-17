@@ -360,28 +360,28 @@ def silcam_process(config_filename, datapath, multiProcess=True, realtime=False,
     else:
         # load the model for particle classification and keep it for later
         nnmodel = []
-        nnmodel, class_labels = sccl.load_model(model_path=settings.NNClassify.model_path)
+        #nnmodel, class_labels = sccl.load_model(model_path=settings.NNClassify.model_path)
 
         # --------------------------------------------------------------------------
-        #print('building model...')
-        #path, filename = os.path.split(settings.NNClassify.model_path)
-        #nnmodel, conv_arr, class_labels = sccl.build_model(32, path, filename)
+        print('building model...')
+        path, filename = os.path.split(settings.NNClassify.model_path)
+        nnmodel, conv_arr, class_labels = sccl.build_model(32, path, filename)
         # Load Model
-        #print("Loading model ...")
-        #nnmodel.load(os.path.join(path, filename))
-        #print('MODEL Loaded ', nnmodel)
+        print("Loading model ...")
+        nnmodel.load(os.path.join(path, filename))
+        print('MODEL Loaded ', nnmodel)
         # --------------------------------------------------------------------------
-        print('bggen ', bggen)
+        #print('bggen ', bggen)
 
         # iterate on the bggen generator to obtain images
         for i, (timestamp, imc, imraw) in enumerate(bggen):
             # handle errors if the loop function fails for any reason
-            print('i, timestamp, imc, imraw ', i, timestamp, imc, imraw)
+            #print('i, timestamp, imc, imraw ', i, timestamp, imc, imraw)
             if (nbImages != None):
                 if (nbImages <= i):
                     print('nbImages <= i')
                     break
-            print('i, timestamp, imc', i, timestamp, imc)
+            #print('i, timestamp, imc', i, timestamp, imc)
             image = (i, timestamp, imc)
             # one single image is processed at a time
             print('processImage...')

@@ -333,7 +333,7 @@ def extract_particles(imc, timestamp, settings, nnmodel, class_labels, region_pr
 
     # pre-allocation
     predictions = np.zeros((len(region_properties),
-         len(class_labels)),
+                            (len(class_labels)+1)),
          dtype='float64')
     predictions *= np.nan
 
@@ -385,7 +385,10 @@ def extract_particles(imc, timestamp, settings, nnmodel, class_labels, region_pr
                 #@todo also include particle stats here too.
 
             # run a prediction on what type of particle this might be
+            #print("predictions ", predictions.shape, predictions[int(i),:])
+            #print(int(i))
             prediction = sccl.predict(roi, nnmodel)
+            #print("prediction[0] ", prediction[0])
             predictions[int(i),:] = prediction[0]
 
     if settings.ExportParticles.export_images:
