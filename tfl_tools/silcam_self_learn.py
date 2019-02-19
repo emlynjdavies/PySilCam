@@ -7,15 +7,15 @@ import skimage.io as skio
 import os
 from shutil import copyfile
 
-DATABASE_PATH = '/mnt/ARRAY/silcam_classification_database'
-config_file = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/config_LowRes.ini'
-stats_csv_file = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/proc/STN05-STATS.csv'
-filepath = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/export'
-model_path = '/mnt/ARRAY/classifier/model/'
+DATABASE_PATH = 'Z:/DATA/SILCAM/silcam_classification_database'
+config_file = 'Z:/DATA/SILCAM/200918/config.ini'
+stats_csv_file = 'Z:/DATA/SILCAM/200918/proc/200918-STATS.csv'
+filepath = 'Z:/DATA/SILCAM/200918/export'
+model_path = 'Z:/DATA/model/model004/'
 
-confidence_threshold = [1, 1, 1, 1, 1, 1, 1]
+confidence_threshold = [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98]
 
-DATABASE_selftaught_PATH = os.path.join(DATABASE_PATH,'../','silcam_self_taught_database')
+DATABASE_selftaught_PATH = os.path.join(DATABASE_PATH,'../200918/','silcam_self_taught_database_0.98')
 
 header = pd.read_csv(os.path.join(model_path, 'header.tfl.txt'))
 OUTPUTS = len(header.columns)

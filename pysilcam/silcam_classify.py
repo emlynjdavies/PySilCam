@@ -170,6 +170,7 @@ def build_model(IMXY='32', model_path='/mnt/ARRAY/classifier/model',
 
     # Step 8: Fully-connected neural network with outputs to make the final prediction
     net = fully_connected(net, (OUTPUTS+1), activation='softmax')
+    #net = fully_connected(net, (OUTPUTS), activation='softmax')
 
     # Tell tflearn how we want to train the network
     net = regression(net, optimizer='adam', learning_rate=0.001, loss='categorical_crossentropy')

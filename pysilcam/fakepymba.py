@@ -82,7 +82,7 @@ class Frame:
             #print('path ...', path)
             path = path.replace('\ ',' ') # handle spaces (not sure on windows behaviour)
             #print('path ...', path)
-            path = os.path.join(path, 'RAW')  # add the 'RAW' directory to the path to list the files, otherwise an error occured no file was found
+            #path = os.path.join(path, 'RAW')  # add the 'RAW' directory to the path to list the files, otherwise an error occured no file was found
             #for f in sorted(os.listdir(path)):
             #    print('f ', f)
 

@@ -18,7 +18,7 @@ import math
 import pysilcam.silcam_classify as sccl
 # -----------------------------
 DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
-MODEL_PATH = 'Z:/DATA/model/model004'
+MODEL_PATH = 'Z:/DATA/model/model005'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that contains the list of images of the training dataset along with their classes
 testset_file = os.path.join(MODEL_PATH,"imagelist_test.dat")     # the file that contains the list of images of the testing dataset along with their classes
