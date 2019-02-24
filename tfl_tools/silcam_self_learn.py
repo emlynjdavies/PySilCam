@@ -43,15 +43,15 @@ def extract_middle(stats):
     return stats
 # ======================================================
 
-DATABASE_PATH = 'Z:/DATA/SILCAM/silcam_classification_database'
-config_file = 'Z:/DATA/SILCAM/200918/config.ini'
-stats_csv_file = 'Z:/DATA/SILCAM/200918/proc/200918-STATS.csv'
-filepath = 'Z:/DATA/SILCAM/200918/export'
+DATABASE_PATH = 'Z:/DATA/SILCAM/silcam_classification_database_model004'
+config_file = 'Z:/DATA/SILCAM/250718/config.ini'
+stats_csv_file = 'Z:/DATA/SILCAM/250718/proc/250718-STATS.csv'
+filepath = 'Z:/DATA/SILCAM/250718/export'
 model_path = 'Z:/DATA/model/model004/'
 
 confidence_threshold = [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98]
 
-DATABASE_selftaught_PATH = os.path.join(DATABASE_PATH,'../200918/','silcam_self_taught_database_border_clean_0.98')
+DATABASE_selftaught_PATH = os.path.join(DATABASE_PATH,'../250718/','silcam_self_taught_database_border_clean_0.98')
 
 header = pd.read_csv(os.path.join(model_path, 'header.tfl.txt'))
 OUTPUTS = len(header.columns)
