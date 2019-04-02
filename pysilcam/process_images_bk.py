@@ -68,6 +68,7 @@ count = 0
 for timestamp, imraw in aqgen:
 # for i, (timestamp, imc, imraw) in enumerate(bggen):
     if count == 0:
+        count = count + 1
         imraw0 = imraw
         first_gray = cv.cvtColor(imraw0, cv.COLOR_RGB2GRAY)
 
