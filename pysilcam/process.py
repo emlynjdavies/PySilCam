@@ -39,7 +39,12 @@ def image2blackwhite_accurate(imc, greythresh):
         imbw                        : segmented image (binary image)
 
     '''
+    plt.imshow(imc)
+    plt.title("original image")
+    plt.show()
     img = np.copy(imc) # create a copy of the input image (not sure why)
+    plt.hist(img.ravel(), 256, [0, 256])
+    plt.show()
 
     # obtain a semi-autimated treshold which can handle
     # some flicker in the illumination by tracking the 50th percentile of the
@@ -49,22 +54,36 @@ def image2blackwhite_accurate(imc, greythresh):
     # create a segmented image using the crude threshold
     #imbw1 = np.invert(img > thresh)
     imbw1 = img < thresh
+    plt.imshow(imbw1)
+    plt.title("less than thresh")
+    plt.show()
 
     # perform an adaptive historgram equalization to handle some
     # less-than-ideal lighting situations
     img_adapteq = skimage.exposure.equalize_adapthist(img,
             clip_limit=(1-greythresh),
             nbins=256)
+    plt.imshow(img_adapteq)
+    plt.title("equalize adapthist")
+    plt.show()
+    plt.hist(img_adapteq.ravel(), 256, [0, 256])
+    plt.show()
 
     # use the equalised image to estimate a second semi-automated threshold
     newthresh = np.percentile(img_adapteq, 0.75) * greythresh
 
     # create a second segmented image using newthresh
     imbw2 = img_adapteq < newthresh
+    plt.imshow(imbw2)
+    plt.title("less than newthresh")
+    plt.show()
 
     # merge both segmentation methods by selecting regions where both identify
     # something as a particle (everything else is water)
     imbw = imbw1 & imbw2
+    plt.imshow(imbw)
+    plt.title("imbw1 & imbw2")
+    plt.show()
 
     return imbw
 
