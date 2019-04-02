@@ -64,10 +64,13 @@ print('* Initializing background image handler')
 bggen = backgrounder(3, aqgen,
                      bad_lighting_limit = None,
                      real_time_stats=False)
-_, imraw0 = aqgen[0]
-first_gray = cv.cvtColor(imraw0, cv.COLOR_RGB2GRAY)
+count = 0
 for timestamp, imraw in aqgen:
 # for i, (timestamp, imc, imraw) in enumerate(bggen):
+    if count == 0:
+        imraw0 = imraw
+        first_gray = cv.cvtColor(imraw0, cv.COLOR_RGB2GRAY)
+
     x, y, z = imraw.shape
     print("timestamp ", timestamp)
     print("Image raw shape imraw.shape( ", x,y,z)
@@ -75,7 +78,7 @@ for timestamp, imraw in aqgen:
     difference = cv.absdiff(first_gray, gray_frame)
     _, difference = cv.threshold(difference, 25, 255, cv.THRESH_BINARY)
 
-    r = 1
+    r = 2
     c = 3
     t_arr = ['Background Image','Original Image','Difference']
     fig, ax = plt.subplots(nrows=r,ncols=c)  # , figsize=(8, 8)
@@ -91,7 +94,7 @@ for timestamp, imraw in aqgen:
     #ax[0, 3].hist(imc.ravel(), 256, [0, 256])
     #ax[0, 3].set_title('Corrected Histogram')
 
-    for i in range(0, r):
+    for i in range(0, 1):
         ax[i, 0].imshow(imraw0)
         ax[i, 0].set_title(t_arr[0])
         ax[i, 1].imshow(imraw)
