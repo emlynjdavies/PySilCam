@@ -82,16 +82,18 @@ for timestamp, imraw in aqgen:
     ret, thresh = cv.threshold(gray, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
+
     blur = cv.GaussianBlur(imraw, (5, 5), 0)
-    maskMOGRGB = subtractorMOG.apply(blur)
-    ret2, thresh2 = cv.threshold(blur, 0, 255,
+    gray_blur = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
+    ret2, thresh2 = cv.threshold(gray_blur, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
     blur2 = cv.GaussianBlur(gray, (5, 5), 0)
-    maskMOGG = subtractorMOG.apply(blur2)
     ret3, thresh3 = cv.threshold(blur2, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
+    maskMOGRGB = subtractorMOG.apply(blur)
+    maskMOGG = subtractorMOG.apply(blur2)
 
     x, y, z = imraw.shape
     print("timestamp ", timestamp)
