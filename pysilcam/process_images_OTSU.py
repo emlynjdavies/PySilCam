@@ -158,7 +158,7 @@ for timestamp, imraw in aqgen:
     imGRGB_arr.append(blur)
     imGG_arr.append(blur2)
     imMOG_arr.append(maskMOG)
-    imMOGRGB_arr.append(maskMOGRGB)
+    imMOGRGB_arr.append(maskMOGRGV)
     imMOGG_arr.append(maskMOGG)
     imOTSU_arr.append(thresh)
     imOTSUTH_arr.append(ret)
