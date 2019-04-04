@@ -69,6 +69,8 @@ imOTSURGBTH_arr =[]
 imOTSUG_arr =[]
 imOTSUGTH_arr =[]
 imMorph_arr = []
+imMorph2_arr = []
+imMorph3_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -78,36 +80,69 @@ aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
-    '''###
-    # Noise removal using Morphological 
-    # closing operation 
-    kernel = np.ones((3, 3), np.uint8) 
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE, 
-                            kernel, iterations = 2) 
-  
-    # Background area using Dialation 
-    bg = cv.dilate(closing, kernel, iterations = 1) 
-  
-    # Finding foreground area 
-    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0) 
-    ret, fg = cv.threshold(dist_transform, 0.02
-                        * dist_transform.max(), 255, 0) 
-    ### '''
+
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
     ret, thresh = cv.threshold(gray, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
 
+    ###
+    # Noise removal using Morphological
+    # closing operation
+    kernel = np.ones((3, 3), np.uint8)
+    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
+                              kernel, iterations=2)
+
+    # Background area using Dialation
+    bg = cv.dilate(closing, kernel, iterations=1)
+
+    # Finding foreground area
+    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
+    ret, fg = cv.threshold(dist_transform, 0.02
+                           * dist_transform.max(), 255, 0)
+    ###
+
     blur = cv.GaussianBlur(imraw, (5, 5), 0)
     gray_blur = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     ret2, thresh2 = cv.threshold(gray_blur, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
+    ###
+    # Noise removal using Morphological
+    # closing operation
+    #kernel = np.ones((3, 3), np.uint8)
+    closing2 = cv.morphologyEx(thresh2, cv.MORPH_CLOSE,
+                              kernel, iterations=2)
+
+    # Background area using Dialation
+    bg2 = cv.dilate(closing2, kernel, iterations=1)
+
+    # Finding foreground area
+    dist_transform2 = cv.distanceTransform(closing2, cv.DIST_L2, 0)
+    ret2, fg2 = cv.threshold(dist_transform2, 0.02
+                           * dist_transform2.max(), 255, 0)
+    ###
     blur2 = cv.GaussianBlur(gray, (5, 5), 0)
     ret3, thresh3 = cv.threshold(blur2, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
+
+    ###
+    # Noise removal using Morphological
+    # closing operation
+    # kernel = np.ones((3, 3), np.uint8)
+    closing3 = cv.morphologyEx(thresh2, cv.MORPH_CLOSE,
+                               kernel, iterations=2)
+
+    # Background area using Dialation
+    bg3 = cv.dilate(closing3, kernel, iterations=1)
+
+    # Finding foreground area
+    dist_transform3 = cv.distanceTransform(closing3, cv.DIST_L2, 0)
+    ret3, fg3 = cv.threshold(dist_transform3, 0.02
+                             * dist_transform3.max(), 255, 0)
+    ###
     maskMOGRGB = subtractorMOG.apply(blur)
     maskMOGG = subtractorMOG.apply(blur2)
 
@@ -127,16 +162,19 @@ for timestamp, imraw in aqgen:
     imOTSURGBTH_arr.append(ret2)
     imOTSUG_arr.append(thresh3)
     imOTSUGTH_arr.append(ret3)
+    imMorph_arr.append(fg)
+    imMorph2_arr.append(fg2)
+    imMorph3_arr.append(fg3)
     timestamp_arr.append(timestamp)
-
 
 
 for i in range(0, 11):
     t_arr = ['Original', 'RGB Gaussian', 'Gray Gaussian',
              'Histogram ', 'RGB Gaussian', 'Gray Gaussian',
              'MOG', 'RGB MOG', 'Gray MOG',
-             'OTSU', 'RGB OTSU', 'Gray OTSU']
-    fig, ax = plt.subplots(nrows=3,ncols=4)
+             'OTSU', 'RGB OTSU', 'Gray OTSU',
+             ]
+    fig, ax = plt.subplots(nrows=3,ncols=5)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
@@ -167,8 +205,9 @@ for i in range(0, 11):
 
     for j in range(0,3):
         for k in range(0,4):
-            ax[j, k].set_yticklabels([])
-            ax[j, k].set_xticklabels([])
+            if (k != 1):
+                ax[j, k].set_yticklabels([])
+                ax[j, k].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
