@@ -95,8 +95,8 @@ for timestamp, imraw in aqgen:
                            * dist_transform.max(), 255, 0)
     ###
 
-    gray_mog = cv.cvtColor(maskMOG, cv.COLOR_RGB2GRAY)
-    ret2, thresh2 = cv.threshold(gray_mog, 0, 255,
+    #gray_mog = cv.cvtColor(maskMOG, cv.COLOR_RGB2GRAY)
+    ret2, thresh2 = cv.threshold(maskMOG, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
     ###
