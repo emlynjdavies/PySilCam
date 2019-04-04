@@ -57,20 +57,13 @@ logger.info('Processing path: ' + datapath)
 
 ###################################################
 imraw_arr = []
-imGRGB_arr = []
-imGG_arr = []
 imMOG_arr = []
-imMOGRGB_arr = []
-imMOGG_arr = []
 imOTSU_arr =[]
 imOTSUTH_arr =[]
-imOTSURGB_arr =[]
-imOTSURGBTH_arr =[]
-imOTSUG_arr =[]
-imOTSUGTH_arr =[]
+imOTSUMOG_arr =[]
+imOTSUMOGTH_arr =[]
 imMorph_arr = []
-imMorph2_arr = []
-imMorph3_arr = []
+imMorphMOG_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -78,18 +71,14 @@ print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
-subtractorMOGRGV = cv.createBackgroundSubtractorMOG2()
-subtractorMOGG = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
 
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
-
     ret, thresh = cv.threshold(gray, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
-
     ###
     # Noise removal using Morphological
     # closing operation
@@ -106,10 +95,8 @@ for timestamp, imraw in aqgen:
                            * dist_transform.max(), 255, 0)
     ###
 
-    blur = cv.GaussianBlur(imraw, (5, 5), 0)
-    maskMOGRGV = subtractorMOGRGV.apply(blur)
-    gray_blur = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    ret2, thresh2 = cv.threshold(gray_blur, 0, 255,
+    gray_mog = cv.cvtColor(maskMOG, cv.COLOR_RGB2GRAY)
+    ret2, thresh2 = cv.threshold(gray_mog, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
     ###
@@ -127,27 +114,6 @@ for timestamp, imraw in aqgen:
     ret2, fg2 = cv.threshold(dist_transform2, 0.02
                            * dist_transform2.max(), 255, 0)
     ###
-    blur2 = cv.GaussianBlur(gray, (5, 5), 0)
-    maskMOGG = subtractorMOGRGV.apply(blur2)
-    ret3, thresh3 = cv.threshold(blur2, 0, 255,
-                                 cv.THRESH_BINARY_INV +
-                                 cv.THRESH_OTSU)
-
-    ###
-    # Noise removal using Morphological
-    # closing operation
-    # kernel = np.ones((3, 3), np.uint8)
-    closing3 = cv.morphologyEx(thresh2, cv.MORPH_CLOSE,
-                               kernel, iterations=2)
-
-    # Background area using Dialation
-    bg3 = cv.dilate(closing3, kernel, iterations=1)
-
-    # Finding foreground area
-    dist_transform3 = cv.distanceTransform(closing3, cv.DIST_L2, 0)
-    ret3, fg3 = cv.threshold(dist_transform3, 0.02
-                             * dist_transform3.max(), 255, 0)
-    ###
 
 
     x, y, z = imraw.shape
@@ -155,67 +121,38 @@ for timestamp, imraw in aqgen:
     print("Image raw shape imraw.shape( ", x,y,z)
     gray_frame = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     imraw_arr.append(imraw)
-    imGRGB_arr.append(blur)
-    imGG_arr.append(blur2)
     imMOG_arr.append(maskMOG)
-    imMOGRGB_arr.append(maskMOGRGV)
-    imMOGG_arr.append(maskMOGG)
     imOTSU_arr.append(thresh)
     imOTSUTH_arr.append(ret)
-    imOTSURGB_arr.append(thresh2)
-    imOTSURGBTH_arr.append(ret2)
-    imOTSUG_arr.append(thresh3)
-    imOTSUGTH_arr.append(ret3)
     imMorph_arr.append(fg)
-    imMorph2_arr.append(fg2)
-    imMorph3_arr.append(fg3)
+    imOTSUMOG_arr.append(thresh2)
+    imOTSUMOGTH_arr.append(ret2)
+    imMorphMOG_arr.append(fg2)
     timestamp_arr.append(timestamp)
 
 
 for i in range(0, 11):
-    t_arr = ['Original', 'RGB Gaussian', 'Gray Gaussian',
-             'Histogram ', 'RGB Gaussian', 'Gray Gaussian',
-             'MOG', 'RGB MOG', 'Gray MOG',
-             'OTSU', 'RGB OTSU', 'Gray OTSU',
-             'Morph', 'RGB Morph', 'Gray Morph'
+    t_arr = ['Original', 'MOG OTSU', 'MOG MORPH'
+             'MOG', 'OTSU', 'MORPH'
              ]
-    fig, ax = plt.subplots(nrows=3,ncols=4)
+    fig, ax = plt.subplots(nrows=2,ncols=3)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
-    #ax[0, 1].hist(imraw_arr[i].ravel(),256)
-    #ax[0, 1].set_title(t_arr[3]+imOTSUTH_arr[i])
-    ax[0, 1].imshow(imMOG_arr[i])
-    ax[0, 1].set_title(t_arr[6])
-    ax[0, 2].imshow(imOTSU_arr[i])
-    ax[0, 2].set_title(t_arr[9])  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
-    ax[0, 3].imshow(imMorph_arr[i])
-    ax[0, 3].set_title(t_arr[12] + ' ' + str(imOTSUTH_arr[i]))
+    ax[0, 1].imshow(imOTSUMOGTH_arr[i])
+    ax[0, 1].set_title(t_arr[1])
+    ax[0, 2].imshow(imMorphMOG_arr[i])
+    ax[0, 2].set_title(t_arr[2])
 
-    ax[1, 0].imshow(imGRGB_arr[i])
-    ax[1, 0].set_title(t_arr[1])
-    #ax[1, 1] = plt.hist(imGRGB_arr[i].ravel(), 256)
-    #ax[1, 1].set_title(t_arr[3] + imOTSURGBTH_arr[i])
-    ax[1, 1].imshow(imMOGRGB_arr[i])
-    ax[1, 1].set_title(t_arr[7])
-    ax[1, 2].imshow(imOTSURGB_arr[i])
-    ax[1, 2].set_title(t_arr[10])
-    ax[1, 3].imshow(imMorph2_arr[i])
-    ax[1, 3].set_title(t_arr[13] + ' ' + str(imOTSURGBTH_arr[i]))
+    ax[1, 0].imshow(imMOG_arr[i])
+    ax[1, 0].set_title(t_arr[3])
+    ax[1, 1].imshow(imOTSU_arr[i])
+    ax[1, 1].set_title(t_arr[4])
+    ax[1, 2].imshow(imMorph_arr[i])
+    ax[1, 2].set_title(t_arr[5])
 
-    ax[2, 0].imshow(imGG_arr[i])
-    ax[2, 0].set_title(t_arr[2])
-    #ax[2, 1] = plt.hist(imGG_arr[i].ravel(), 256)
-    #ax[2, 1].set_title(t_arr[3] + imOTSUGTH_arr[i])
-    ax[2, 1].imshow(imMOGG_arr[i])
-    ax[2, 1].set_title(t_arr[8])
-    ax[2, 2].imshow(imOTSUG_arr[i])
-    ax[2, 2].set_title(t_arr[11])
-    ax[2, 3].imshow(imMorph3_arr[i])
-    ax[2, 3].set_title(t_arr[14] + ' ' + str(imOTSUGTH_arr[i]))
-
-    for j in range(0,3):
-        for k in range(0,4):
+    for j in range(0,2):
+        for k in range(0,3):
             ax[j, k].set_yticklabels([])
             ax[j, k].set_xticklabels([])
     plt.axis('off')
