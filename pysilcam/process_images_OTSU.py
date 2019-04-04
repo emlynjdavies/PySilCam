@@ -78,11 +78,14 @@ print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
+subtractorMOGRGV = cv.createBackgroundSubtractorMOG2()
+subtractorMOGG = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
 
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
+
     ret, thresh = cv.threshold(gray, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
@@ -104,6 +107,7 @@ for timestamp, imraw in aqgen:
     ###
 
     blur = cv.GaussianBlur(imraw, (5, 5), 0)
+    maskMOGRGV = subtractorMOGRGV.apply(blur)
     gray_blur = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     ret2, thresh2 = cv.threshold(gray_blur, 0, 255,
                                  cv.THRESH_BINARY_INV +
@@ -124,6 +128,7 @@ for timestamp, imraw in aqgen:
                            * dist_transform2.max(), 255, 0)
     ###
     blur2 = cv.GaussianBlur(gray, (5, 5), 0)
+    maskMOGG = subtractorMOGRGV.apply(blur2)
     ret3, thresh3 = cv.threshold(blur2, 0, 255,
                                  cv.THRESH_BINARY_INV +
                                  cv.THRESH_OTSU)
@@ -143,8 +148,7 @@ for timestamp, imraw in aqgen:
     ret3, fg3 = cv.threshold(dist_transform3, 0.02
                              * dist_transform3.max(), 255, 0)
     ###
-    maskMOGRGB = subtractorMOG.apply(blur)
-    maskMOGG = subtractorMOG.apply(blur2)
+
 
     x, y, z = imraw.shape
     print("timestamp ", timestamp)
