@@ -132,7 +132,7 @@ for timestamp, imraw in aqgen:
 
 
 for i in range(0, 11):
-    t_arr = ['Original', 'MOG OTSU', 'MOG MORPH'
+    t_arr = ['Original', 'MOG OTSU', 'MOG MORPH',
              'MOG', 'OTSU', 'MORPH'
              ]
     fig, ax = plt.subplots(nrows=2,ncols=3)
