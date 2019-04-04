@@ -68,6 +68,7 @@ imOTSURGB_arr =[]
 imOTSURGBTH_arr =[]
 imOTSUG_arr =[]
 imOTSUGTH_arr =[]
+imMorph_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -77,6 +78,21 @@ aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
+    '''###
+    # Noise removal using Morphological 
+    # closing operation 
+    kernel = np.ones((3, 3), np.uint8) 
+    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE, 
+                            kernel, iterations = 2) 
+  
+    # Background area using Dialation 
+    bg = cv.dilate(closing, kernel, iterations = 1) 
+  
+    # Finding foreground area 
+    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0) 
+    ret, fg = cv.threshold(dist_transform, 0.02
+                        * dist_transform.max(), 255, 0) 
+    ### '''
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
     ret, thresh = cv.threshold(gray, 0, 255,
@@ -129,7 +145,7 @@ for i in range(0, 11):
     ax[0, 2].imshow(imMOG_arr[i])
     ax[0, 2].set_title(t_arr[6])
     ax[0, 2].imshow(imOTSU_arr[i])
-    ax[0, 2].set_title(t_arr[9] + ' ' + imOTSUTH_arr[i])  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
+    ax[0, 2].set_title(t_arr[9] + ' ' + str(imOTSUTH_arr[i]))  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
 
     ax[1, 0].imshow(imGRGB_arr[i])
     ax[1, 0].set_title(t_arr[1])
@@ -138,7 +154,7 @@ for i in range(0, 11):
     ax[1, 2].imshow(imMOGRGB_arr[i])
     ax[1, 2].set_title(t_arr[7])
     ax[1, 2].imshow(imOTSURGB_arr[i])
-    ax[1, 2].set_title(t_arr[10] + ' ' + imOTSURGBTH_arr[i])
+    ax[1, 2].set_title(t_arr[10] + ' ' + str(imOTSURGBTH_arr[i]))
 
     ax[2, 0].imshow(imGG_arr[i])
     ax[2, 0].set_title(t_arr[2])
@@ -147,7 +163,7 @@ for i in range(0, 11):
     ax[2, 2].imshow(imMOGG_arr[i])
     ax[2, 2].set_title(t_arr[8])
     ax[2, 2].imshow(imOTSUG_arr[i])
-    ax[2, 2].set_title(t_arr[11] + ' ' + imOTSUGTH_arr[i])
+    ax[2, 2].set_title(t_arr[11] + ' ' + str(imOTSUGTH_arr[i]))
 
     for j in range(0,3):
         for k in range(0,4):
