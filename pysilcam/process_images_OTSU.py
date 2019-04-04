@@ -139,15 +139,15 @@ for i in range(0, 11):
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
-    ax[0, 1].imshow(imOTSUMOGTH_arr[i])
-    ax[0, 1].set_title(t_arr[1])
+    ax[0, 1].imshow(imOTSUMOG_arr[i])
+    ax[0, 1].set_title(t_arr[1] + ' ' + str(imOTSUTH_arr[i]))
     ax[0, 2].imshow(imMorphMOG_arr[i])
     ax[0, 2].set_title(t_arr[2])
 
     ax[1, 0].imshow(imMOG_arr[i])
     ax[1, 0].set_title(t_arr[3])
     ax[1, 1].imshow(imOTSU_arr[i])
-    ax[1, 1].set_title(t_arr[4])
+    ax[1, 1].set_title(t_arr[4] + ' ' + str(imOTSUTH_arr[i]))
     ax[1, 2].imshow(imMorph_arr[i])
     ax[1, 2].set_title(t_arr[5])
 
