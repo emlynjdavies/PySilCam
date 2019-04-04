@@ -106,11 +106,11 @@ for timestamp, imraw in aqgen:
     imMOGRGB_arr.append(maskMOGRGB)
     imMOGG_arr.append(maskMOGG)
     imOTSU_arr.append(thresh)
-    imOTSUGTH_arr.append(ret)
+    imOTSUTH_arr.append(ret)
     imOTSURGB_arr.append(thresh2)
-    imOTSUGTH_arr.append(ret2)
+    imOTSURGBTH_arr.append(ret2)
     imOTSUG_arr.append(thresh3)
-    imOTSUG_arr.append(ret3)
+    imOTSUGTH_arr.append(ret3)
     timestamp_arr.append(timestamp)
 
 
@@ -129,7 +129,7 @@ for i in range(0, 11):
     ax[0, 2].imshow(imMOG_arr[i])
     ax[0, 2].set_title(t_arr[6])
     ax[0, 2].imshow(imOTSU_arr[i])
-    ax[0, 2].set_title(t_arr[9] + ' ' + imOTSUTH_arr[i])
+    ax[0, 2].set_title(t_arr[9] + ' ' + imOTSUTH_arr[i])  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
 
     ax[1, 0].imshow(imGRGB_arr[i])
     ax[1, 0].set_title(t_arr[1])
@@ -143,11 +143,11 @@ for i in range(0, 11):
     ax[2, 0].imshow(imGG_arr[i])
     ax[2, 0].set_title(t_arr[2])
     ax[2, 1] = plt.hist(imGG_arr[i].ravel(), 256)
-    #ax[2, 1].set_title(t_arr[3] + imOTSUG_arr[i])
+    #ax[2, 1].set_title(t_arr[3] + imOTSUGTH_arr[i])
     ax[2, 2].imshow(imMOGG_arr[i])
     ax[2, 2].set_title(t_arr[8])
     ax[2, 2].imshow(imOTSUG_arr[i])
-    ax[2, 2].set_title(t_arr[11] + ' ' + imOTSUG_arr[i])
+    ax[2, 2].set_title(t_arr[11] + ' ' + imOTSUGTH_arr[i])
 
     for j in range(0,3):
         for k in range(0,4):
