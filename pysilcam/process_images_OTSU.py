@@ -128,8 +128,8 @@ for i in range(0, 11):
     #ax[0, 1].set_title(t_arr[3]+imOTSUTH_arr[i])
     ax[0, 2].imshow(imMOG_arr[i])
     ax[0, 2].set_title(t_arr[6])
-    ax[0, 2].imshow(imOTSU_arr[i] + ' ' + imOTSUTH_arr[i])
-    ax[0, 2].set_title(t_arr[9])
+    ax[0, 2].imshow(imOTSU_arr[i])
+    ax[0, 2].set_title(t_arr[9] + ' ' + imOTSUTH_arr[i])
 
     ax[1, 0].imshow(imGRGB_arr[i])
     ax[1, 0].set_title(t_arr[1])
@@ -137,8 +137,8 @@ for i in range(0, 11):
     #ax[1, 1].set_title(t_arr[3] + imOTSURGBTH_arr[i])
     ax[1, 2].imshow(imMOGRGB_arr[i])
     ax[1, 2].set_title(t_arr[7])
-    ax[1, 2].imshow(imOTSURGB_arr[i] + ' '  + imOTSURGBTH_arr[i])
-    ax[1, 2].set_title(t_arr[10])
+    ax[1, 2].imshow(imOTSURGB_arr[i])
+    ax[1, 2].set_title(t_arr[10] + ' ' + imOTSURGBTH_arr[i])
 
     ax[2, 0].imshow(imGG_arr[i])
     ax[2, 0].set_title(t_arr[2])
@@ -146,8 +146,8 @@ for i in range(0, 11):
     #ax[2, 1].set_title(t_arr[3] + imOTSUG_arr[i])
     ax[2, 2].imshow(imMOGG_arr[i])
     ax[2, 2].set_title(t_arr[8])
-    ax[2, 2].imshow(imOTSUG_arr[i] + ' ' + imOTSUG_arr[i])
-    ax[2, 2].set_title(t_arr[11])
+    ax[2, 2].imshow(imOTSUG_arr[i])
+    ax[2, 2].set_title(t_arr[11] + ' ' + imOTSUG_arr[i])
 
     for j in range(0,3):
         for k in range(0,4):
