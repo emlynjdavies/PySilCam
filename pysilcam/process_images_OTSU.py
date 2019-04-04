@@ -173,41 +173,47 @@ for i in range(0, 11):
              'Histogram ', 'RGB Gaussian', 'Gray Gaussian',
              'MOG', 'RGB MOG', 'Gray MOG',
              'OTSU', 'RGB OTSU', 'Gray OTSU',
+             'Morph', 'RGB Morph', 'Gray Morph'
              ]
-    fig, ax = plt.subplots(nrows=3,ncols=5)
+    fig, ax = plt.subplots(nrows=3,ncols=4)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
-    ax[0, 1] = plt.hist(imraw_arr[i].ravel(),256)
+    #ax[0, 1].hist(imraw_arr[i].ravel(),256)
     #ax[0, 1].set_title(t_arr[3]+imOTSUTH_arr[i])
-    ax[0, 2].imshow(imMOG_arr[i])
-    ax[0, 2].set_title(t_arr[6])
+    ax[0, 1].imshow(imMOG_arr[i])
+    ax[0, 1].set_title(t_arr[6])
     ax[0, 2].imshow(imOTSU_arr[i])
-    ax[0, 2].set_title(t_arr[9] + ' ' + str(imOTSUTH_arr[i]))  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
+    ax[0, 2].set_title(t_arr[9])  # imOTSUTH_arr imOTSURGBTH_arr imOTSUGTH_arr
+    ax[0, 3].imshow(imMorph_arr[i])
+    ax[0, 3].set_title(t_arr[12] + ' ' + str(imOTSUTH_arr[i]))
 
     ax[1, 0].imshow(imGRGB_arr[i])
     ax[1, 0].set_title(t_arr[1])
-    ax[1, 1] = plt.hist(imGRGB_arr[i].ravel(), 256)
+    #ax[1, 1] = plt.hist(imGRGB_arr[i].ravel(), 256)
     #ax[1, 1].set_title(t_arr[3] + imOTSURGBTH_arr[i])
-    ax[1, 2].imshow(imMOGRGB_arr[i])
-    ax[1, 2].set_title(t_arr[7])
+    ax[1, 1].imshow(imMOGRGB_arr[i])
+    ax[1, 1].set_title(t_arr[7])
     ax[1, 2].imshow(imOTSURGB_arr[i])
-    ax[1, 2].set_title(t_arr[10] + ' ' + str(imOTSURGBTH_arr[i]))
+    ax[1, 2].set_title(t_arr[10])
+    ax[1, 3].imshow(imMorph2_arr[i])
+    ax[1, 3].set_title(t_arr[13] + ' ' + str(imOTSURGBTH_arr[i]))
 
     ax[2, 0].imshow(imGG_arr[i])
     ax[2, 0].set_title(t_arr[2])
-    ax[2, 1] = plt.hist(imGG_arr[i].ravel(), 256)
+    #ax[2, 1] = plt.hist(imGG_arr[i].ravel(), 256)
     #ax[2, 1].set_title(t_arr[3] + imOTSUGTH_arr[i])
-    ax[2, 2].imshow(imMOGG_arr[i])
-    ax[2, 2].set_title(t_arr[8])
+    ax[2, 1].imshow(imMOGG_arr[i])
+    ax[2, 1].set_title(t_arr[8])
     ax[2, 2].imshow(imOTSUG_arr[i])
-    ax[2, 2].set_title(t_arr[11] + ' ' + str(imOTSUGTH_arr[i]))
+    ax[2, 2].set_title(t_arr[11])
+    ax[2, 3].imshow(imMorph3_arr[i])
+    ax[2, 3].set_title(t_arr[14] + ' ' + str(imOTSUGTH_arr[i]))
 
     for j in range(0,3):
         for k in range(0,4):
-            if (k != 1):
-                ax[j, k].set_yticklabels([])
-                ax[j, k].set_xticklabels([])
+            ax[j, k].set_yticklabels([])
+            ax[j, k].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
