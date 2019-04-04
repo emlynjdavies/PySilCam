@@ -57,12 +57,17 @@ logger.info('Processing path: ' + datapath)
 
 ###################################################
 imraw_arr = []
-imc_arr = []
+imGRGB_arr = []
+imGG_arr = []
 imMOG_arr = []
-imMOG2_arr = []
-imMOGL_arr = []
-imKNN_arr = []
-imDiff_arr = []
+imMOGRGB_arr = []
+imMOGG_arr = []
+imOTSU_arr =[]
+imOTSUTH_arr =[]
+imOTSURGB_arr =[]
+imOTSURGBTH_arr =[]
+imOTSUG_arr =[]
+imOTSUGTH_arr =[]
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -70,73 +75,80 @@ print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
-subtractorMOG2 = cv.createBackgroundSubtractorMOG2(history=3, varThreshold=25, detectShadows=False)
-subtractorMOGL = cv.createBackgroundSubtractorMOG2(history=3, detectShadows=False)
-subtractorKNN = cv.createBackgroundSubtractorKNN(history=3, dist2Threshold=25, detectShadows=False)
-
-count = 0
-first_frame = None
 
 for timestamp, imraw in aqgen:
-    if count == 0:
-        count = count + 1
-        first_frame = imraw
-        first_gray = cv.cvtColor(first_frame, cv.COLOR_RGB2GRAY)
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
-    maskMOG2 = subtractorMOG2.apply(imraw)
-    maskKNN = subtractorKNN.apply(imraw)
     ret, thresh = cv.threshold(gray, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
-    maskMOGL = subtractorMOGL.apply(imraw, learningRate=0.1)
+    blur = cv.GaussianBlur(imraw, (5, 5), 0)
+    maskMOGRGB = subtractorMOG.apply(blur)
+    ret2, thresh2 = cv.threshold(blur, 0, 255,
+                                 cv.THRESH_BINARY_INV +
+                                 cv.THRESH_OTSU)
+    blur2 = cv.GaussianBlur(gray, (5, 5), 0)
+    maskMOGG = subtractorMOG.apply(blur2)
+    ret3, thresh3 = cv.threshold(blur2, 0, 255,
+                                 cv.THRESH_BINARY_INV +
+                                 cv.THRESH_OTSU)
 
     x, y, z = imraw.shape
     print("timestamp ", timestamp)
     print("Image raw shape imraw.shape( ", x,y,z)
     gray_frame = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    difference = cv.absdiff(first_gray, gray_frame)
-    _, difference = cv.threshold(difference, 25, 255, cv.THRESH_BINARY)
     imraw_arr.append(imraw)
+    imGRGB_arr.append(blur)
+    imGG_arr.append(blur2)
     imMOG_arr.append(maskMOG)
-    imMOG2_arr.append(maskMOG2)
-    imMOGL_arr.append(maskMOGL)
-    imKNN_arr.append(maskKNN)
-    imDiff_arr.append(difference)
+    imMOGRGB_arr.append(maskMOGRGB)
+    imMOGG_arr.append(maskMOGG)
+    imOTSU_arr.append(thresh)
+    imOTSUGTH_arr.append(ret)
+    imOTSURGB_arr.append(thresh2)
+    imOTSUGTH_arr.append(ret2)
+    imOTSUG_arr.append(thresh3)
+    imOTSUG_arr.append(ret3)
     timestamp_arr.append(timestamp)
 
-aq2=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
-print ("Acquiring images...")
-#Get number of images to use for background correction from config
-print('* Initializing background image handler')
-aqgen2=aq2.get_generator(datapath,writeToDisk=discWrite,
-                       camera_config_file=config_filename)
-bggen = backgrounder(3, aqgen2,
-                     bad_lighting_limit = None,
-                     real_time_stats=False)
 
-for i, (timestamp, imc, imraw) in enumerate(bggen):
-    imc_arr.append(imc)
 
 for i in range(0, 11):
-    t_arr = ['Original Image', 'Moving Avg', 'MOG Default', 'MOG2 Threshold 25', 'Mask KNN', 'MOG learning rate 0.1']
-    fig, ax = plt.subplots(nrows=2,ncols=3)
+    t_arr = ['Original', 'RGB Gaussian', 'Gray Gaussian',
+             'Histogram ', 'RGB Gaussian', 'Gray Gaussian',
+             'MOG', 'RGB MOG', 'Gray MOG',
+             'OTSU', 'RGB OTSU', 'Gray OTSU']
+    fig, ax = plt.subplots(nrows=3,ncols=4)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
-    ax[0, 1].imshow(imMOG_arr[i])
-    ax[0, 1].set_title(t_arr[2])
-    ax[1, 1].imshow(imMOG2_arr[i])
-    ax[1, 1].set_title(t_arr[3])
-    ax[1, 0].imshow(imKNN_arr[i])
-    ax[1, 0].set_title(t_arr[4])
-    ax[1, 2].imshow(imMOGL_arr[i])
-    ax[1, 2].set_title(t_arr[5])
-    if i > 2:
-        ax[0, 2].imshow(imc_arr[i-3])
-        ax[0, 2].set_title(t_arr[1])
-    for j in range(0,2):
-        for k in range(0,3):
+    ax[0, 1] = plt.hist(imraw_arr[i].ravel(),256)
+    ax[0, 1].set_title(t_arr[3]+imOTSUTH_arr[i])
+    ax[0, 2].imshow(imMOG_arr[i])
+    ax[0, 2].set_title(t_arr[6])
+    ax[0, 2].imshow(imOTSU_arr[i])
+    ax[0, 2].set_title(t_arr[9])
+
+    ax[1, 0].imshow(imGRGB_arr[i])
+    ax[1, 0].set_title(t_arr[1])
+    ax[1, 1] = plt.hist(imGRGB_arr[i].ravel(), 256)
+    ax[1, 1].set_title(t_arr[3] + imOTSURGBTH_arr[i])
+    ax[1, 2].imshow(imMOGRGB_arr[i])
+    ax[1, 2].set_title(t_arr[7])
+    ax[1, 2].imshow(imOTSURGB_arr[i])
+    ax[1, 2].set_title(t_arr[10])
+
+    ax[2, 0].imshow(imGG_arr[i])
+    ax[2, 0].set_title(t_arr[2])
+    ax[2, 1] = plt.hist(imGG_arr[i].ravel(), 256)
+    ax[2, 1].set_title(t_arr[3] + imOTSUG_arr[i])
+    ax[2, 2].imshow(imMOGG_arr[i])
+    ax[2, 2].set_title(t_arr[8])
+    ax[2, 2].imshow(imOTSUG_arr[i])
+    ax[2, 2].set_title(t_arr[11])
+
+    for j in range(0,3):
+        for k in range(0,4):
             ax[j, k].set_yticklabels([])
             ax[j, k].set_xticklabels([])
     plt.axis('off')
