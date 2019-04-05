@@ -135,24 +135,33 @@ for i in range(0, 11):
     t_arr = ['Original', 'MOG OTSU', 'MOG MORPH',
              'MOG', 'OTSU', 'MORPH'
              ]
-    fig, ax = plt.subplots(nrows=2,ncols=3)
+    fig, ax = plt.subplots(nrows=4,ncols=2)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title(t_arr[0])
-    ax[0, 1].imshow(imOTSUMOG_arr[i])
-    ax[0, 1].set_title(t_arr[1] + ' ' + str(imOTSUTH_arr[i]))
-    ax[0, 2].imshow(imMorphMOG_arr[i])
-    ax[0, 2].set_title(t_arr[2])
+    ax[0, 1].hist(imraw_arr[i].ravel(), 256, [0, 256])
+    ax[0, 1].set_title('Original Histogram')
 
     ax[1, 0].imshow(imMOG_arr[i])
     ax[1, 0].set_title(t_arr[3])
-    ax[1, 1].imshow(imOTSU_arr[i])
-    ax[1, 1].set_title(t_arr[4] + ' ' + str(imOTSUTH_arr[i]))
-    ax[1, 2].imshow(imMorph_arr[i])
-    ax[1, 2].set_title(t_arr[5])
+    ax[1, 1].hist(imMOG_arr[i].ravel(), 256, [0, 256])
+    ax[1, 1].set_title('MOG Histogram')
 
-    for j in range(0,2):
-        for k in range(0,3):
+    ax[2, 0].imshow(imOTSUMOG_arr[i])
+    ax[2, 0].set_title(t_arr[1] + ' ' + str(imOTSUTH_arr[i]))
+    gray = cv.cvtColor(imraw_arr[i], cv.COLOR_RGB2GRAY)
+    ax[2, 1].hist(gray.ravel(), 256, [0, 256])
+    ax[2, 1].set_title('Original Gray Histogram')
+
+    ax[3, 0].imshow(imMorphMOG_arr[i])
+    ax[3, 0].set_title(t_arr[2])
+    gray2 = cv.cvtColor(imMOG_arr[i], cv.COLOR_RGB2GRAY)
+    ax[3, 1].hist(gray2.ravel(), 256, [0, 256])
+    ax[3, 1].set_title('MOG Gray Histogram')
+
+
+    for j in range(0,4):
+        for k in range(0,1):
             ax[j, k].set_yticklabels([])
             ax[j, k].set_xticklabels([])
     plt.axis('off')
