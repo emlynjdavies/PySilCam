@@ -109,7 +109,7 @@ for timestamp, imraw in aqgen:
     markers1 = cv.watershed(imraw, markers1)
     imraw[markers1 == -1] = [255, 0, 0]
     ##markers2 = cv.watershed(maskMOG, markers2)
-    maskMOG[markers1 == -1] = [255, 0, 0]
+    #maskMOG[markers1 == -1] = [255, 0, 0]
     #####################################
 
 
@@ -140,7 +140,7 @@ for i in range(0, 11):
     ax[2].set_yticklabels([])
     ax[2].set_xticklabels([])
     ax[3].imshow(imMOGSeg_arr[i])
-    ax[3].set_title('Segmented MOG')
+    ax[3].set_title(str(imMOGSeg_arr[i].shape()))
     ax[3].set_yticklabels([])
     ax[3].set_xticklabels([])
     plt.axis('off')
