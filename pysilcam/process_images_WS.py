@@ -108,8 +108,8 @@ for timestamp, imraw in aqgen:
     markers2 = markers + 1
     markers1 = cv.watershed(imraw, markers1)
     imraw[markers1 == -1] = [255, 0, 0]
-    markers2 = cv.watershed(maskMOG, markers2)
-    maskMOG[markers2 == -1] = [255]
+    #markers2 = cv.watershed(maskMOG, markers2)
+    maskMOG[markers1 == -1] = [255]
     #####################################
 
 
