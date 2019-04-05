@@ -31,6 +31,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import cv2 as cv
 from skimage.filters import threshold_otsu, threshold_adaptive, try_all_threshold
+import random as rng
 
 # Z:/DATA/SILCAM/250718/config.ini Z:/DATA/SILCAM/RAW/250718 --nomultiproc
 #config_filename = "Z:/DATA/SILCAM/Working/config.ini"
@@ -56,9 +57,12 @@ logger = logging.getLogger(__name__ + '.silcam_process')
 logger.info('Processing path: ' + datapath)
 
 ###################################################
+rng.seed(12345)
+
 imraw_arr = []
 imMOG_arr = []
 imSegmented_arr = []
+imMOGSeg_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -71,6 +75,7 @@ for timestamp, imraw in aqgen:
     imcp = np.copy(imraw)
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
+    maskMOGcpy = np.copy(maskMOG)
 
     # Finding foreground area
     # closing operation
@@ -100,8 +105,11 @@ for timestamp, imraw in aqgen:
     ret, markers = cv.connectedComponents(fg2)
     # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
+    markers2 = markers + 1
     markers = cv.watershed(imraw, markers)
     imraw[markers == -1] = [255, 0, 0]
+    markers2 = cv.watershed(maskMOG, markers2)
+    maskMOG[markers2 == -1] = [255, 0, 0]
     #####################################
 
 
@@ -110,13 +118,14 @@ for timestamp, imraw in aqgen:
     print("Image raw shape imraw.shape( ", x,y,z)
     gray_frame = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     imraw_arr.append(imcp)
-    imMOG_arr.append(maskMOG)
+    imMOG_arr.append(maskMOGcpy)
     imSegmented_arr.append(imraw)
+    imMOGSeg_arr.append(maskMOG)
     timestamp_arr.append(timestamp)
 
 
 for i in range(0, 11):
-    fig, ax = plt.subplots(nrows=3)
+    fig, ax = plt.subplots(nrows=4)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
@@ -130,6 +139,10 @@ for i in range(0, 11):
     ax[2].set_title('MOG')
     ax[2].set_yticklabels([])
     ax[2].set_xticklabels([])
+    ax[3].imshow(imMOGSeg_arr[i])
+    ax[3].set_title('Segmented MOG')
+    ax[3].set_yticklabels([])
+    ax[3].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
