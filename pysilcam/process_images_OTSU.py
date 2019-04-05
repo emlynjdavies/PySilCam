@@ -154,7 +154,7 @@ for i in range(0, 11):
 
     ax[3, 0].imshow(imMorphMOG_arr[i])
     ax[3, 0].set_title(t_arr[2])
-    ax[3, 1].hist(imMorph_arr[i].ravel(), 256, [0, 256])
+    ax[3, 1].imshow(imMorph_arr[i])
     ax[3, 1].set_title('MORPH sure foreground')
     ax[3, 1].set_yticklabels([])
     ax[3, 1].set_xticklabels([])
