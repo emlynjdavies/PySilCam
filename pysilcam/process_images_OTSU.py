@@ -83,15 +83,14 @@ for timestamp, imraw in aqgen:
     # Noise removal using Morphological
     # closing operation
     kernel = np.ones((3, 3), np.uint8)
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
-                              kernel, iterations=2)
+    opening = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=2)
 
     # Background area using Dialation
-    bg = cv.dilate(closing, kernel, iterations=1)
+    sure_bg = cv.dilate(opening, kernel, iterations=3)
 
     # Finding foreground area
-    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
-    ret, fg = cv.threshold(dist_transform, 0.02
+    dist_transform = cv.distanceTransform(opening, cv.DIST_L2, 5)
+    ret, sure_fg = cv.threshold(dist_transform, 0.7
                            * dist_transform.max(), 255, 0)
     ###
 
@@ -124,7 +123,7 @@ for timestamp, imraw in aqgen:
     imMOG_arr.append(maskMOG)
     imOTSU_arr.append(thresh)
     imOTSUTH_arr.append(ret)
-    imMorph_arr.append(fg)
+    imMorph_arr.append(sure_fg)
     imOTSUMOG_arr.append(thresh2)
     imOTSUMOGTH_arr.append(ret2)
     imMorphMOG_arr.append(fg2)
@@ -155,9 +154,10 @@ for i in range(0, 11):
 
     ax[3, 0].imshow(imMorphMOG_arr[i])
     ax[3, 0].set_title(t_arr[2])
-    #gray2 = cv.cvtColor(imMOG_arr[i], cv.COLOR_RGB2GRAY)
-    #ax[3, 1].hist(imMOG_arr[i].ravel(), 256, [0, 256])
-    #ax[3, 1].set_title('MOG Gray Histogram')
+    ax[3, 1].hist(imMorph_arr[i].ravel(), 256, [0, 256])
+    ax[3, 1].set_title('MORPH sure foreground')
+    ax[3, 1].set_yticklabels([])
+    ax[3, 1].set_xticklabels([])
 
 
     for j in range(0,4):
