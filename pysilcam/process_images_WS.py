@@ -140,7 +140,7 @@ for i in range(0, 11):
     ax[2].set_yticklabels([])
     ax[2].set_xticklabels([])
     ax[3].imshow(imMOGSeg_arr[i])
-    ax[3].set_title(str(imMOGSeg_arr[i].shape()))
+    ax[3].set_title(str(imMOGSeg_arr[i].shape))
     ax[3].set_yticklabels([])
     ax[3].set_xticklabels([])
     plt.axis('off')
