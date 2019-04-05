@@ -68,6 +68,7 @@ aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
 subtractorMOG = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
+    imcp = np.copy(imraw)
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
 
@@ -100,7 +101,6 @@ for timestamp, imraw in aqgen:
     # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
     markers = cv.watershed(imraw, markers)
-    imcp = np.copy(imraw)
     imraw[markers == -1] = [255, 0, 0]
     #####################################
 
