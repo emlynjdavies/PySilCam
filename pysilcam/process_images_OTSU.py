@@ -155,9 +155,9 @@ for i in range(0, 11):
 
     ax[3, 0].imshow(imMorphMOG_arr[i])
     ax[3, 0].set_title(t_arr[2])
-    gray2 = cv.cvtColor(imMOG_arr[i], cv.COLOR_RGB2GRAY)
-    ax[3, 1].hist(gray2.ravel(), 256, [0, 256])
-    ax[3, 1].set_title('MOG Gray Histogram')
+    #gray2 = cv.cvtColor(imMOG_arr[i], cv.COLOR_RGB2GRAY)
+    #ax[3, 1].hist(imMOG_arr[i].ravel(), 256, [0, 256])
+    #ax[3, 1].set_title('MOG Gray Histogram')
 
 
     for j in range(0,4):
