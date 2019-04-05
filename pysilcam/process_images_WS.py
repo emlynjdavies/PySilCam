@@ -105,7 +105,7 @@ for timestamp, imraw in aqgen:
     ret, markers = cv.connectedComponents(fg2)
     # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
-    markers2 = markers + 1
+    markers2 = markers
     markers = cv.watershed(imraw, markers)
     imraw[markers == -1] = [255, 0, 0]
     markers2 = cv.watershed(maskMOG, markers2)
