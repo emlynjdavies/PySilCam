@@ -95,6 +95,7 @@ for timestamp, imraw in aqgen:
 
     ####  WATERSHED ALGORITHM #################################
     # Marker labelling
+    fg2 = np.uint8(fg2)
     ret, markers = cv.connectedComponents(fg2)
     # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
