@@ -76,7 +76,7 @@ for timestamp, imraw in aqgen:
 
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
-    ret, thresh = cv.threshold(gray, 0, 255,
+    ret, thresh = cv.threshold(maskMOG, 0, 255,
                                 cv.THRESH_BINARY_INV +
                                 cv.THRESH_OTSU)
     ###
