@@ -151,10 +151,8 @@ for timestamp, imraw in aqgen:
     print('dist_8u.shape = dist.astype(uint8) ', dist_8u.shape)
     # Find total markers
     _, contours, _ = cv.findContours(dist_8u, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    print('contours.shape = cv.findContours(dist_8u, cv.RETR_EXTERNAL, cv.CHAIN_APROX_SIMPLE)', contours.shape)
     # Create the marker image for the watershed algorithm
     markers = np.zeros(dist.shape, dtype=np.int32)
-    print('markers.shape = np.zeros(dist.shape, dtype=np.int32) ', markers.shape)
     # Draw the foreground markers
     for i in range(len(contours)):
         cv.drawContours(markers, contours, i, (i + 1), -1)
