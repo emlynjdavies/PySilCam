@@ -78,11 +78,11 @@ subtractorMOG = cv.createBackgroundSubtractorMOG2()
 for timestamp, imraw in aqgen:
     ### imraw -- original image
     imraw_arr.append(imraw)
-    print('imraw.shape ', imraw.shape)
+    print('imraw.shape ', imraw.shape)  # (2050, 2448, 3)
     gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    print('gray.shape ', gray.shape)
+    print('gray.shape ', gray.shape)    # (2050, 2448)
     maskMOG = subtractorMOG.apply(imraw)
-    print('maskMOG.shape ', maskMOG.shape)
+    print('maskMOG.shape ', maskMOG.shape)  # (2050, 2448)
     ### maskMOG -- background subtracted
     imMOG_arr.append(maskMOG)
 
@@ -98,25 +98,25 @@ for timestamp, imraw in aqgen:
     # BUT a 8bits unsigned int (the one we are working with) can contain values from 0 to 255
     # so the possible negative number will be truncated
     imgLaplacian = cv.filter2D(maskMOG, cv.CV_32F, kernel)
-    print('imgLaplacian.shape ', imgLaplacian.shape)
+    print('imgLaplacian.shape ', imgLaplacian.shape)    # (2050, 2448)
     sharp = np.float32(maskMOG)
-    print('sharp.shape ', sharp.shape)
+    print('sharp.shape ', sharp.shape)                  # (2050, 2448)
     imgResult = sharp - imgLaplacian
-    print('imgResult.shape = sharp - imgLaplacian ', imgResult.shape)
+    print('imgResult.shape = sharp - imgLaplacian ', imgResult.shape)   # (2050, 2448)
     # convert back to 8bits gray scale
     imgResult = np.clip(imgResult, 0, 255)
-    print('imgResult.shape = np.clip(imgResult, 0, 255) ', imgResult.shape)
+    print('imgResult.shape = np.clip(imgResult, 0, 255) ', imgResult.shape) # (2050, 2448)
     imgResult = imgResult.astype('uint8')
-    print('imgResult.shape = imgResult.astype(uint8)', imgResult.shape)
+    print('imgResult.shape = imgResult.astype(uint8)', imgResult.shape)     # (2050, 2448)
     imgLaplacian = np.clip(imgLaplacian, 0, 255)
-    print('imgLaplacian.shape = np.clip(imgLaplacian,0,255) ', imgLaplacian.shape)
+    print('imgLaplacian.shape = np.clip(imgLaplacian,0,255) ', imgLaplacian.shape)  # (2050, 2448)
     imgLaplacian = np.uint8(imgLaplacian)
-    print('imgLaplacian.shape = np.uint8(imgLaplacian) ', imgLaplacian.shape)
+    print('imgLaplacian.shape = np.uint8(imgLaplacian) ', imgLaplacian.shape)       # (2050, 2448)
     #### imageResult -- Laplacian filter  New Sharped Image
     laplace_arr.append(imgResult)
 
     # Create binary image from source image
-    bw = cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
+    bw = imgResult # cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
     print('bw.shape ', bw.shape)
     _, bw = cv.threshold(bw, 40, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
     print('bw.shape = cv.threshold(bw, 40, 255, BINARY|OTSU)', bw.shape)
