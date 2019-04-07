@@ -70,17 +70,14 @@ aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
-subtractorMOG = cv.createBackgroundSubtractorMOG()
 subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
 subtractorGMG = cv.createBackgroundSubtractorGMG()
 
 for timestamp, imraw in aqgen:
-    maskMOG = subtractorMOG.apply(imraw)
     maskMOG2 = subtractorMOG2.apply(imraw)
     maskGMG = subtractorGMG.apply(imraw)
 
     imraw_arr.append(imraw)
-    imMOG_arr.append(maskMOG)
     imMOG2_arr.append(maskMOG2)
     imGMG_arr.append(maskGMG)
     timestamp_arr.append(timestamp)
