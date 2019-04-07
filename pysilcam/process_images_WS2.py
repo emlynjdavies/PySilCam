@@ -163,7 +163,7 @@ for timestamp, imraw in aqgen:
     markers_arr.append(markers)
 
     # Perform the watershed algorithm
-    cv.watershed(imgResult, markers)
+    cv.watershed(imraw, markers)
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
     mark = cv.bitwise_not(mark)
