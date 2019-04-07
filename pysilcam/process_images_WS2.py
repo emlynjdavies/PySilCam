@@ -79,8 +79,8 @@ for timestamp, imraw in aqgen:
     ### imraw -- original image
     imraw_arr.append(imraw)
     print('imraw.shape ', imraw.shape)  # (2050, 2448, 3)
-    gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    print('gray.shape ', gray.shape)    # (2050, 2448)
+    #gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
+    #print('gray.shape ', gray.shape)    # (2050, 2448)
     maskMOG = subtractorMOG.apply(imraw)
     print('maskMOG.shape ', maskMOG.shape)  # (2050, 2448)
     ### maskMOG -- background subtracted
@@ -116,7 +116,7 @@ for timestamp, imraw in aqgen:
     laplace_arr.append(imgResult)
 
     # Create binary image from source image
-    bw = imgResult # cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
+    bw = cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)  # imgResult #
     print('bw.shape ', bw.shape)
     _, bw = cv.threshold(bw, 40, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
     print('bw.shape = cv.threshold(bw, 40, 255, BINARY|OTSU)', bw.shape)
@@ -163,9 +163,9 @@ for timestamp, imraw in aqgen:
     markers_arr.append(markers)
 
     # Perform the watershed algorithm
-    # cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
-    cv.watershed(new_gray, markers)
+    cv.cvtColor(maskMOG, cv.COLOR_RGB2GRAY)
+    # new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
+    # cv.watershed(new_gray, markers)
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
     mark = cv.bitwise_not(mark)
