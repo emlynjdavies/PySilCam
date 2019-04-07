@@ -62,6 +62,7 @@ rng.seed(12345)
 imraw_arr = []
 imMOG_arr = []
 imMOG2_arr = []
+imMOG3_arr = []
 imMA_arr = []
 timestamp_arr = []
 
@@ -71,13 +72,16 @@ aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
 subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, detectShadows=False)
 subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
+subtractorMOG3 = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, detectShadows=False)
 
 for timestamp, imraw in aqgen:
     maskMOG = subtractorMOG2.apply(imraw)
     maskMOG2 = subtractorMOG2.apply(imraw)
+    maskMOG3 = subtractorMOG2.apply(imraw)
     imraw_arr.append(imraw)
     imMOG_arr.append(maskMOG)
     imMOG2_arr.append(maskMOG2)
+    imMOG3_arr.append(maskMOG3)
     timestamp_arr.append(timestamp)
 
 ###################################################
@@ -96,7 +100,7 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     imMA_arr.append(imc)
 
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=3)
+    fig, ax = plt.subplots(nrows=5)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
@@ -106,15 +110,19 @@ for i in range(0, 15):
     ax[1].set_title('MOG hist=5 ' + str(imMOG_arr[i].shape))
     ax[1].set_yticklabels([])
     ax[1].set_xticklabels([])
-    ax[2].imshow(imMOG2_arr[i])
-    ax[2].set_title('MOG2 ' + str(imMOG2_arr[i].shape))
+    ax[2].imshow(imMOG3_arr[i])
+    ax[2].set_title('MOG thres=25 ' + str(imMOG3_arr[i].shape))
     ax[2].set_yticklabels([])
     ax[2].set_xticklabels([])
+    ax[3].imshow(imMOG2_arr[i])
+    ax[3].set_title('MOG2 ' + str(imMOG2_arr[i].shape))
+    ax[3].set_yticklabels([])
+    ax[3].set_xticklabels([])
     if i > 4:
-        ax[3].imshow(imMA_arr[i-5])
-        ax[3].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
-        ax[3].set_yticklabels([])
-        ax[3].set_xticklabels([])
+        ax[4].imshow(imMA_arr[i-5])
+        ax[4].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
+        ax[4].set_yticklabels([])
+        ax[4].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
