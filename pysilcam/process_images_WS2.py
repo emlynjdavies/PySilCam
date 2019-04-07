@@ -220,7 +220,7 @@ for i in range(0, 11):
     ax[1, 1].imshow(distTransf_arr[i])
     ax[1, 1].set_title(t_arr[4])
 
-    ax[1, 2].imshow(imraw_arr[i])
+    ax[1, 2].imshow(final_arr[i])
     ax[1, 2].set_title(t_arr[7])
 
     ax[2, 0].imshow(laplace_arr[i])
