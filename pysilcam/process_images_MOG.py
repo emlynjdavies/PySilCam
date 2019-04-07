@@ -61,28 +61,51 @@ rng.seed(12345)
 
 imraw_arr = []
 imMOG_arr = []
-imMOG2_arr = []
-imMOG3_arr = []
 imMA_arr = []
+imMOGSeg_arr = []
+imMASeg_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
-subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, detectShadows=False)
-subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
-subtractorMOG3 = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, detectShadows=False)
+subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, detectShadows=False)
 
 for timestamp, imraw in aqgen:
-    maskMOG = subtractorMOG2.apply(imraw)
-    maskMOG2 = subtractorMOG2.apply(imraw)
-    maskMOG3 = subtractorMOG2.apply(imraw)
+    maskMOG = subtractorMOG.apply(imraw)
     imraw_arr.append(imraw)
-    imMOG_arr.append(maskMOG)
-    imMOG2_arr.append(maskMOG2)
-    imMOG3_arr.append(maskMOG3)
+    maskMOG_cp = np.copy(maskMOG)
+    imMOG_arr.append(maskMOG_cp)
     timestamp_arr.append(timestamp)
+    # Finding foreground area
+    # closing operation
+    kernel = np.ones((3, 3), np.uint8)
+    ret, thresh = cv.threshold(maskMOG, 0, 255,
+                                 cv.THRESH_BINARY_INV +
+                                 cv.THRESH_OTSU)
+    ###
+    # Noise removal using Morphological
+    # closing operation
+    # kernel = np.ones((3, 3), np.uint8)
+    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
+                               kernel, iterations=2)
+    # Background area using Dialation
+    bg = cv.dilate(closing, kernel, iterations=1)
+    # Finding foreground area
+    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
+    ret, fg = cv.threshold(dist_transform, 0.02
+                             * dist_transform.max(), 255, 0)
+    ###
+    ####  WATERSHED ALGORITHM #################################
+    # Marker labelling
+    fg = np.uint8(fg)
+    ret, markers = cv.connectedComponents(fg)
+    markers = markers + 1
+    new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
+    markers = cv.watershed(new_gray, markers)
+    maskMOG[markers == -1] = [255]
+    imMOGSeg_arr.append(maskMOG)
 
 ###################################################
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -97,32 +120,62 @@ bggen = backgrounder(5, aqgen,
                      real_time_stats=False)
 
 for i, (timestamp, imc, imraw) in enumerate(bggen):
-    imMA_arr.append(imc)
+    imc_cp = np.copy(imc)
+    imMA_arr.append(imc_cp)
+
+    # Finding foreground area
+    # closing operation
+    kernel = np.ones((3, 3), np.uint8)
+    ret, thresh = cv.threshold(imc, 0, 255,
+                               cv.THRESH_BINARY_INV +
+                               cv.THRESH_OTSU)
+    ###
+    # Noise removal using Morphological
+    # closing operation
+    # kernel = np.ones((3, 3), np.uint8)
+    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
+                              kernel, iterations=2)
+    # Background area using Dialation
+    bg = cv.dilate(closing, kernel, iterations=1)
+    # Finding foreground area
+    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
+    ret, fg = cv.threshold(dist_transform, 0.02
+                           * dist_transform.max(), 255, 0)
+    ###
+    ####  WATERSHED ALGORITHM #################################
+    # Marker labelling
+    fg = np.uint8(fg)
+    ret, markers = cv.connectedComponents(fg)
+    markers = markers + 1
+    #new_gray = cv.cvtColor(imc, cv.COLOR_GRAY2BGR)
+    markers = cv.watershed(imc, markers)
+    imc[markers == -1] = [255]
+    imMASeg_arr.append(imc)
 
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=5)
+    fig, ax = plt.subplots(nrows=3, ncols=2)
     plt.suptitle(timestamp_arr[i])
-    ax[0].imshow(imraw_arr[i])
-    ax[0].set_title('Original')
-    ax[0].set_yticklabels([])
-    ax[0].set_xticklabels([])
-    ax[1].imshow(imMOG_arr[i])
-    ax[1].set_title('MOG hist=5 ' + str(imMOG_arr[i].shape))
-    ax[1].set_yticklabels([])
-    ax[1].set_xticklabels([])
-    ax[2].imshow(imMOG3_arr[i])
-    ax[2].set_title('MOG thres=25 ' + str(imMOG3_arr[i].shape))
-    ax[2].set_yticklabels([])
-    ax[2].set_xticklabels([])
-    ax[3].imshow(imMOG2_arr[i])
-    ax[3].set_title('MOG2 ' + str(imMOG2_arr[i].shape))
-    ax[3].set_yticklabels([])
-    ax[3].set_xticklabels([])
+    ax[0, 0].imshow(imraw_arr[i])
+    ax[0, 0].set_title('Original')
+    ax[0, 0].set_yticklabels([])
+    ax[0, 0].set_xticklabels([])
+    ax[1, 0].imshow(imMOG_arr[i])
+    ax[1, 0].set_title('MOG hist=5 thres=25 ' + str(imMOG_arr[i].shape))
+    ax[1, 0].set_yticklabels([])
+    ax[1, 0].set_xticklabels([])
+    ax[1, 1].imshow(imMOGSeg_arr[i])
+    ax[1, 1].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
+    ax[1, 1].set_yticklabels([])
+    ax[1, 1].set_xticklabels([])
     if i > 4:
-        ax[4].imshow(imMA_arr[i-5])
-        ax[4].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
-        ax[4].set_yticklabels([])
-        ax[4].set_xticklabels([])
+        ax[2, 0].imshow(imMA_arr[i-5])
+        ax[2, 0].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
+        ax[2, 0].set_yticklabels([])
+        ax[2, 0].set_xticklabels([])
+        ax[2, 1].imshow(imMASeg_arr[i - 5])
+        ax[2, 1].set_title('Moving Average Seg ' + str(imMASeg_arr[i - 5].shape))
+        ax[2, 1].set_yticklabels([])
+        ax[2, 1].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
