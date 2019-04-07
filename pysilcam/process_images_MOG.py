@@ -60,9 +60,7 @@ logger.info('Processing path: ' + datapath)
 rng.seed(12345)
 
 imraw_arr = []
-imMOG_arr = []
 imMOG2_arr = []
-imGMG_arr = []
 imMA_arr = []
 timestamp_arr = []
 
@@ -71,15 +69,11 @@ print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
 subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
-subtractorGMG = cv.createBackgroundSubtractorGMG()
 
 for timestamp, imraw in aqgen:
     maskMOG2 = subtractorMOG2.apply(imraw)
-    maskGMG = subtractorGMG.apply(imraw)
-
     imraw_arr.append(imraw)
     imMOG2_arr.append(maskMOG2)
-    imGMG_arr.append(maskGMG)
     timestamp_arr.append(timestamp)
 
 ###################################################
@@ -98,7 +92,7 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     imMA_arr.append(imc)
 
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=4)
+    fig, ax = plt.subplots(nrows=3)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
@@ -108,15 +102,11 @@ for i in range(0, 15):
     ax[1].set_title('MOG2 ' + str(imMOG2_arr[i].shape))
     ax[1].set_yticklabels([])
     ax[1].set_xticklabels([])
-    ax[2].imshow(imGMG_arr[i])
-    ax[2].set_title('GMG ' + str(imGMG_arr[i].shape))
-    ax[2].set_yticklabels([])
-    ax[2].set_xticklabels([])
     if i > 4:
-        ax[3].imshow(imMA_arr[i-5])
-        ax[3].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
-        ax[3].set_yticklabels([])
-        ax[3].set_xticklabels([])
+        ax[2].imshow(imMA_arr[i-5])
+        ax[2].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
+        ax[2].set_yticklabels([])
+        ax[2].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
