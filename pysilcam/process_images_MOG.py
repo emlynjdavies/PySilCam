@@ -126,7 +126,8 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     # Finding foreground area
     # closing operation
     kernel = np.ones((3, 3), np.uint8)
-    ret, thresh = cv.threshold(imc, 0, 255,
+    new_imc = cv.cvtColor(imraw_arr[i], cv.COLOR_RGB2GRAY)
+    ret, thresh = cv.threshold(new_imc, 0, 255,
                                cv.THRESH_BINARY_INV +
                                cv.THRESH_OTSU)
     ###
