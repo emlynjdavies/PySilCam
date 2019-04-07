@@ -116,7 +116,7 @@ for timestamp, imraw in aqgen:
     laplace_arr.append(imgResult)
 
     # Create binary image from source image
-    bw = cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)  # imgResult #
+    bw = imgResult # cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
     print('bw.shape ', bw.shape)
     _, bw = cv.threshold(bw, 40, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
     print('bw.shape = cv.threshold(bw, 40, 255, BINARY|OTSU)', bw.shape)
@@ -163,9 +163,9 @@ for timestamp, imraw in aqgen:
     markers_arr.append(markers)
 
     # Perform the watershed algorithm
-    cv.cvtColor(maskMOG, cv.COLOR_RGB2GRAY)
-    # new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
-    # cv.watershed(new_gray, markers)
+    # cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
+    new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
+    cv.watershed(new_gray, markers)
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
     mark = cv.bitwise_not(mark)

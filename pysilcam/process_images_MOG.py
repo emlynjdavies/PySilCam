@@ -61,89 +61,69 @@ rng.seed(12345)
 
 imraw_arr = []
 imMOG_arr = []
+imMOG2_arr = []
+imGMG_arr = []
 imMA_arr = []
-imMOGSeg_arr = []
-imSegmented_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
-subtractorMOG = cv.createBackgroundSubtractorMOG2()
+subtractorMOG = cv.createBackgroundSubtractorMOG()
+subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
+subtractorGMG = cv.createBackgroundSubtractorGMG()
 
 for timestamp, imraw in aqgen:
-    imcp = np.copy(imraw)
-    gray = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
     maskMOG = subtractorMOG.apply(imraw)
-    maskMOGcpy = np.copy(maskMOG)
+    maskMOG2 = subtractorMOG2.apply(imraw)
+    maskGMG = subtractorGMG.apply(imraw)
 
-    # Finding foreground area
-    # closing operation
-    kernel = np.ones((3, 3), np.uint8)
-    ret2, thresh2 = cv.threshold(maskMOG, 0, 255,
-                                 cv.THRESH_BINARY_INV +
-                                 cv.THRESH_OTSU)
-    ###
-    # Noise removal using Morphological
-    # closing operation
-    #kernel = np.ones((3, 3), np.uint8)
-    closing2 = cv.morphologyEx(thresh2, cv.MORPH_CLOSE,
-                              kernel, iterations=2)
-
-    # Background area using Dialation
-    bg2 = cv.dilate(closing2, kernel, iterations=1)
-
-    # Finding foreground area
-    dist_transform2 = cv.distanceTransform(closing2, cv.DIST_L2, 0)
-    ret2, fg2 = cv.threshold(dist_transform2, 0.02
-                           * dist_transform2.max(), 255, 0)
-    ###
-
-    ####  WATERSHED ALGORITHM #################################
-    # Marker labelling
-    fg2 = np.uint8(fg2)
-    ret, markers = cv.connectedComponents(fg2)
-    # Add one to all labels so that sure background is not 0, but 1
-    markers1 = markers + 1
-    markers2 = markers + 1
-    markers1 = cv.watershed(imraw, markers1)
-    imraw[markers1 == -1] = [255, 0, 0]
-    #markers2 = cv.watershed(maskMOG, markers2)
-    maskMOG[markers1 == -1] = [255]
-    #####################################
-
-
-    x, y, z = imraw.shape
-    print("timestamp ", timestamp)
-    print("Image raw shape imraw.shape( ", x,y,z)
-    gray_frame = cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    imraw_arr.append(imcp)
-    imMOG_arr.append(maskMOGcpy)
-    imSegmented_arr.append(imraw)
-    imMOGSeg_arr.append(maskMOG)
+    imraw_arr.append(imraw)
+    imMOG_arr.append(maskMOG)
+    imMOG2_arr.append(maskMOG2)
+    imGMG_arr.append(maskGMG)
     timestamp_arr.append(timestamp)
 
+###################################################
+aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
+print ("Acquiring images...")
+aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
+                       camera_config_file=config_filename)
 
-for i in range(0, 11):
-    fig, ax = plt.subplots(nrows=4)
+#Get number of images to use for background correction from config
+print('* Initializing background image handler')
+bggen = backgrounder(5, aqgen,
+                     bad_lighting_limit = None,
+                     real_time_stats=False)
+
+for i, (timestamp, imc, imraw) in enumerate(bggen):
+    imMA_arr.append(imc)
+
+for i in range(0, 15):
+    fig, ax = plt.subplots(nrows=5)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
     ax[0].set_yticklabels([])
     ax[0].set_xticklabels([])
-    ax[1].imshow(imSegmented_arr[i])
-    ax[1].set_title('Segmented')
+    ax[1].imshow(imMOG_arr[i])
+    ax[1].set_title('MOG ' + str(imMOG_arr[i].shape))
     ax[1].set_yticklabels([])
     ax[1].set_xticklabels([])
-    ax[2].imshow(imMOG_arr[i])
-    ax[2].set_title('MOG')
+    ax[2].imshow(imMOG2_arr[i])
+    ax[2].set_title('MOG2 ' + str(imMOG2_arr[i].shape))
     ax[2].set_yticklabels([])
     ax[2].set_xticklabels([])
-    ax[3].imshow(imMOGSeg_arr[i])
-    ax[3].set_title(str(imMOGSeg_arr[i].shape))
+    ax[3].imshow(imGMG_arr[i])
+    ax[3].set_title('GMG ' + str(imGMG_arr[i].shape))
     ax[3].set_yticklabels([])
     ax[3].set_xticklabels([])
+    if i > 4:
+        ax[4].imshow(imMA_arr[i-5])
+        ax[4].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
+        ax[4].set_yticklabels([])
+        ax[4].set_xticklabels([])
     plt.axis('off')
     plt.tight_layout()
     plt.show()
