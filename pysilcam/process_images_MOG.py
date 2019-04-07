@@ -158,25 +158,21 @@ for i in range(0, 15):
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title('Original')
-    ax[0, 0].set_yticklabels([])
-    ax[0, 0].set_xticklabels([])
     ax[1, 0].imshow(imMOG_arr[i])
     ax[1, 0].set_title('MOG hist=5 thres=25 ' + str(imMOG_arr[i].shape))
-    ax[1, 0].set_yticklabels([])
-    ax[1, 0].set_xticklabels([])
     ax[1, 1].imshow(imMOGSeg_arr[i])
     ax[1, 1].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
-    ax[1, 1].set_yticklabels([])
-    ax[1, 1].set_xticklabels([])
     if i > 4:
         ax[2, 0].imshow(imMA_arr[i-5])
         ax[2, 0].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
-        ax[2, 0].set_yticklabels([])
-        ax[2, 0].set_xticklabels([])
         ax[2, 1].imshow(imMASeg_arr[i - 5])
         ax[2, 1].set_title('Moving Average Seg ' + str(imMASeg_arr[i - 5].shape))
-        ax[2, 1].set_yticklabels([])
-        ax[2, 1].set_xticklabels([])
+
+    for j in range(0, 3):
+        for k in range(0,2):
+            ax[j, k].set_yticklabels([])
+            ax[j, k].set_xticklabels([])
+
     plt.axis('off')
     plt.tight_layout()
     plt.show()
