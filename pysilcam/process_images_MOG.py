@@ -69,7 +69,7 @@ aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
-subtractorMOG = cv. createBackgroundSubtractorMOG2(history=5, detectShadows=False)
+subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, detectShadows=False)
 subtractorMOG2 = cv.createBackgroundSubtractorMOG2()
 
 for timestamp, imraw in aqgen:
