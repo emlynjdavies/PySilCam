@@ -284,7 +284,7 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     #### imageResult -- Laplacian filter  New Sharped Image
 
     # Create binary image from source image
-    bw = imgResult  # cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
+    bw = cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
     print('bw.shape ', bw.shape)
     _, bw = cv.threshold(bw, 40, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
     print('bw.shape = cv.threshold(bw, 40, 255, BINARY|OTSU)', bw.shape)
