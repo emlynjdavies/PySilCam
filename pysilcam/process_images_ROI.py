@@ -234,11 +234,6 @@ for timestamp, imraw in aqgen:
     ### dst -- Final Result
 '''
 
-    imraw_arr = []
-    imMOG_arr = []
-    imMOG_INV_arr = []
-    imMOGSeg_arr = []
-    imMOGSeg2_arr = []
 
 for i in range(0, 15):
     fig, ax = plt.subplots(nrows=5)
