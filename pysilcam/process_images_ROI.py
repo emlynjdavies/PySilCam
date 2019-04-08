@@ -103,8 +103,9 @@ for timestamp, imraw in aqgen:
     markers = markers + 1
     new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
     markers = cv.watershed(new_gray, markers)
-    maskMOG[markers == -1] = [100]
-    imMOGSeg_arr.append(maskMOG)
+    new_imraw = np.copy(imraw)
+    new_imraw[markers == -1] = [255]
+    imMOGSeg_arr.append(new_imraw)
 
     '''    #####################################################################
     ####  WATERSHED ALGORITHM V2 ########################################
