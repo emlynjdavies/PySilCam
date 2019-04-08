@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 from skimage.filters import threshold_otsu, threshold_adaptive, try_all_threshold
 import random as rng
-
+from scipy.ndimage import label
 # Z:/DATA/SILCAM/250718/config.ini Z:/DATA/SILCAM/RAW/250718 --nomultiproc
 #config_filename = "Z:/DATA/SILCAM/Working/config.ini"
 config_filename = "/mnt/DATA/SILCAM/Working/config.ini"
@@ -40,7 +40,24 @@ config_filename = "/mnt/DATA/SILCAM/Working/config.ini"
 datapath = "/mnt/DATA/SILCAM/Working/RAW250718"
 discWrite = False
 ###################################################
+def segment_on_dt(a, img):
+    border = cv.dilate(img, None, iterations=5)
+    border = border - cv.erode(border, None)
 
+    dt = cv.distanceTransform(img, 2, 3)
+    dt = ((dt - dt.min()) / (dt.max() - dt.min()) * 255).astype(np.uint8)
+    _, dt = cv.threshold(dt, 180, 255, cv.THRESH_BINARY)  # 0 -> 180
+    lbl, ncc = label(dt)
+    lbl = lbl * (255 / (ncc + 1))
+    # Completing the markers now.
+    lbl[border == 255] = 255
+
+    lbl = lbl.astype(np.int32)
+    cv.watershed(a, lbl)
+
+    lbl[lbl == -1] = 0
+    lbl = lbl.astype(np.uint8)
+    return 255 - lbl
 ####################################################
 # Loading config file
 # Load the configuration, create settings object
@@ -61,7 +78,9 @@ rng.seed(12345)
 
 imraw_arr = []
 imMOG_arr = []
+imMOG_INV_arr = []
 imMOGSeg_arr = []
+imMOGSeg2_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -72,41 +91,49 @@ subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, de
 
 for timestamp, imraw in aqgen:
     maskMOG = subtractorMOG.apply(imraw)
+    _, maskMOG_INV = cv.threshold(maskMOG, 127, 255, cv.THRESH_BINARY_INV)
     imraw_arr.append(imraw)
     maskMOG_cp = np.copy(maskMOG)
-    maskMOG2 = np.copy(maskMOG)
+    maskMOG2 = np.copy(maskMOG_INV)
     imMOG_arr.append(maskMOG_cp)
+    imMOG_INV_arr.append(maskMOG2)
     timestamp_arr.append(timestamp)
     # Finding foreground area
     # closing operation
-    kernel = np.ones((3, 3), np.uint8)
-    ret, thresh = cv.threshold(maskMOG, 0, 255,
-                                 cv.THRESH_BINARY_INV +
+    ret, thresh = cv.threshold(maskMOG_INV, 0, 255,
+                                 cv.THRESH_BINARY +
                                  cv.THRESH_OTSU)
+
     ###
     # Noise removal using Morphological
     # closing operation
-    # kernel = np.ones((3, 3), np.uint8)
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
-                               kernel, iterations=2)
-    # Background area using Dialation
-    bg = cv.dilate(closing, kernel, iterations=1)
-    # Finding foreground area
-    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
-    ret, fg = cv.threshold(dist_transform, 0.02
-                             * dist_transform.max(), 255, 0)
-    ###
-    ####  WATERSHED ALGORITHM #################################
-    # Marker labelling
-    fg = np.uint8(fg)
-    ret, markers = cv.connectedComponents(fg)
+    kernel = np.ones((3, 3), np.uint8)
+    opening = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=2)
+    # sure background area
+    sure_bg = cv.dilate(opening, kernel, iterations=3)
+    # Finding sure foreground area
+    dist_transform = cv.distanceTransform(opening, cv.DIST_L2, 5)
+    ret, sure_fg = cv.threshold(dist_transform, 0.7 * dist_transform.max(), 255, 0)
+    # Finding unknown region
+    sure_fg = np.uint8(sure_fg)
+    unknown = cv.subtract(sure_bg, sure_fg)
+
+    ret, markers = cv.connectedComponents(sure_fg)
+    # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
+    # Now, mark the region of unknown with zero
+    markers[unknown == 255] = 0
     new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
     markers = cv.watershed(new_gray, markers)
+    maskMOG_INV[markers == -1] = 255
+    imMOGSeg2_arr.append(maskMOG_INV)
+
+
     new_imraw = np.copy(imraw)
-    new_imraw[markers == -1] = [255]
-    new_imraw[markers] = [255]
+    new_imraw[markers == -1] = 255
+    new_imraw[markers] = 255
     imMOGSeg_arr.append(new_imraw)
+
 
     '''    #####################################################################
     ####  WATERSHED ALGORITHM V2 ########################################
@@ -207,18 +234,27 @@ for timestamp, imraw in aqgen:
     ### dst -- Final Result
 '''
 
+    imraw_arr = []
+    imMOG_arr = []
+    imMOG_INV_arr = []
+    imMOGSeg_arr = []
+    imMOGSeg2_arr = []
 
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=2)
+    fig, ax = plt.subplots(nrows=5)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
     ax[1].imshow(imMOG_arr[i])
     ax[1].set_title('MOG hist=5 thres=25 ' + str(imMOG_arr[i].shape))
-    ax[1].imshow(imMOGSeg_arr[i])
-    ax[1].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
+    ax[2].imshow(imMOG_INV_arr[i])
+    ax[2].set_title('MOG Inverted ' + str(imMOG_INV_arr[i].shape))
+    ax[3].imshow(imMOGSeg_arr[i])
+    ax[3].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
+    ax[4].imshow(imMOGSeg2_arr[i])
+    ax[4].set_title('MOG Inverted Seg ' + str(imMOGSeg2_arr[i].shape))
 
-    for j in range(0, 2):
+    for j in range(0, 5):
         ax[j].set_yticklabels([])
         ax[j].set_xticklabels([])
 
