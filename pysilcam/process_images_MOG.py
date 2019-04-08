@@ -327,8 +327,8 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     # Draw the background marker
     cv.circle(markers, (5, 5), 3, (255, 255, 255), -1)
 
-    new_gray = cv.cvtColor(imc2, cv.COLOR_GRAY2BGR)
-    cv.watershed(new_gray, markers)
+    # new_gray = cv.cvtColor(imc2, cv.COLOR_GRAY2BGR)
+    cv.watershed(imc2, markers)
 
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
