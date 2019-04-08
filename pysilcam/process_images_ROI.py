@@ -216,10 +216,9 @@ for i in range(0, 15):
     ax[1].imshow(imMOGSeg_arr[i])
     ax[1].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
 
-    for j in range(0, 3):
-        for k in range(0, 3):
-            ax[j, k].set_yticklabels([])
-            ax[j, k].set_xticklabels([])
+    for j in range(0, 2):
+        ax[j].set_yticklabels([])
+        ax[j].set_xticklabels([])
 
     plt.axis('off')
     plt.tight_layout()
