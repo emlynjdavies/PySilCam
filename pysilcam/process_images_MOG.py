@@ -181,6 +181,9 @@ for timestamp, imraw in aqgen:
     # Draw the background marker
     cv.circle(markers, (5, 5), 3, (255, 255, 255), -1)
 
+    new_gray = cv.cvtColor(maskMOG2, cv.COLOR_GRAY2BGR)
+    cv.watershed(new_gray, markers)
+
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
     mark = cv.bitwise_not(mark)
@@ -323,6 +326,9 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
         cv.drawContours(markers, contours, i, (i + 1), -1)
     # Draw the background marker
     cv.circle(markers, (5, 5), 3, (255, 255, 255), -1)
+
+    new_gray = cv.cvtColor(imc2, cv.COLOR_GRAY2BGR)
+    cv.watershed(new_gray, markers)
 
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
