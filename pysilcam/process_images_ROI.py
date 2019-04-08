@@ -207,7 +207,7 @@ for timestamp, imraw in aqgen:
 
 
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=3, ncols=3)
+    fig, ax = plt.subplots(nrows=2)
     plt.suptitle(timestamp_arr[i])
     ax[0].imshow(imraw_arr[i])
     ax[0].set_title('Original')
