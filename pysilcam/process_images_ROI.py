@@ -118,14 +118,17 @@ for timestamp, imraw in aqgen:
     sure_fg = np.uint8(sure_fg)
     unknown = cv.subtract(sure_bg, sure_fg)
 
+    # find contours
+    _, ctrs, _ = cv.findContours(sure_fg.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
     ret, markers = cv.connectedComponents(sure_fg)
     # Add one to all labels so that sure background is not 0, but 1
     markers = markers + 1
     # Now, mark the region of unknown with zero
     markers[unknown == 255] = 0
-    new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
+    new_gray = cv.cvtColor(maskMOG_INV, cv.COLOR_GRAY2BGR)
     markers = cv.watershed(new_gray, markers)
-    maskMOG_INV[markers == -1] = 255
+    maskMOG_INV[markers == -1] = 0
     imMOGSeg2_arr.append(maskMOG_INV)
 
 
