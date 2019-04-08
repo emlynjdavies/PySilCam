@@ -105,6 +105,7 @@ for timestamp, imraw in aqgen:
     markers = cv.watershed(new_gray, markers)
     new_imraw = np.copy(imraw)
     new_imraw[markers == -1] = [255]
+    new_imraw[markers] = [255]
     imMOGSeg_arr.append(new_imraw)
 
     '''    #####################################################################
