@@ -298,12 +298,12 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     # Now, mark the region of unknown with zero
     markers[unknown == 255] = 0
     markersO = markers
-
-    markers = cv.watershed(inv, markers)
+    new_gray = cv.cvtColor(inv, cv.COLOR_GRAY2BGR)
+    markers = cv.watershed(new_gray, markers)
     imc[markers == -1] = 255
     imMASeg_arr.append(imc)
 
-    markersO = cv.watershed(inv, markersO)
+    markersO = cv.watershed(new_gray, markersO)
     imraw[markersO == -1] = [255, 0, 0]
     imMASegO_arr.append(imraw)
 
