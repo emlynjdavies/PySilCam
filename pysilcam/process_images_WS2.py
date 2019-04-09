@@ -73,7 +73,8 @@ aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
 aqgen=aq.get_generator(datapath,writeToDisk=discWrite,
                        camera_config_file=config_filename)
-subtractorMOG = cv.createBackgroundSubtractorMOG2()
+
+subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, detectShadows=False)
 
 for timestamp, imraw in aqgen:
     ### imraw -- original image
@@ -164,7 +165,7 @@ for timestamp, imraw in aqgen:
 
     # Perform the watershed algorithm
     # cv.cvtColor(imraw, cv.COLOR_RGB2GRAY)
-    new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
+    new_gray = cv.cvtColor(imgResult, cv.COLOR_GRAY2BGR)
     cv.watershed(new_gray, markers)
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
