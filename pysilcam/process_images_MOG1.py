@@ -63,9 +63,14 @@ imraw_arr = []
 imMOG_arr = []
 imMA_arr = []
 imMOGSeg_arr = []
-imMASeg_arr = []
+imMOGSegO_arr = []
 imMOGSeg2_arr = []
+imMOGSegO2_arr = []
+
+imMASeg_arr = []
+imMASegO_arr = []
 imMASeg2_arr = []
+imMASegO2_arr = []
 timestamp_arr = []
 
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
@@ -76,10 +81,9 @@ subtractorMOG = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=25, de
 
 for timestamp, imraw in aqgen:
     maskMOG = subtractorMOG.apply(imraw)
-    imraw_arr.append(imraw)
-    maskMOG_cp = np.copy(maskMOG)
     maskMOG2 = np.copy(maskMOG)
-    imMOG_arr.append(maskMOG_cp)
+    imraw_arr.append(np.copy(imraw))
+    imMOG_arr.append(np.copy(maskMOG))
     timestamp_arr.append(timestamp)
     # Finding foreground area
     # closing operation
@@ -88,26 +92,35 @@ for timestamp, imraw in aqgen:
                                  cv.THRESH_OTSU)
     ###
     # Noise removal using Morphological
-    # closing operation
+    # opening operation
     kernel = np.ones((3, 3), np.uint8)
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
+    opening = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
                                kernel, iterations=2)
     # Background area using Dialation
-    bg = cv.dilate(closing, kernel, iterations=1)
+    bg = cv.dilate(opening, kernel, iterations=3)
     # Finding foreground area
-    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
-    ret, fg = cv.threshold(dist_transform, 0.02
+    dist_transform = cv.distanceTransform(opening, cv.DIST_L2, 5)
+    ret, fg = cv.threshold(dist_transform, 0.7
                              * dist_transform.max(), 255, 0)
     ###
     ####  WATERSHED ALGORITHM #################################
     # Marker labelling
     fg = np.uint8(fg)
+    unknown = cv.subtract(bg,fg)
     ret, markers = cv.connectedComponents(fg)
     markers = markers + 1
+    # Now, mark the region of unknown with zero
+    markers[unknown == 255] = 0
+    markersO = markers
+
     new_gray = cv.cvtColor(maskMOG, cv.COLOR_GRAY2BGR)
     markers = cv.watershed(new_gray, markers)
-    maskMOG[markers == -1] = [255]
+    maskMOG[markers == -1] = 255
     imMOGSeg_arr.append(maskMOG)
+
+    markersO = cv.watershed(new_gray, markersO)
+    imraw[markersO == -1] = [255,0,0]
+    imMOGSegO_arr.append(imraw)
 
     #####################################################################
     ####  WATERSHED ALGORITHM V2 ########################################
@@ -180,7 +193,7 @@ for timestamp, imraw in aqgen:
     # Draw the background marker
     cv.circle(markers, (5, 5), 3, (255, 255, 255), -1)
 
-    new_gray = cv.cvtColor(maskMOG2, cv.COLOR_GRAY2BGR)
+    new_gray = cv.cvtColor(imgResult, cv.COLOR_GRAY2BGR)
     cv.watershed(new_gray, markers)
 
     # mark = np.zeros(markers.shape, dtype=np.uint8)
@@ -208,6 +221,37 @@ for timestamp, imraw in aqgen:
     ### dst -- Final Result
     imMOGSeg2_arr.append(dst)
 
+    ### WATERSHED ON THE ORIGINAL IMAGE #############################
+
+    cv.watershed(imraw, markersO)
+
+    # mark = np.zeros(markers.shape, dtype=np.uint8)
+    mark = markersO.astype('uint8')
+    mark = cv.bitwise_not(mark)
+    print('mark.shape ', mark.shape)
+    # uncomment this if you want to see how the mark
+    # image looks like at that point
+    # cv.imshow('Markers_v2', mark)
+    # Generate random colors
+    colors = []
+    for contour in contours:
+        colors.append((rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256)))
+    # Create the result image
+    dstO = np.zeros((markersO.shape[0], markersO.shape[1], 3), dtype=np.uint8)
+    print('dstO.shape = np.zeros((markersO.shape[0], markersO.shape[1],3), dtype=np.uint8) ', dst.shape)
+    # Fill labeled objects with random colors
+    for i in range(markersO.shape[0]):
+        for j in range(markersO.shape[1]):
+            index = markersO[i, j]
+            if index > 0 and index <= len(contours):
+                dstO[i, j, :] = colors[index - 1]
+    print('dstO.shape -- final ', dstO.shape)
+    # Visualize the final image
+    ### dst -- Final Result
+    imMOGSegO2_arr.append(dstO)
+
+
+
 ###################################################
 aq=Acquire(USE_PYMBA=False)   # USE_PYMBA=realtime
 print ("Acquiring images...")
@@ -221,39 +265,46 @@ bggen = backgrounder(5, aqgen,
                      real_time_stats=False)
 
 for i, (timestamp, imc, imraw) in enumerate(bggen):
-    imc_cp = np.copy(imc)
     imc2 = np.copy(imc)
-    imMA_arr.append(imc_cp)
+    imMA_arr.append(np.copy(imc))
+
+    _, inv = cv.threshold(imc, 127, 255, cv.THRESH_BINARY_INV)
 
     # Finding foreground area
     # closing operation
-    kernel = np.ones((3, 3), np.uint8)
-    new_imc = cv.cvtColor(imraw_arr[i], cv.COLOR_RGB2GRAY)
-    ret, thresh = cv.threshold(new_imc, 0, 255,
+    ret, thresh = cv.threshold(inv, 0, 255,
                                cv.THRESH_BINARY_INV +
                                cv.THRESH_OTSU)
     ###
     # Noise removal using Morphological
     # closing operation
-    # kernel = np.ones((3, 3), np.uint8)
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
+    kernel = np.ones((3, 3), np.uint8)
+    opening = cv.morphologyEx(thresh, cv.MORPH_CLOSE,
                               kernel, iterations=2)
     # Background area using Dialation
-    bg = cv.dilate(closing, kernel, iterations=1)
+    bg = cv.dilate(opening, kernel, iterations=3)
     # Finding foreground area
-    dist_transform = cv.distanceTransform(closing, cv.DIST_L2, 0)
-    ret, fg = cv.threshold(dist_transform, 0.02
+    dist_transform = cv.distanceTransform(opening, cv.DIST_L2, 5)
+    ret, fg = cv.threshold(dist_transform, 0.7
                            * dist_transform.max(), 255, 0)
     ###
     ####  WATERSHED ALGORITHM #################################
     # Marker labelling
     fg = np.uint8(fg)
+    unknown = cv.subtract(bg, fg)
     ret, markers = cv.connectedComponents(fg)
     markers = markers + 1
-    #new_gray = cv.cvtColor(imc, cv.COLOR_GRAY2BGR)
-    markers = cv.watershed(imc, markers)
-    imc[markers == -1] = [255]
+    # Now, mark the region of unknown with zero
+    markers[unknown == 255] = 0
+    markersO = markers
+
+    markers = cv.watershed(inv, markers)
+    imc[markers == -1] = 255
     imMASeg_arr.append(imc)
+
+    markersO = cv.watershed(inv, markersO)
+    imraw[markersO == -1] = [255, 0, 0]
+    imMASegO_arr.append(imraw)
 
     #####################################################################
     ####  WATERSHED ALGORITHM V2 ########################################
@@ -326,8 +377,8 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     # Draw the background marker
     cv.circle(markers, (5, 5), 3, (255, 255, 255), -1)
 
-    # new_gray = cv.cvtColor(imc2, cv.COLOR_GRAY2BGR)
-    cv.watershed(imc2, markers)
+    #new_gray = cv.cvtColor(imgResult, cv.COLOR_GRAY2BGR)
+    cv.watershed(imgResult, markers)
 
     # mark = np.zeros(markers.shape, dtype=np.uint8)
     mark = markers.astype('uint8')
@@ -354,26 +405,65 @@ for i, (timestamp, imc, imraw) in enumerate(bggen):
     ### dst -- Final Result
     imMASeg2_arr.append(dst)
 
+    ### WATERSHED ON THE ORIGINAL IMAGE #############################
+
+    cv.watershed(imc2, markersO)
+
+    # mark = np.zeros(markers.shape, dtype=np.uint8)
+    mark = markersO.astype('uint8')
+    mark = cv.bitwise_not(mark)
+    print('mark.shape ', mark.shape)
+    # uncomment this if you want to see how the mark
+    # image looks like at that point
+    # cv.imshow('Markers_v2', mark)
+    # Generate random colors
+    colors = []
+    for contour in contours:
+        colors.append((rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256)))
+    # Create the result image
+    dstO = np.zeros((markersO.shape[0], markersO.shape[1], 3), dtype=np.uint8)
+    print('dstO.shape = np.zeros((markersO.shape[0], markersO.shape[1],3), dtype=np.uint8) ', dst.shape)
+    # Fill labeled objects with random colors
+    for i in range(markersO.shape[0]):
+        for j in range(markersO.shape[1]):
+            index = markersO[i, j]
+            if index > 0 and index <= len(contours):
+                dstO[i, j, :] = colors[index - 1]
+    print('dstO.shape -- final ', dstO.shape)
+    # Visualize the final image
+    ### dst -- Final Result
+    imMASegO2_arr.append(dstO)
+
 for i in range(0, 15):
-    fig, ax = plt.subplots(nrows=3, ncols=3)
+    fig, ax = plt.subplots(nrows=4, ncols=3)
     plt.suptitle(timestamp_arr[i])
     ax[0, 0].imshow(imraw_arr[i])
     ax[0, 0].set_title('Original')
-    ax[1, 0].imshow(imMOG_arr[i])
-    ax[1, 0].set_title('MOG hist=5 thres=25 ' + str(imMOG_arr[i].shape))
+    ax[0, 1].imshow(imMOG_arr[i])
+    ax[0, 1].set_title('MOG' + str(imMOG_arr[i].shape))
     ax[1, 1].imshow(imMOGSeg_arr[i])
     ax[1, 1].set_title('MOG Seg ' + str(imMOGSeg_arr[i].shape))
-    ax[1, 2].imshow(imMOGSeg2_arr[i])
-    ax[1, 2].set_title('MOG Seg w Laplace ' + str(imMOGSeg2_arr[i].shape))
+    ax[1, 0].imshow(imMOGSegO_arr[i])
+    ax[1, 0].set_title('MOG Seg Org' + str(imMOGSegO_arr[i].shape))
+    ax[2, 1].imshow(imMOGSeg2_arr[i])
+    ax[2, 1].set_title('MOG Seg w Laplace ' + str(imMOGSeg2_arr[i].shape))
+    ax[3, 1].imshow(imMOGSegO2_arr[i])
+    ax[3, 1].set_title('MOG Seg L Org ' + str(imMOGSegO2_arr[i].shape))
+
+
     if i > 4:
-        ax[2, 0].imshow(imMA_arr[i-5])
-        ax[2, 0].set_title('Moving Average ' + str(imMA_arr[i-5].shape))
+        ax[0, 2].imshow(imMA_arr[i-5])
+        ax[0, 2].set_title('Moving Avg ' + str(imMA_arr[i-5].shape))
         ax[2, 1].imshow(imMASeg_arr[i - 5])
-        ax[2, 1].set_title('Moving Average Seg ' + str(imMASeg_arr[i - 5].shape))
+        ax[2, 1].set_title('Moving Avg Seg ' + str(imMASeg_arr[i - 5].shape))
+        ax[2, 0].imshow(imMASegO_arr[i - 5])
+        ax[2, 0].set_title('MA Seg Org' + str(imMASegO_arr[i - 5].shape))
         ax[2, 2].imshow(imMASeg2_arr[i - 5])
         ax[2, 2].set_title('Moving Average Seg Laplace ' + str(imMASeg2_arr[i - 5].shape))
+        ax[3, 2].imshow(imMASegO2_arr[i - 5])
+        ax[3, 2].set_title('Moving Average Seg Laplace ' + str(imMASegO2_arr[i - 5].shape))
 
-    for j in range(0, 3):
+    for j in range(0, 4):
         for k in range(0, 3):
             ax[j, k].set_yticklabels([])
             ax[j, k].set_xticklabels([])
