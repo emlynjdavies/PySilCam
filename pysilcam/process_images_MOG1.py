@@ -267,8 +267,9 @@ bggen = backgrounder(5, aqgen,
 for i, (timestamp, imc, imraw) in enumerate(bggen):
     imc2 = np.copy(imc)
     imMA_arr.append(np.copy(imc))
+    imc3 = cv.cvtColor(imc, cv.COLOR_BGR2GRAY)
 
-    _, inv = cv.threshold(imc, 127, 255, cv.THRESH_BINARY_INV)
+    _, inv = cv.threshold(imc3, 127, 255, cv.THRESH_BINARY_INV)
 
     # Finding foreground area
     # closing operation
