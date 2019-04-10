@@ -106,3 +106,11 @@ prediction = model.predict([testX[0]])
 print("Prediction: %s" % str(prediction[0]))
 
 
+'''
+# if you defined the the DNN as below
+model = tflearn.DNN(net, tensorboard_dir=os.path.join(definitions.DATA_DIR, 'tensorboard/log'), checkpoint_path=os.path.join(definitions.DATA_DIR, 'models/intent_classify/classify.model'), max_checkpoints=1)
+
+# try to load the checkpoints based on the checkpoint index
+
+model.load(os.path.join(definitions.DATA_DIR, 'models/intent_classify/classify.model-1428'))
+'''
