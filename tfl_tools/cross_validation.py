@@ -6,6 +6,8 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 from tflearn.data_utils import shuffle, image_preloader
 import pysilcam.silcam_classify as sccl
+from statistics import mean,stdev
+
 # -- PATHS ---------------------------
 DATABASE_PATH = '/mnt/DATA/dataset'
 MODEL_PATH = '/mnt/DATA/model/modelCV'
@@ -40,6 +42,16 @@ def import_directory_structure(classList):
             fileList.append([os.path.join(filepath, f), str(c_ind + 1)])
     fileList = np.array(fileList)
     return fileList
+
+def make_dataset(X_data,y_data,n_splits):
+    seed = 7
+    for train_index, test_index in model_selection.KFold(n_splits=n_splits,shuffle=True,random_state=seed).split(X_data):
+        X_train, X_test = X_data[train_index], X_data[test_index]
+        y_train, y_test = y_data[train_index], y_data[test_index]
+        yield X_train,y_train,X_test,y_test
+
+
+
 # -----------------------------
 # -----------------------------
 print('=== Formatting database....')
@@ -64,21 +76,36 @@ np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
 
+
 #X = array[:,0:8]
 #Y = array[:,8]
 #num_instances = len(X)
 
-
-seed = 7
-kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
-#model = LogisticRegression()
-# Build the model
-print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
-model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
-
-results = model_selection.cross_val_score(model, X, Y, cv=kfold, n_jobs=-1, scoring='accuracy')
-print("Accuracy: %.3f%% (%.3f%%)" % (results.mean()*100.0, results.std()*100.0))
+results = []
+for i, trainX, trainY, testX, testY in make_dataset(X,Y,10):
+    # kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
+    # #model = LogisticRegression()
+    # Build the model
+    print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
+    model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
+    # Training
+    print("start training round %f ...", i)
+    model.fit(trainX, trainY, n_epoch=50, shuffle=True, validation_set=(testX, testY),
+              show_metric=True, batch_size=128,
+              snapshot_epoch=True,
+              run_id='plankton-classifier')
+    # Save
+    print("Saving model %f ...", i)
+    MODEL_FILE = "plankton-classifier" + str(i) + ".tfl"
+    model_file = os.path.join(MODEL_PATH,MODEL_FILE)
+    model.save(model_file)
+    # Evaluate model
+    score = model.evaluate(testX, testY)
+    print('Test accuracy: %0.4f%%' % (score[0] * 100))
+    results.append(score[0])
+    #results = model_selection.cross_val_score(model, X, Y, cv=kfold, n_jobs=-1, scoring='accuracy')
+    print("Accuracy: %.4f%% (%.4f%%)" % (mean(results)*100.0, stdev(results)*100.0))
 
 fh = open('/mnt/DATA/model/modelCV/out.txt', 'a')
-fh.write("Accuracy: %.3f%% (%.3f%%)" % (results.mean()*100.0, results.std()*100.0))
+fh.write("Accuracy for Round %f: %.4f%% (%.4f%%)" % i, (mean(results)*100.0, stdev(results)*100.0))
 fh.close
