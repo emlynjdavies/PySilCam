@@ -76,7 +76,7 @@ kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
 print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
 model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
 
-results = model_selection.cross_val_score(model, X, Y, cv=kfold)
+results = model_selection.cross_val_score(model, X, Y, cv=kfold, n_jobs=-1, scoring='accuracy')
 print("Accuracy: %.3f%% (%.3f%%)" % (results.mean()*100.0, results.std()*100.0))
 
 fh = open('/mnt/DATA/model/modelCV/out.txt', 'a')
