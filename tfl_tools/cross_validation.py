@@ -82,7 +82,9 @@ X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categ
 #num_instances = len(X)
 
 results = []
-for i, trainX, trainY, testX, testY in make_dataset(X,Y,10):
+i = 0
+for trainX, trainY, testX, testY in make_dataset(X,Y,10):
+    i = i + 1
     # kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
     # #model = LogisticRegression()
     # Build the model
