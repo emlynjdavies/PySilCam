@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 # Evaluate using Cross Validation
 import os
 import pandas as pd
@@ -6,7 +7,7 @@ import tflearn
 from tflearn.data_utils import shuffle, image_preloader
 import pysilcam.silcam_classify as sccl
 
-from __future__ import absolute_import, division, print_function
+
 from sklearn import model_selection, metrics
 import tensorflow as tf
 import numpy as np
