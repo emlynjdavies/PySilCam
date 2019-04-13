@@ -1,12 +1,17 @@
 # Evaluate using Cross Validation
 import os
 import pandas as pd
-from sklearn import model_selection
-from sklearn.linear_model import LogisticRegression
 import numpy as np
+import tflearn
 from tflearn.data_utils import shuffle, image_preloader
 import pysilcam.silcam_classify as sccl
+
+from __future__ import absolute_import, division, print_function
+from sklearn import model_selection, metrics
+import tensorflow as tf
+import numpy as np
 from statistics import mean,stdev
+
 
 # -- PATHS ---------------------------
 DATABASE_PATH = '/mnt/DATA/dataset'
@@ -16,9 +21,7 @@ trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that
 testset_file = os.path.join(MODEL_PATH,"imagelist_test.dat")     # the file that contains the list of images of the testing dataset along with their classes
 set_file = os.path.join(MODEL_PATH,"imagelist.dat")     # the file that contains the list of images of the testing dataset along with their classes
 IMXY = 32
-SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
-CHECK_POINT_FILE = "plankton-classifier.tfl.ckpt"
-MODEL_FILE = "plankton-classifier.tfl"
+#SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 # -----------------------------
 
 # --- FUNCTION DEFINITION --------------------------
@@ -51,10 +54,9 @@ def make_dataset(X_data,y_data,n_splits):
         yield X_train,y_train,X_test,y_test
 
 
-
 # -----------------------------
 # -----------------------------
-print('=== Formatting database....')
+'''print('=== Formatting database....')
 classList = find_classes()
 save_classes(classList)
 print("CLASSLIST SIZE ", pd.read_csv(HEADER_FILE, header=None).shape[1])
@@ -65,29 +67,32 @@ fileList = import_directory_structure(classList)
 print('Shuffle dataset....')
 np.random.shuffle(fileList)
 
-# url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
-# names = classList # ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']
-#dataframe = pd.read_csv(url, names=names)
-#array = dataframe.values
-# X = fileList
 print('Save into a file ....')
-np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
+np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')'''
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
 
-
-#X = array[:,0:8]
-#Y = array[:,8]
-#num_instances = len(X)
-
-results = []
 i = 0
-for trainX, trainY, testX, testY in make_dataset(X,Y,10):
+prediction = []
+test = []
+accuracy = []
+precision = []
+recall = []
+f1_score = []
+confusion_matrix = []
+normalised_confusion_matrix = []
+fh = open('/mnt/DATA/model/modelCV/out.txt', 'a')
+for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     i = i + 1
-    # kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
-    # #model = LogisticRegression()
-    # Build the model
+    tf.reset_default_graph()
+    round_num = str(i)
+    if i < 10:
+        round_num = '0' + round_num    # kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
+
+    CHECK_POINT_FILE = '/round'+ round_num + '/plankton-classifier.tfl.ckpt'
+    MODEL_FILE = '/round'+ round_num + '/plankton-classifier.tfl'
+
     print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
     model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
     # Training
@@ -97,17 +102,86 @@ for trainX, trainY, testX, testY in make_dataset(X,Y,10):
               snapshot_epoch=True,
               run_id='plankton-classifier')
     # Save
-    print("Saving model %f ...", i)
-    MODEL_FILE = "plankton-classifier" + str(i) + ".tfl"
+    print("Saving model %f ..." % i)
     model_file = os.path.join(MODEL_PATH,MODEL_FILE)
     model.save(model_file)
     # Evaluate model
     score = model.evaluate(testX, testY)
     print('Test accuracy: %0.4f%%' % (score[0] * 100))
-    results.append(score[0])
-    #results = model_selection.cross_val_score(model, X, Y, cv=kfold, n_jobs=-1, scoring='accuracy')
-    print("Accuracy: %.4f%% (%.4f%%)" % (mean(results)*100.0, stdev(results)*100.0))
+    score = model.evaluate(testX, testY)
+    fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
 
-fh = open('/mnt/DATA/model/modelCV/out.txt', 'a')
-fh.write("Accuracy for Round %f: %.4f%% (%.4f%%)" % i, (mean(results)*100.0, stdev(results)*100.0))
+    print("\nTest prediction for x = ", testX)
+    print("model evaluation ")
+    predictions = model.predict(testX)
+    #predictions = [int(i) for i in model.predict(testX)]
+    print("predictions: ", predictions)
+    fh.write("predictions: ", predictions)
+
+    #print("testY: ", testY)
+    pre = metrics.precision_score(testY, predictions, average="weighted")
+    print("Precision: {}%".format(100 * pre))
+    fh.write("Precision: {}%".format(100 * pre))
+
+    rec = metrics.recall_score(testY, predictions, average="weighted")
+    print("Recall: {}%".format(100 * rec))
+    fh.write("Recall: {}%".format(100 * rec))
+
+    f1sc = metrics.f1_score(testY, predictions, average="weighted")
+    print("f1_score: {}%".format(100 * f1sc))
+    fh.write("f1_score: {}%".format(100 * f1sc))
+    print("")
+    fh.write("")
+    print("Confusion Matrix:")
+    fh.write("Confusion Matrix:")
+    conf_matrix = metrics.confusion_matrix(testY, predictions)
+    print(conf_matrix)
+    fh.write(conf_matrix)
+    norm_conf_matrix = np.array(conf_matrix, dtype=np.float32) / np.sum(conf_matrix) * 100
+    print("")
+    fh.write("")
+    print("Confusion matrix (normalised to % of total test data):")
+    fh.write("Confusion matrix (normalised to % of total test data):")
+    print(norm_conf_matrix)
+    fh.write(norm_conf_matrix)
+
+    ## update summaries ###
+    prediction.append(predictions)
+    test.append(testY)
+    accuracy.append(score[0])
+    precision.append(pre)
+    recall.append(rec)
+    f1_score.append(f1sc)
+    confusion_matrix.append(conf_matrix)
+    normalised_confusion_matrix.append(norm_conf_matrix)
+
+for i in range(0, 10):
+    print("Round ", i)
+    print("Accuracy: {}%".format(100*accuracy[i]))
+    print("Precision: {}%".format(100 * precision[i]))
+    print("Recall: {}%".format(100 * recall[i]))
+    print("F1 Score: {}%".format(100 * f1_score[i]))
+    print("confusion matrix: ", confusion_matrix[i])
+    print("Normalized confusion matrix: ", normalised_confusion_matrix[i])
+
+
+print("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
+fh.write("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
+print("Overall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
+fh.write("Overall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
+print("Overall Recall: %.3f%% (%.3f%%)" % (mean(recall)*100.0, stdev(recall)*100.0))
+fh.write("Overall Recall: %.3f%% (%.3f%%)" % (mean(recall)*100.0, stdev(recall)*100.0))
+print("Overall F1Score: %.3f%% (%.3f%%)" % (mean(f1_score)*100.0, stdev(f1_score)*100.0))
+fh.write("Overall F1Score: %.3f%% (%.3f%%)" % (mean(f1_score)*100.0, stdev(f1_score)*100.0))
+print('Confusion Matrix')
+fh.write('Confusion Matrix')
+for i in range(0,10):
+    print(confusion_matrix[i])
+    fh.write(confusion_matrix[i])
+print('Normalized Confusion Matrix')
+fh.write('Normalized Confusion Matrix')
+for i in range(0,10):
+    print(normalised_confusion_matrix[i])
+    fh.write(normalised_confusion_matrix[i])
+
 fh.close
