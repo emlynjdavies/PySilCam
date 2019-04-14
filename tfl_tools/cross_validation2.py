@@ -159,6 +159,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
             print(i)
             predict[int(i)] = 1
     print(predict)
+    predictions = predict
 
 
     print("testY: ")
