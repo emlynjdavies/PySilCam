@@ -84,7 +84,7 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-fh = open('/mnt/DATA/model/modelCV/out.txt', 'a')
+fh = open('/mnt/DATA/model/modelCV/out2.txt', 'a')
 for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     i = i + 1
     tf.reset_default_graph()
