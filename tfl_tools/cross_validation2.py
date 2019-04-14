@@ -153,10 +153,12 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print("predictions: ")
     for i in predictions:
         print(i)
-    
+        print(i.argmax(axis=0))
+
     print("testY: ")
     for i in testY:
         print(i)
+        print(i.argmax(axis=0))
     fh.write("predictions: " )
     fh.write(np.array2string(predictions))
     acc = metrics.accuracy_score(testY, predictions)
