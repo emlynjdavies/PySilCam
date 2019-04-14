@@ -235,12 +235,12 @@ print('Confusion Matrix')
 fh.write('Confusion Matrix')
 for i in range(0,10):
     print(confusion_matrix[i])
-    fh.write(confusion_matrix[i])
+    #fh.write(confusion_matrix[i])
 print('Normalized Confusion Matrix')
 fh.write('Normalized Confusion Matrix')
 for i in range(0,10):
     print(normalised_confusion_matrix[i])
-    fh.write(normalised_confusion_matrix[i])
+    #fh.write(normalised_confusion_matrix[i])
 
 
 fh.close
