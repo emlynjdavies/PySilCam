@@ -118,7 +118,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
         if len(X[0]) > 0:
             print('X[0][0]', len(X[0][0]))
             if len(X[0][0]) > 0:
-                print('X[0,0,0]', len(X[0][0][0]))
+                print('X0][0][0]', len(X[0][0][0]))
     print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
     print('testX SHAPE')
     print('testX ',len(testX))
@@ -131,15 +131,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
 
     #print('testX ', testX)
     print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-    print('testY SHAPE')
-    print('testY ', len(testY))
-    if len(testY) > 0:
-        print('testY[0]', len(testY[0]))
-        if len(testY[0]) > 0:
-            print('testY[0][0]', len(testY[0][0]))
-            if len(testY[0][0]) > 0:
-                print('testY[0][0][0]', len(testY[0][0][0]))
-
+   
     print('testY ', testY)
     score = model.evaluate(testX, testY)
     fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
