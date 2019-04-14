@@ -116,18 +116,18 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     if len(X) > 0:
         print('X[0]', len(X[0]))
         if len(X[0]) > 0:
-            print('X3', len(X[0, 0]))
-            if len(X[0, 0]) > 0:
-                print('X[0,0,0]', len(X[0, 0, 0]))
+            print('X[0][0]', len(X[0][0]))
+            if len(X[0][0]) > 0:
+                print('X[0,0,0]', len(X[0][0][0]))
     print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
     print('testX SHAPE')
     print('testX ',len(testX))
     if len(testX) > 0:
         print('testX[0]', len(testX[0]))
         if len(testX[0]) > 0:
-            print('X3', len(testX[0,0]))
-            if len(testX[0,0]) > 0:
-                print('testX[0,0,0]', len(testX[0, 0, 0]))
+            print('X[0][0]', len(testX[0][0]))
+            if len(testX[0][0]) > 0:
+                print('testX[0][0][0]', len(testX[0][0][0]))
 
     #print('testX ', testX)
     print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
@@ -136,9 +136,9 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     if len(testY) > 0:
         print('testY[0]', len(testY[0]))
         if len(testY[0]) > 0:
-            print('X3', len(testY[0, 0]))
-            if len(testY[0, 0]) > 0:
-                print('testY[0,0,0]', len(testY[0, 0, 0]))
+            print('testY[0][0]', len(testY[0][0]))
+            if len(testY[0][0]) > 0:
+                print('testY[0][0][0]', len(testY[0][0][0]))
 
     print('testY ', testY)
     score = model.evaluate(testX, testY)
