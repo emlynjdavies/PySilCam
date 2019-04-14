@@ -92,8 +92,8 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     if i < 10:
         round_num = '0' + round_num    # kfold = model_selection.KFold(n_splits=10, shuffle=True, random_state=seed)
 
-    CHECK_POINT_FILE = './round'+ round_num + '/plankton-classifier.tfl.ckpt'
-    MODEL_FILE = './round'+ round_num + '/plankton-classifier.tfl'
+    CHECK_POINT_FILE = 'round'+ round_num + '/plankton-classifier.tfl.ckpt'
+    MODEL_FILE = 'round'+ round_num + '/plankton-classifier.tfl'
     model_file = os.path.join(MODEL_PATH, MODEL_FILE)
 
     print("MODEL_PATH ", MODEL_PATH)
