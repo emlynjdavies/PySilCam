@@ -18,8 +18,6 @@ from statistics import mean,stdev
 DATABASE_PATH = '/mnt/DATA/dataset'
 MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that contains the list of images of the training dataset along with their classes
-testset_file = os.path.join(MODEL_PATH,"imagelist_test.dat")     # the file that contains the list of images of the testing dataset along with their classes
 set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 IMXY = 32
 #SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
@@ -57,7 +55,7 @@ def make_dataset(X_data,y_data,n_splits):
 
 # -----------------------------
 # -----------------------------
-print('=== Formatting database....')
+'''print('=== Formatting database....')
 classList = find_classes()
 save_classes(classList)
 print("CLASSLIST SIZE ", pd.read_csv(HEADER_FILE, header=None).shape[1])
@@ -69,7 +67,7 @@ print('Shuffle dataset....')
 np.random.shuffle(fileList)
 
 print('Save into a file ....')
-np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
+np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')'''
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
@@ -110,24 +108,42 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print("Saving model %f ..." % i)
     model.save(model_file)
     # Evaluate model
-    score = model.evaluate(testX, testY)
-    print('Test accuracy: %0.4f%%' % (score[0] * 100))
-    score = model.evaluate(testX, testY)
-    fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
+    # score = model.evaluate(testX, testY)
+    # print('Test accuracy: %0.4f%%' % (score[0] * 100))
+    # score = model.evaluate(testX, testY)
+    # fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
 
-    print("\nTest prediction for x = ", testX)
+    # print("\nTest prediction for x = ", testX)
     print("model evaluation ")
     predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ", predictions)
-    fh.write("predictions: ", predictions)
+    fh.write("\n predictions: ")
+    y_pred = []
+    for pred in predictions:
+        y_pred.append(np.argmax(pred))
+    print(y_pred)
+    for el in y_pred:
+        fh.write("%s" % el)
+    print("testY: ")
+    fh.write("\n testY: ")
+    y_true = []
+    for ty in testY:
+        y_true.append(ty.argmax(axis=0))
+    print(y_true)
+    for el in y_true:
+        fh.write("%s" % el)
+
+    acc = metrics.accuracy_score(y_true, y_pred)
+    print("Accuracy: {}%".format(100 * acc))
+    fh.write("Accruacy: {}%".format(100 * acc))
 
     #print("testY: ", testY)
-    pre = metrics.precision_score(testY, predictions, average="weighted")
+    pre = metrics.precision_score(y_true, y_pred, average="weighted")
     print("Precision: {}%".format(100 * pre))
     fh.write("Precision: {}%".format(100 * pre))
 
-    rec = metrics.recall_score(testY, predictions, average="weighted")
+    rec = metrics.recall_score(y_true, y_pred, average="weighted")
     print("Recall: {}%".format(100 * rec))
     fh.write("Recall: {}%".format(100 * rec))
 
