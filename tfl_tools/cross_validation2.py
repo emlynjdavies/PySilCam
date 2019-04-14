@@ -161,7 +161,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
         predict[np.argmax(pred)] = 1
         print(predict)
         pred_classes.append(predict)
-        fh.write(np.array2string(pred_classes))
+        fh.write(np.array2string(predict))
     predictions = pred_classes
     print("predictions: ", predictions)
 
