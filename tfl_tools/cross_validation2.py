@@ -153,47 +153,39 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ")
     fh.write("predictions: ")
-    pred_classes = []
-
+    y_pred = []
     for pred in predictions:
-        predict = np.zeros(len(class_labels)+1, dtype=float)
-        print(pred)
-        predict[np.argmax(pred)] = 1
-        print(predict)
-        pred_classes.append(predict)
-        fh.write(np.array2string(predict))
-    predictions = pred_classes
-    print("predictions: ", predictions)
-
+        y_pred.append(np.argmax(pred))
+    fh.write(np.array2string(y_pred))
 
     print("testY: ")
     fh.write("testY: ")
+    y_true = []
     for ty in testY:
-        print(ty)
-        print(ty.argmax(axis=0))
-        fh.write(np.array2string(ty))
+        y_true.append(ty.argmax(axis=0))
+    fh.write(np.array2string(y_true))
 
-    acc = metrics.accuracy_score(testY, predictions)
+    acc = metrics.accuracy_score(y_true, y_pred)
     print("Accuracy: {}%".format(100 * acc))
     fh.write("Accruacy: {}%".format(100 * acc))
 
     #print("testY: ", testY)
-    pre = metrics.precision_score(testY, predictions, average="weighted")
+    pre = metrics.precision_score(y_true, y_pred, average="weighted")
     print("Precision: {}%".format(100 * pre))
     fh.write("Precision: {}%".format(100 * pre))
 
-    rec = metrics.recall_score(testY, predictions, average="weighted")
+    rec = metrics.recall_score(y_true, y_pred, average="weighted")
     print("Recall: {}%".format(100 * rec))
     fh.write("Recall: {}%".format(100 * rec))
 
-    f1sc = metrics.f1_score(testY, predictions, average="weighted")
+    f1sc = metrics.f1_score(y_true, y_pred, average="weighted")
     print("f1_score: {}%".format(100 * f1sc))
     fh.write("f1_score: {}%".format(100 * f1sc))
     print("")
     fh.write("")
     print("Confusion Matrix:")
     fh.write("Confusion Matrix:")
-    conf_matrix = metrics.confusion_matrix(testY, predictions)
+    conf_matrix = metrics.confusion_matrix(y_true, y_pred)
     print(conf_matrix)
     fh.write(conf_matrix)
     norm_conf_matrix = np.array(conf_matrix, dtype=np.float32) / np.sum(conf_matrix) * 100
