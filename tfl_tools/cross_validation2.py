@@ -158,9 +158,12 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
         predict = np.zeros(len(class_labels), dtype=float)
         print(pred)
         pre = pred.argmax(axis=0)
-        for i in pre:
-            print(i)
-            predict[i] = 1
+        if len(pre) > 1:
+            for i in pre:
+                print(i)
+                predict[i] = 1
+        else:
+            predict[pre]
         print(predict)
         pred_classes.append(predict)
     predictions = pred_classes
