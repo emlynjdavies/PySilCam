@@ -146,8 +146,8 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     #score = model.evaluate(testX, testY)
     #fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
 
-    print("\nTest prediction for x = ", testX)
-    print("model evaluation ")
+    #print("\nTest prediction for x = ", testX)
+    #print("model evaluation ")
     predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ", predictions)
