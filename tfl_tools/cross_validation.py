@@ -57,7 +57,7 @@ def make_dataset(X_data,y_data,n_splits):
 
 # -----------------------------
 # -----------------------------
-print('=== Formatting database....')
+'''print('=== Formatting database....')
 classList = find_classes()
 save_classes(classList)
 print("CLASSLIST SIZE ", pd.read_csv(HEADER_FILE, header=None).shape[1])
@@ -69,7 +69,7 @@ print('Shuffle dataset....')
 np.random.shuffle(fileList)
 
 print('Save into a file ....')
-np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
+np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')'''
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
@@ -96,7 +96,8 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     MODEL_FILE = '/round'+ round_num + '/plankton-classifier.tfl'
     model_file = os.path.join(MODEL_PATH, MODEL_FILE)
 
-    print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
+    print("MODEL_PATH ", MODEL_PATH)
+    print("MODEL_PATH ", CHECK_POINT_FILE)
     print("model_file ", model_file)
     '''model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
     # Training
