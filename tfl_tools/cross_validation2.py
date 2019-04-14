@@ -55,7 +55,7 @@ def make_dataset(X_data,y_data,n_splits):
 
 # -----------------------------
 # -----------------------------
-print('=== Formatting database....')
+'''print('=== Formatting database....')
 classList = find_classes()
 save_classes(classList)
 print("CLASSLIST SIZE ", pd.read_csv(HEADER_FILE, header=None).shape[1])
@@ -67,7 +67,8 @@ print('Shuffle dataset....')
 np.random.shuffle(fileList)
 
 print('Save into a file ....')
-np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
+np.savetxt(set_file, fileList, delimiter=' ', fmt='%s') '''
+#classList = sccl.get_class_labels(HEADER_FILE)
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
@@ -151,7 +152,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ")
-    predict = np.zeros(len(predictions), dtype=float)
+    predict = np.zeros(len(class_labels), dtype=float)
     for pred in predictions:
         print(pred)
         print(pred.argmax(axis=0))
