@@ -157,7 +157,9 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for pred in predictions:
         y_pred.append(np.argmax(pred))
     print(y_pred)
-    print("".join(np.array2string(y_pred)), file=fh)
+    for el in y_pred:
+        fh.write("%s\n" % el)
+    #print("".join(np.array2string(y_pred)), file=fh)
 
 
     print("testY: ")
@@ -166,7 +168,9 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for ty in testY:
         y_true.append(ty.argmax(axis=0))
     print(y_true)
-    print("".join(np.array2string(y_true)), file=fh)
+    for el in y_true:
+        fh.write("%s\n" % el)
+    #print("".join(np.array2string(y_true)), file=fh)
 
     acc = metrics.accuracy_score(y_true, y_pred)
     print("Accuracy: {}%".format(100 * acc))
