@@ -110,9 +110,36 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     # Evaluate model
     #score = model.evaluate(testX, testY)
     #print('Test accuracy: %0.4f%%' % (score[0] * 100))
-    print('len(testX) ',len(testX))
-    print('testX ', testX)
-    print('len(testY) ', len(testY))
+    print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+    print('X SHAPE')
+    print('X ', len(X))
+    if len(X) > 0:
+        print('X[0]', len(X[0]))
+        if len(X[0]) > 0:
+            print('X3', len(X[0, 0]))
+            if len(X[0, 0]) > 0:
+                print('X[0,0,0]', len(X[0, 0, 0]))
+    print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+    print('testX SHAPE')
+    print('testX ',len(testX))
+    if len(testX) > 0:
+        print('testX[0]', len(testX[0]))
+        if len(testX[0]) > 0:
+            print('X3', len(testX[0,0]))
+            if len(testX[0,0]) > 0:
+                print('testX[0,0,0]', len(testX[0, 0, 0]))
+
+    #print('testX ', testX)
+    print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+    print('testY SHAPE')
+    print('testY ', len(testY))
+    if len(testY) > 0:
+        print('testY[0]', len(testY[0]))
+        if len(testY[0]) > 0:
+            print('X3', len(testY[0, 0]))
+            if len(testY[0, 0]) > 0:
+                print('testY[0,0,0]', len(testY[0, 0, 0]))
+
     print('testY ', testY)
     score = model.evaluate(testX, testY)
     fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
