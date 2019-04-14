@@ -97,7 +97,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     model_file = os.path.join(MODEL_PATH, MODEL_FILE)
 
     print("MODEL_PATH ", MODEL_PATH)
-    print("MODEL_PATH ", CHECK_POINT_FILE)
+    print("CHECK_POINT_FILE ", CHECK_POINT_FILE)
     print("model_file ", model_file)
     '''model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
     # Training
