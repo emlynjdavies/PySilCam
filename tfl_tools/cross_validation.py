@@ -93,18 +93,18 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
 
     CHECK_POINT_FILE = '/round'+ round_num + '/plankton-classifier.tfl.ckpt'
     MODEL_FILE = '/round'+ round_num + '/plankton-classifier.tfl'
+    model_file = os.path.join(MODEL_PATH, MODEL_FILE)
 
     print("MODEL_PATH ", MODEL_PATH, CHECK_POINT_FILE)
-    model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
+    '''model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
     # Training
     print("start training round %f ...", i)
     model.fit(trainX, trainY, n_epoch=50, shuffle=True, validation_set=(testX, testY),
               show_metric=True, batch_size=128,
               snapshot_epoch=True,
-              run_id='plankton-classifier')
+              run_id='plankton-classifier'+round_num)
     # Save
     print("Saving model %f ..." % i)
-    model_file = os.path.join(MODEL_PATH,MODEL_FILE)
     model.save(model_file)
     # Evaluate model
     score = model.evaluate(testX, testY)
@@ -155,6 +155,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     f1_score.append(f1sc)
     confusion_matrix.append(conf_matrix)
     normalised_confusion_matrix.append(norm_conf_matrix)
+    
 
 for i in range(0, 10):
     print("Round ", i)
@@ -165,7 +166,7 @@ for i in range(0, 10):
     print("confusion matrix: ", confusion_matrix[i])
     print("Normalized confusion matrix: ", normalised_confusion_matrix[i])
 
-
+'''
 print("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
 fh.write("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
 print("Overall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
