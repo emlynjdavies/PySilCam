@@ -157,7 +157,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for pred in predictions:
         y_pred.append(np.argmax(pred))
     print(y_pred)
-    print("".join(y_pred), file=fh)
+    print("".join(np.array2string(y_pred)), file=fh)
 
 
     print("testY: ")
@@ -166,7 +166,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for ty in testY:
         y_true.append(ty.argmax(axis=0))
     print(y_true)
-    print("".join(y_true), file=fh)
+    print("".join(np.array2string(y_true)), file=fh)
 
     acc = metrics.accuracy_score(y_true, y_pred)
     print("Accuracy: {}%".format(100 * acc))
@@ -190,14 +190,14 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     fh.write("Confusion Matrix:")
     conf_matrix = metrics.confusion_matrix(y_true, y_pred)
     print(conf_matrix)
-    fh.write(conf_matrix)
+    #fh.write(conf_matrix)
     norm_conf_matrix = np.array(conf_matrix, dtype=np.float32) / np.sum(conf_matrix) * 100
     print("")
     fh.write("")
     print("Confusion matrix (normalised to % of total test data):")
     fh.write("Confusion matrix (normalised to % of total test data):")
     print(norm_conf_matrix)
-    fh.write(norm_conf_matrix)
+    #fh.write(norm_conf_matrix)
 
     ## update summaries ###
     prediction.append(predictions)
