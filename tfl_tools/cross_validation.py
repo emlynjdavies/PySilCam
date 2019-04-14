@@ -57,7 +57,7 @@ def make_dataset(X_data,y_data,n_splits):
 
 # -----------------------------
 # -----------------------------
-'''print('=== Formatting database....')
+print('=== Formatting database....')
 classList = find_classes()
 save_classes(classList)
 print("CLASSLIST SIZE ", pd.read_csv(HEADER_FILE, header=None).shape[1])
@@ -69,7 +69,7 @@ print('Shuffle dataset....')
 np.random.shuffle(fileList)
 
 print('Save into a file ....')
-np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')'''
+np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
@@ -99,7 +99,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print("MODEL_PATH ", MODEL_PATH)
     print("CHECK_POINT_FILE ", CHECK_POINT_FILE)
     print("model_file ", model_file)
-    '''model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
+    model, conv_arr, class_labels = sccl.build_model(IMXY, MODEL_PATH, CHECK_POINT_FILE)
     # Training
     print("start training round %f ...", i)
     model.fit(trainX, trainY, n_epoch=50, shuffle=True, validation_set=(testX, testY),
@@ -187,6 +187,6 @@ fh.write('Normalized Confusion Matrix')
 for i in range(0,10):
     print(normalised_confusion_matrix[i])
     fh.write(normalised_confusion_matrix[i])
-'''
+
 
 fh.close
