@@ -148,17 +148,21 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
 
     #print("\nTest prediction for x = ", testX)
     #print("model evaluation ")
-    predictions = model.predict_label(testX)
+    predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ")
+    predict = np.zeros(len(predictions), dtype=float)
     for pred in predictions:
         print(pred)
-        #print(pred.argmax(axis=0))
+        print(pred.argmax(axis=0))
+        predict[pred] = 1
+    print(predict)
+
 
     print("testY: ")
     for ty in testY:
         print(ty)
-        #print(ty.argmax(axis=0))
+        print(ty.argmax(axis=0))
     fh.write("predictions: " )
     fh.write(np.array2string(predictions))
     acc = metrics.accuracy_score(testY, predictions)
