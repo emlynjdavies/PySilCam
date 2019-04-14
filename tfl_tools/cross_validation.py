@@ -167,7 +167,6 @@ for i in range(0, 10):
     print("confusion matrix: ", confusion_matrix[i])
     print("Normalized confusion matrix: ", normalised_confusion_matrix[i])
 
-'''
 print("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
 fh.write("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
 print("Overall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
@@ -186,5 +185,6 @@ fh.write('Normalized Confusion Matrix')
 for i in range(0,10):
     print(normalised_confusion_matrix[i])
     fh.write(normalised_confusion_matrix[i])
+'''
 
 fh.close
