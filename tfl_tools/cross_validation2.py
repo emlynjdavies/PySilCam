@@ -163,7 +163,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
                 print(i)
                 predict[i] = 1
         else:
-            predict[pre]
+            predict[pre] = 1
         print(predict)
         pred_classes.append(predict)
     predictions = pred_classes
