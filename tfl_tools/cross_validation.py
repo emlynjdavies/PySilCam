@@ -20,7 +20,7 @@ MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that contains the list of images of the training dataset along with their classes
 testset_file = os.path.join(MODEL_PATH,"imagelist_test.dat")     # the file that contains the list of images of the testing dataset along with their classes
-set_file = os.path.join(MODEL_PATH,"imagelist.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 IMXY = 32
 #SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 # -----------------------------
