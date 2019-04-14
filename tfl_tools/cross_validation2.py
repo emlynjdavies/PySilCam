@@ -151,7 +151,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ", predictions)
-    fh.write("predictions: ", predictions)
+    fh.write("predictions: " + predictions)
     acc = metrics.accuracy_score(testY, predictions, average="weighted")
     print("Accuracy: {}%".format(100 * acc))
     fh.write("Accruacy: {}%".format(100 * acc))
