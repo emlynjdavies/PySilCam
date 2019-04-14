@@ -143,8 +143,8 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print('Y ', Y)
     print('trainY ', trainY)
     print('testY ', testY)
-    score = model.evaluate(testX, testY)
-    fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
+    #score = model.evaluate(testX, testY)
+    #fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
 
     print("\nTest prediction for x = ", testX)
     print("model evaluation ")
@@ -152,6 +152,9 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     #predictions = [int(i) for i in model.predict(testX)]
     print("predictions: ", predictions)
     fh.write("predictions: ", predictions)
+    acc = metrics.accuracy_score(testY, predictions, average="weighted")
+    print("Accuracy: {}%".format(100 * acc))
+    fh.write("Accruacy: {}%".format(100 * acc))
 
     #print("testY: ", testY)
     pre = metrics.precision_score(testY, predictions, average="weighted")
@@ -183,7 +186,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     ## update summaries ###
     prediction.append(predictions)
     test.append(testY)
-    accuracy.append(score[0])
+    accuracy.append(acc)
     precision.append(pre)
     recall.append(rec)
     f1_score.append(f1sc)
