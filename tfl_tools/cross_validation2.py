@@ -110,9 +110,9 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     # Evaluate model
     #score = model.evaluate(testX, testY)
     #print('Test accuracy: %0.4f%%' % (score[0] * 100))
-    #print('testX.shape ',testX.shape)
+    print('len(testX) ',len(testX))
     print('testX ', testX)
-    #print('testY.shape ', testY.shape)
+    print('len(testY) ', len(testY))
     print('testY ', testY)
     score = model.evaluate(testX, testY)
     fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
