@@ -73,7 +73,8 @@ np.savetxt(set_file, fileList, delimiter=' ', fmt='%s')'''
 # -- call image_preloader
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
-
+print(X[0])
+print(Y[0])
 i = 0
 prediction = []
 test = []
