@@ -155,7 +155,8 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for pred in predictions:
         print(pred)
         print(pred.argmax(axis=0))
-        predict[pred] = 1
+        for i in pred:
+            predict[i] = 1
     print(predict)
 
 
