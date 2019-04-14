@@ -15,7 +15,7 @@ from statistics import mean,stdev
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = '/mnt/DATA/dataset1'
+DATABASE_PATH = '/mnt/DATA/dataset'
 MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 trainset_file = os.path.join(MODEL_PATH,"imagelist_train.dat")   # the file that contains the list of images of the training dataset along with their classes
