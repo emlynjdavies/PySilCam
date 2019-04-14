@@ -172,7 +172,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
         fh.write("%s\n" % el)
     #print("".join(np.array2string(y_true)), file=fh)
 
-    acc = metrics.accuracy_score(y_true, y_pred, average="weighted")
+    acc = metrics.accuracy_score(y_true, y_pred)
     print("Accuracy: {}%".format(100 * acc))
     fh.write("Accruacy: {}%".format(100 * acc))
 

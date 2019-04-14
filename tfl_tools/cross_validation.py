@@ -147,28 +147,22 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print("Recall: {}%".format(100 * rec))
     fh.write("Recall: {}%".format(100 * rec))
 
-    f1sc = metrics.f1_score(testY, predictions, average="weighted")
+    f1sc = metrics.f1_score(y_true, y_pred, average="weighted")
     print("f1_score: {}%".format(100 * f1sc))
     fh.write("f1_score: {}%".format(100 * f1sc))
     print("")
-    fh.write("")
     print("Confusion Matrix:")
-    fh.write("Confusion Matrix:")
     conf_matrix = metrics.confusion_matrix(testY, predictions)
     print(conf_matrix)
-    fh.write(conf_matrix)
     norm_conf_matrix = np.array(conf_matrix, dtype=np.float32) / np.sum(conf_matrix) * 100
     print("")
-    fh.write("")
     print("Confusion matrix (normalised to % of total test data):")
-    fh.write("Confusion matrix (normalised to % of total test data):")
     print(norm_conf_matrix)
-    fh.write(norm_conf_matrix)
 
     ## update summaries ###
     prediction.append(predictions)
     test.append(testY)
-    accuracy.append(score[0])
+    accuracy.append(acc)
     precision.append(pre)
     recall.append(rec)
     f1_score.append(f1sc)
@@ -197,12 +191,9 @@ print('Confusion Matrix')
 fh.write('Confusion Matrix')
 for i in range(0,10):
     print(confusion_matrix[i])
-    fh.write(confusion_matrix[i])
+
 print('Normalized Confusion Matrix')
-fh.write('Normalized Confusion Matrix')
 for i in range(0,10):
     print(normalised_confusion_matrix[i])
-    fh.write(normalised_confusion_matrix[i])
-
 
 fh.close
