@@ -150,7 +150,13 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     #print("model evaluation ")
     predictions = model.predict(testX)
     #predictions = [int(i) for i in model.predict(testX)]
-    print("predictions: ", predictions)
+    print("predictions: ")
+    for i in predictions:
+        print(i)
+    
+    print("testY: ")
+    for i in testY:
+        print(i)
     fh.write("predictions: " )
     fh.write(np.array2string(predictions))
     acc = metrics.accuracy_score(testY, predictions)
