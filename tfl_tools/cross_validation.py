@@ -101,7 +101,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     model.fit(trainX, trainY, n_epoch=50, shuffle=True, validation_set=(testX, testY),
               show_metric=True, batch_size=128,
               snapshot_epoch=True,
-              run_id='plankton-classifier'+round_num)
+              run_id='plankton-classifier')
     # Save
     print("Saving model %f ..." % i)
     model_file = os.path.join(MODEL_PATH,MODEL_FILE)
