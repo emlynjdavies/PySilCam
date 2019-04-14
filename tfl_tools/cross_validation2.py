@@ -108,8 +108,12 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     print("Saving model %f ..." % i)
     model.save(model_file)
     # Evaluate model
-    score = model.evaluate(testX, testY)
-    print('Test accuracy: %0.4f%%' % (score[0] * 100))
+    #score = model.evaluate(testX, testY)
+    #print('Test accuracy: %0.4f%%' % (score[0] * 100))
+    print('testX.shape ',testX.shape)
+    print('testX ', testX)
+    print('testY.shape ', testY.shape)
+    print('testY ', testY)
     score = model.evaluate(testX, testY)
     fh.write("Accuracy for round %f: %.4f%% " % i, (score[0] * 100))
 
