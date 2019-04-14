@@ -157,10 +157,10 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     for pred in predictions:
         predict = np.zeros(len(class_labels), dtype=float)
         print(pred)
-        print(pred.argmax(axis=0))
-        for i in pred:
+        pre = pred.argmax(axis=0)
+        for i in pre:
             print(i)
-            predict[int(i)] = 1
+            predict[i] = 1
         print(predict)
         pred_classes.append(predict)
     predictions = pred_classes
