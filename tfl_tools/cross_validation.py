@@ -152,7 +152,7 @@ for trainX, trainY, testX, testY in make_dataset(X, Y, 10):
     fh.write("f1_score: {}%".format(100 * f1sc))
     print("")
     print("Confusion Matrix:")
-    conf_matrix = metrics.confusion_matrix(testY, predictions)
+    conf_matrix = metrics.confusion_matrix(y_true, y_pred)
     print(conf_matrix)
     norm_conf_matrix = np.array(conf_matrix, dtype=np.float32) / np.sum(conf_matrix) * 100
     print("")
