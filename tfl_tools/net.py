@@ -33,6 +33,8 @@ class Net:
         self.random_mean = 0
         self.random_stddev = 0.01
         self.check_point_file = model_file
+
+
     def __preprocessing(self):
         # normalisation of images
         print("Normalisation of images...")
@@ -100,15 +102,15 @@ class Net:
         self.model_file = model_file
         print(self.model_file)
         if self.name == 'LeNet':
-            self.__build_LeNet()
+            return self.__build_LeNet()
         elif self.name == 'CIFAR10':
-            self.__build_CIFAR10
+            return self.__build_CIFAR10
         elif self.name == 'AlexNet':
-            self.__build_AlexNet()
+            return self.__build_AlexNet()
         elif self.name == 'VGGNet':
-            self.__build_VGGNet()
+            return self.__build_VGGNet()
         elif self.name == 'ResNet':
-            self.__build_ResNet()
+            return self.__build_ResNet()
 
 
     def __build_LeNet(self):
