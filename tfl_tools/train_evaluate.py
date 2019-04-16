@@ -105,7 +105,7 @@ for i in range(0, 10):
     print("Recall: {}%".format(100 * recall[i]))
     fh.write("\tRecall: {}%".format(100 * recall[i]))
     print("F1 Score: {}%".format(100 * f1_score[i]))
-    fh.write("F1 Score: {}%".format(100 * f1_score[i]))
+    fh.write("\tF1 Score: {}%".format(100 * f1_score[i]))
     print("confusion matrix: ", confusion_matrix[i])
     print("Normalized confusion matrix: ", normalised_confusion_matrix[i])
 
