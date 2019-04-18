@@ -12,11 +12,29 @@ from tflearn.data_preprocessing import ImagePreprocessing
 from tflearn.data_augmentation import ImageAugmentation
 import tensorflow as tf
 import numpy as np
+
+'''
+Deep Neural Network Architecture
+build - train - predict - evaluate 
+'''
+
 class Net:
 
     def __init__(self, name='LeNet', input_width=32, input_height=32, input_channels=3, num_classes=7, learning_rate=0.01,
                  momentum=0.9, keep_prob=0.8,
                  model_file='plankton-classifier.tfl'):
+        '''
+        Network Initialization
+        :param name:            Name of the model (LeNet, CIFAR10, AlexNet, VGGNet, ResNet)
+        :param input_width:     input image width default (32)
+        :param input_height:    input image width default (32)
+        :param input_channels:  input image number of channels default (3)
+        :param num_classes:     number of classes
+        :param learning_rate:   Learing rate (default 0.01)
+        :param momentum:        Momentum (not used yet... consider use/remove)
+        :param keep_prob:       drop out probability (default 0.8)
+        :param model_file:      the name of the saved model file - it should be passed as absolute link
+        '''
         self.name = name
 
         self.input_width = input_width
@@ -34,8 +52,11 @@ class Net:
         self.random_stddev = 0.01
         self.check_point_file = model_file
 
-
     def __preprocessing(self):
+        '''
+        Image preprocessing
+        :return: img_prep - preprocessed images
+        '''
         # normalisation of images
         print("Normalisation of images...")
         img_prep = ImagePreprocessing()
@@ -44,6 +65,13 @@ class Net:
         return img_prep
 
     def __data_augmentation(self):
+        '''
+        Data Augmentation
+        flip left and right
+        rotation
+        blur
+        :return: img_aug - image augmentation
+        '''
         # Create extra synthetic training data by flipping & rotating images
         print("Data augmentation...")
         img_aug = ImageAugmentation()
@@ -53,12 +81,35 @@ class Net:
         return img_aug
 
     def train(self,model, trainX, trainY, testX, testY, round_num='01', n_epoch=50, batch_size=128):
+        '''
+        Training the model
+        :param model:       The model to be trained
+        :param trainX:      Input training set
+        :param trainY:      Ouput true training set
+        :param testX:       Input test set
+        :param testY:       Output test set
+        :param round_num:   round number in case the cross validation
+        :param n_epoch:     Number of epochs
+        :param batch_size:  batch size
+        :return:
+        '''
         model.fit(trainX, trainY, n_epoch=n_epoch, shuffle=True, validation_set=(testX, testY),
                   show_metric=True, batch_size=batch_size,
                   snapshot_epoch=True,
                   run_id='plankton-classifier' + round_num)
 
+
+
     def evaluate(self, model, testX, testY):
+        '''
+        Evaluate the model
+        :param model:   The model to be evaluated
+        :param testX:   Input test set
+        :param testY:   Output test set
+        :return: summaries for y_pred, y_true,
+                    accuracy, precision, recall, f1_score,
+                    confusion_matrix, normalized_confusion_matrix
+        '''
         # print("\nTest prediction for x = ", testX)
         print("model evaluation ")
         predictions = model.predict(testX)
@@ -95,14 +146,24 @@ class Net:
         print(normalized_confusion_matrix)
         return y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
 
-
-
-
     def build_model(self, model_file):
+        '''
+        Build the model depends on the initialize network name
+        LetNet - based on LeCun
+        MINSTNet - based on LeCun network used to classify the MINST dataset
+        CIFAR10 - the version of the LeNet used to classify the CIFAR dataset for 10 classes
+        AlexNet - the version of AlexNet reconstructed to be compatible with the input images
+        VGGNet -
+        ResNet -
+        :param model_file: the model file
+        :return: The model and and convolution array
+        '''
         self.model_file = model_file
         print(self.model_file)
         if self.name == 'LeNet':
             return self.__build_LeNet()
+        elif self.name == 'MINST':
+            return self.__build_MINST()
         elif self.name == 'CIFAR10':
             return self.__build_CIFAR10
         elif self.name == 'AlexNet':
@@ -114,6 +175,76 @@ class Net:
 
 
     def __build_LeNet(self):
+        '''
+        Build the model based on LeCun proposed architecture
+        :return: The model and and convolution array
+        '''
+        print("Building" + self.name + " model ...")
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+
+        # Define the network architecture
+        print("Define the network architecture...")
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        # Layer 1
+        print('Layer 1: Convolution layer with 32 filters, each 3x3x3')
+        # 1: Convolution layer with 32 filters, each 3x3x3
+        print('  1: Convolution layer with 32 filters, each 3x3x3')
+        net = conv_2d(net, 32, 3, activation='relu', regularizer="L2", name='conv_1')
+        conv_1 = net
+        # 2: Max pooling layer
+        print('  2: Max pooling')
+        net = max_pool_2d(net, 2)
+        # 3: local_response_normalization
+        print('  3: Local Response Normalization')
+        net = local_response_normalization(net)
+        # Layer 2:
+        print('Layer 2:')
+        # 3: Convolution layer with 64 filters
+        print('1: Convolution again')
+        net = conv_2d(net, 64, 3, activation='relu', regularizer="L2", name='conv_2')
+        conv_2 = net
+        # 2: Max pooling layer
+        print('  2: Max pooling')
+        net = max_pool_2d(net, 2)
+        # 3: local_response_normalization
+        print('  3: Local Response Normalization')
+        net = local_response_normalization(net)
+
+        # Layer 3: Fully-connected 128 node neural network
+        print('Layer 3: Fully-connected 128 node neural network')
+        net = fully_connected(net, 128, activation='tanh')
+        net = dropout(net, self.keep_prob)
+
+        # Layer 4: Fully-connected 256 node neural network
+        print('Layer 4: Fully-connected 256 node neural network')
+        net = fully_connected(net, 256, activation='tanh')
+        net = dropout(net, self.keep_prob)
+
+        # Layer 5: Fully-connected 256 node neural network
+        print('Layer 5: Fully-connected number of classes node neural network')
+        net = fully_connected(net, self.num_classes+1, activation='softmax')
+
+        net = regression(net, optimizer='adam', learning_rate=self.learning_rate,
+                             loss='categorical_crossentropy', name='target')
+
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2]
+        return model, conv_arr
+
+    def __build_MINST(self):
+        '''
+        Build the model
+        MINSTNet - based on LeCun network used to classify the MINST dataset
+        :return: The model and and convolution array
+        '''
         print("Building" + self.name + " model ...")
         # This resets all parameters and variables, leave this here
         tf.reset_default_graph()
@@ -175,6 +306,11 @@ class Net:
         return model, conv_arr
 
     def __build_CIFAR10(self):
+        '''
+        Build the model
+        CIFAR10 - the version of the LeNet used to classify the CIFAR dataset for 10 classes
+        :return: The model and and convolution array
+        '''
         print("Building" + self.name + " model ...")
 
         # This resets all parameters and variables, leave this here
@@ -231,18 +367,38 @@ class Net:
         return model, conv_arr
 
     def __build_AlexNet(self):
+        '''
+        Build the model
+        AlexNet - the version of AlexNet reconstructed to be compatible with the input images
+        :return: The model and and convolution array
+        '''
         print("Building AlexNet")
         print(self.name)
 
     def __build_VGGNet(self):
+        '''
+        Build the model
+        VGGNet - the version of VGGNet reconstructed to be compatible with the input images
+        :return: The model and and convolution array
+        '''
         print("Building VGGNet")
         print(self.name)
 
     def __build_GoogLeNet(self):
+        '''
+        Build the model
+        GoogleNet (Inception Net) - the version of GoogleNet reconstructed to be compatible with the input images
+        :return: The model and and convolution array
+        '''
         print("Building GoogLeNet")
         print(self.name)
 
     def __build_ResNet(self):
+        '''
+        Build the model
+        ResNet (Residual Network) - the version of ResNet reconstructed to be compatible with the input images
+        :return: The model and and convolution array
+        '''
         print("Building ResNet")
         print(self.name)
 

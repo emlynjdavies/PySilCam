@@ -8,10 +8,10 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
-#DATABASE_PATH = '/mnt/DATA/dataset_test'
-#MODEL_PATH = '/mnt/DATA/model/modelCV2'
+#DATABASE_PATH = 'Z:/DATA/dataset_test'
+#MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = '/mnt/DATA/dataset_test'
+MODEL_PATH = '/mnt/DATA/model/modelCIFAR10'
 LOG_FILE = os.path.join(MODEL_PATH, 'cv.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
@@ -22,18 +22,18 @@ set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that cont
 IMXY = 32
 # -----------------------------
 
-name='LeNet'
+name='CIFAR10'
 input_width=32
 input_height=32
 input_channels=3
 num_classes=7
 
-learning_rate=0.01  # for LeNet -- 0.001 for CIFAR10
+learning_rate=0.001  # 0.01 for LeNet -- 0.001 for CIFAR10
 momentum=0.9
-keep_prob=0.8  # for LeNet -- 0.5 for CIFAR10
+keep_prob=0.5  # 0.8 for LeNet -- 0.5 for CIFAR10
 
-n_epoch = 3  # 50
-batch_size = 3 # 128
+n_epoch = 50  # 50
+batch_size = 128 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
@@ -74,6 +74,7 @@ for trainX, trainY, testX, testY in data_set.gen():
     print("Saving model %f ..." % i)
     model.save(model_file)
 
+    # Evaluate
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
         LeNet.evaluate(model, testX, testY)
 
