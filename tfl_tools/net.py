@@ -165,7 +165,7 @@ class Net:
         elif self.name == 'MINST':
             return self.__build_MINST()
         elif self.name == 'CIFAR10':
-            return self.__build_CIFAR10
+            return self.__build_CIFAR10()
         elif self.name == 'AlexNet':
             return self.__build_AlexNet()
         elif self.name == 'VGGNet':

@@ -8,8 +8,8 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-#DATABASE_PATH = 'Z:/DATA/dataset_test'
-#MODEL_PATH = 'Z:/DATA/model/modelCV2'
+# DATABASE_PATH = 'Z:/DATA/dataset_test'
+# MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/dataset_test'
 MODEL_PATH = '/mnt/DATA/model/modelCIFAR10'
 LOG_FILE = os.path.join(MODEL_PATH, 'cv.out')
@@ -17,7 +17,7 @@ LOG_FILE = os.path.join(MODEL_PATH, 'cv.out')
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-#set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+# set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
 IMXY = 32
 # -----------------------------
