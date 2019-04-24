@@ -194,37 +194,33 @@ class Net:
         # Layer 1
         print('Layer 1: Convolution layer with 32 filters, each 3x3x3')
         # 1: Convolution layer with 32 filters, each 3x3x3
-        print('  1: Convolution layer with 32 filters, each 3x3x3')
-        net = conv_2d(net, 32, 3, activation='relu', regularizer="L2", name='conv_1')
+        print('  1: Convolution layer with 6 filters, each 5x5x3')
+        # incoming, number of filters, filter size, strides, padding, activation, bias, weigths_init, bias_init,
+        # regularizer, weight_decay
+        net = conv_2d (net, 6, 5, activation='relu', regularizer="L2", name='conv_1')
         conv_1 = net
         # 2: Max pooling layer
         print('  2: Max pooling')
-        net = max_pool_2d(net, 2)
-        # 3: local_response_normalization
-        print('  3: Local Response Normalization')
-        net = local_response_normalization(net)
+        net = max_pool_2d(net, 2, 2)
+
         # Layer 2:
         print('Layer 2:')
         # 3: Convolution layer with 64 filters
         print('1: Convolution again')
-        net = conv_2d(net, 64, 3, activation='relu', regularizer="L2", name='conv_2')
+        net = conv_2d(net, 16, 5, activation='relu', regularizer="L2", name='conv_2')
         conv_2 = net
         # 2: Max pooling layer
         print('  2: Max pooling')
-        net = max_pool_2d(net, 2)
-        # 3: local_response_normalization
-        print('  3: Local Response Normalization')
-        net = local_response_normalization(net)
+        net = max_pool_2d(net, 2, 2)
 
         # Layer 3: Fully-connected 128 node neural network
-        print('Layer 3: Fully-connected 128 node neural network')
-        net = fully_connected(net, 128, activation='tanh')
+        print('Layer 3: Fully-connected 120 node neural network')
+        net = fully_connected(net, 120, activation='tanh')
         net = dropout(net, self.keep_prob)
 
         # Layer 4: Fully-connected 256 node neural network
         print('Layer 4: Fully-connected 256 node neural network')
-        net = fully_connected(net, 256, activation='tanh')
-        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, 84, activation='tanh')
 
         # Layer 5: Fully-connected 256 node neural network
         print('Layer 5: Fully-connected number of classes node neural network')
