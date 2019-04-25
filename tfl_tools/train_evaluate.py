@@ -11,7 +11,7 @@ from net import Net
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelMINST'
+MODEL_PATH = '/mnt/DATA/model/modelLENET'
 LOG_FILE = os.path.join(MODEL_PATH, 'cv.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
@@ -22,7 +22,7 @@ set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains
 IMXY = 32
 # -----------------------------
 
-name='MINST'
+name='LeNet'
 input_width=32
 input_height=32
 input_channels=3

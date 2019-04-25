@@ -205,7 +205,7 @@ class Net:
 
         # Layer 2:
         print('Layer 2:')
-        # 3: Convolution layer with 64 filters
+        # 3: Convolution layer with 16 filters size 5 and stride 1
         print('1: Convolution again')
         net = conv_2d(net, 16, 5, activation='relu', regularizer="L2", name='conv_2')
         conv_2 = net
@@ -219,7 +219,7 @@ class Net:
         net = dropout(net, self.keep_prob)
 
         # Layer 4: Fully-connected 256 node neural network
-        print('Layer 4: Fully-connected 256 node neural network')
+        print('Layer 4: Fully-connected 84 node neural network')
         net = fully_connected(net, 84, activation='tanh')
 
         # Layer 5: Fully-connected 256 node neural network
