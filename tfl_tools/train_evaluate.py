@@ -11,8 +11,8 @@ from net import Net
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelLENET'
-LOG_FILE = os.path.join(MODEL_PATH, 'cv.out')
+MODEL_PATH = '/mnt/DATA/model/modelORGNET'
+LOG_FILE = os.path.join(MODEL_PATH, 'cvORGNET.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
@@ -22,15 +22,15 @@ set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains
 IMXY = 32
 # -----------------------------
 
-name='LeNet'
+name='OrgNet'
 input_width=32
 input_height=32
 input_channels=3
 num_classes=7
 
-learning_rate=0.01  # 0.01 for MINST -- 0.001 for CIFAR10
+learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 --
 momentum=0.9
-keep_prob=0.8  # 0.8 for LeNet -- 0.5 for CIFAR10
+keep_prob=0.75  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10
 
 n_epoch = 50  # 50
 batch_size = 128 # 128
