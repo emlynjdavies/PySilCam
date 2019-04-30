@@ -90,9 +90,11 @@ for trainX, trainY, testX, testY in data_set.gen():
 
 
 for i in range(0, 10):
-    print("Round ", i)
-    fh.write("\nRound")
-    fh.write(round_num)
+    fh.write("\nRound ")
+    if i < 10:
+        j = '0' + i
+    fh.write(j)
+    print("Round ", j)
     fh.write("\nPredictions: ")
     for el in y_pred:
         fh.write("%s " % el)
@@ -100,29 +102,41 @@ for i in range(0, 10):
     for el in y_true:
         fh.write("%s " % el)
     print("\nAccuracy: {}%".format(100*accuracy[i]))
-    fh.write("\tAccuracy: {}%".format(100*accuracy[i]))
+    fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
     print("Precision: {}%".format(100 * precision[i]))
     fh.write("\tPrecision: {}%".format(100 * precision[i]))
     print("Recall: {}%".format(100 * recall[i]))
     fh.write("\tRecall: {}%".format(100 * recall[i]))
-    print("F1 Score: {}%".format(100 * f1_score[i]))
-    fh.write("\tF1 Score: {}%".format(100 * f1_score[i]))
-    print("confusion matrix: ", confusion_matrix[i])
-    print("Normalized confusion matrix: ", normalised_confusion_matrix[i])
+    print("F1_Score: {}%".format(100 * f1_score[i]))
+    fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
+    print("confusion_matrix: ", confusion_matrix[i])
+    print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
 
-print("Overall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
-fh.write("\nOverall Accuracy: %.3f%% (%.3f%%)" % (mean(accuracy)*100.0, stdev(accuracy)*100.0))
-print("Overall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
-fh.write("\tOverall Precision: %.3f%% (%.3f%%)" % (mean(precision)*100.0, stdev(precision)*100.0))
-print("Overall Recall: %.3f%% (%.3f%%)" % (mean(recall)*100.0, stdev(recall)*100.0))
-fh.write("\tOverall Recall: %.3f%% (%.3f%%)" % (mean(recall)*100.0, stdev(recall)*100.0))
-print("Overall F1Score: %.3f%% (%.3f%%)" % (mean(f1_score)*100.0, stdev(f1_score)*100.0))
-fh.write("\tOverall F1Score: %.3f%% (%.3f%%)" % (mean(f1_score)*100.0, stdev(f1_score)*100.0))
-print('Confusion Matrix')
+print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
+print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
+fh.write("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
+fh.write("\nOverall_STD_Accuracy: %.3f%%" % (stdev(accuracy)*100.0))
+
+print("\tOverall_Precision: %.3f%%" % (mean(precision)*100.0))
+print("\tOverall_STD_Precision: %.3f%%" % (stdev(precision)*100.0))
+fh.write("\tOverall_Precision: %.3f%% " % (mean(precision)*100.0))
+fh.write("\tOverall_STD_Precision: %.3f%% " % (stdev(precision)*100.0))
+
+print("\tOverall_Recall: %.3f%% " % (mean(recall)*100.0))
+print("\tOverall_STD_Recall: %.3f%% " % (stdev(recall)*100.0))
+fh.write("\tOverall_Recall: %.3f%% " % (mean(recall)*100.0))
+fh.write("\tOverall_STD_Recall: %.3f%% " % (stdev(recall)*100.0))
+
+print("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
+print("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
+fh.write("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
+fh.write("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
+
+print('Confusion_Matrix')
 for i in range(0,10):
     print(confusion_matrix[i])
 
-print('Normalized Confusion Matrix')
+print('Normalized_Confusion_Matrix')
 for i in range(0,10):
     print(normalised_confusion_matrix[i])
 
