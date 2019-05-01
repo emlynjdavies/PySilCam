@@ -11,7 +11,7 @@ from net import Net
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelORGNET'
+MODEL_PATH = '/mnt/DATA/model/modelORGNET2'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvORGNET.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
