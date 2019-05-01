@@ -33,8 +33,8 @@ momentum=0.9
 keep_prob=0.4  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET -- 0.4 for GoogLeNet
 
-n_epoch = 2  # 50
-batch_size = 3 # 128
+n_epoch = 50  # 50
+batch_size = 128 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
