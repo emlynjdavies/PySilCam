@@ -5,7 +5,8 @@ from sklearn import metrics
 
 import tflearn
 from tflearn.layers.core import input_data, dropout, fully_connected
-from tflearn.layers.conv import conv_2d, max_pool_2d
+from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
+from tflearn.layers.merge_ops import merge
 from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.estimator import regression
 from tflearn.data_preprocessing import ImagePreprocessing
@@ -172,8 +173,12 @@ class Net:
             return self.__build_AlexNet()
         elif self.name == 'VGGNet':
             return self.__build_VGGNet()
+        elif self.name == 'GoogLeNet':
+            return self.__build_GoogLeNet()
         elif self.name == 'ResNet':
             return self.__build_ResNet()
+        elif self.name == 'ResNeXt':
+            return self.__build_ResNeXt()
 
     def __build_OrgNet(self):
         '''
@@ -441,6 +446,45 @@ class Net:
         '''
         print("Building AlexNet")
         print(self.name)
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+        # Define the network architecture
+        print("Define the network architecture...")
+        #network = input_data(shape=[None, 227, 227, 3])
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        net = conv_2d(net, 96, 11, strides=4, activation='relu', name='conv_1')
+        conv_1 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = conv_2d(net, 256, 5, activation='relu', name='conv_2')
+        conv_2 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = conv_2d(net, 384, 3, activation='relu', name='conv_3')
+        conv_3 = net
+        net = conv_2d(net, 384, 3, activation='relu', name='conv_4')
+        conv_4 = net
+        net = conv_2d(net, 256, 3, activation='relu', name='conv_5')
+        conv_5 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = fully_connected(net, 4096, activation='tanh')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, 4096, activation='tanh')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, self.num_classes + 1, activation='softmax')
+        net = regression(net, optimizer='momentum',
+                             loss='categorical_crossentropy',
+                             learning_rate=self.learning_rate, name='target')
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5]
+        return model, conv_arr
 
     def __build_VGGNet(self):
         '''
@@ -448,8 +492,75 @@ class Net:
         VGGNet - the version of VGGNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
-        print("Building VGGNet")
-        print(self.name)
+        print("Building" + self.name + " model ...")
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+
+        # Define the network architecture
+        print("Define the network architecture...")
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        print("Block 1: 2 convolution layers each with 64 filters (each 3x3x3) followed by max_pool...")
+        net = conv_2d(net, 64, 3, activation='relu',name='conv_1')
+        conv_1 = net
+        net = conv_2d(net, 64, 3, activation='relu',name='conv_2')
+        conv_2 = net
+        net = max_pool_2d(net, 2, strides=2)
+
+        print("Block 2: 2 convolution layers each with 128 filters (each 3x3x3) followed by max_pool...")
+        net = conv_2d(net, 128, 3, activation='relu',name='conv_3')
+        conv_3 = net
+        net = conv_2d(net, 128, 3, activation='relu',name='conv_4')
+        conv_4 = net
+        net = max_pool_2d(net, 2, strides=2)
+
+        print("Block 3: 3 convolution layers each with 256 filters (each 3x3x3) followed by max_pool...")
+        net = conv_2d(net, 256, 3, activation='relu', name='conv_5')
+        conv_5 = net
+        net = conv_2d(net, 256, 3, activation='relu', name='conv_6')
+        conv_6 = net
+        net = conv_2d(net, 256, 3, activation='relu', name='conv_7')
+        conv_7 = net
+        net = max_pool_2d(net, 2, strides=2)
+
+        print("Block 4: 3 convolution layers each with 512 filters (each 3x3x3) followed by max_pool...")
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_8')
+        conv_8 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_9')
+        conv_9 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_10')
+        conv_10 = net
+        net = max_pool_2d(net, 2, strides=2)
+
+        print("Block 5: 3 convolution layers each with 512 filters (each 3x3x3) followed by max_pool...")
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_11')
+        conv_11 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_12')
+        conv_12 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_13')
+        conv_13 = net
+        net = max_pool_2d(net, 2, strides=2)
+
+        net = fully_connected(net, 4096, activation='relu')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, 4096, activation='relu')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, self.num_classes+1, activation='softmax')
+
+        net = regression(net, optimizer='rmsprop',
+                             loss='categorical_crossentropy',
+                             learning_rate=self.learning_rate, name='target')
+
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6, conv_7,
+                    conv_8, conv_9, conv_10, conv_11, conv_12, conv_13]
+        return model, conv_arr
 
     def __build_GoogLeNet(self):
         '''
@@ -459,6 +570,208 @@ class Net:
         '''
         print("Building GoogLeNet")
         print(self.name)
+        print("Building" + self.name + " model ...")
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+
+        # Define the network architecture
+        print("Define the network architecture...")
+        network = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name='conv1_7_7_s2')
+        pool1_3_3 = max_pool_2d(conv1_7_7, 3, strides=2)
+        pool1_3_3 = local_response_normalization(pool1_3_3)
+        conv2_3_3_reduce = conv_2d(pool1_3_3, 64, 1, activation='relu', name='conv2_3_3_reduce')
+        conv2_3_3 = conv_2d(conv2_3_3_reduce, 192, 3, activation='relu', name='conv2_3_3')
+        conv2_3_3 = local_response_normalization(conv2_3_3)
+        pool2_3_3 = max_pool_2d(conv2_3_3, kernel_size=3, strides=2, name='pool2_3_3_s2')
+        conv_1 = conv1_7_7
+        conv_2 = conv2_3_3
+
+
+        # 3a
+        print(" 3a ")
+        inception_3a_1_1 = conv_2d(pool2_3_3, 64, 1, activation='relu', name='inception_3a_1_1')
+        inception_3a_3_3_reduce = conv_2d(pool2_3_3, 96, 1, activation='relu', name='inception_3a_3_3_reduce')
+        inception_3a_3_3 = conv_2d(inception_3a_3_3_reduce, 128, filter_size=3, activation='relu',
+                                   name='inception_3a_3_3')
+        inception_3a_5_5_reduce = conv_2d(pool2_3_3, 16, filter_size=1, activation='relu',
+                                          name='inception_3a_5_5_reduce')
+        inception_3a_5_5 = conv_2d(inception_3a_5_5_reduce, 32, filter_size=5, activation='relu',
+                                   name='inception_3a_5_5')
+        inception_3a_pool = max_pool_2d(pool2_3_3, kernel_size=3, strides=1, name='inception_3a_pool')
+        inception_3a_pool_1_1 = conv_2d(inception_3a_pool, 32, filter_size=1, activation='relu',
+                                        name='inception_3a_pool_1_1')
+        inception_3a_output = merge([inception_3a_1_1, inception_3a_3_3, inception_3a_5_5, inception_3a_pool_1_1],
+                                    mode='concat', axis=3)
+        conv_3 = inception_3a_pool_1_1
+
+        # 3b
+        print(" 3b ")
+        inception_3b_1_1 = conv_2d(inception_3a_output, 128, filter_size=1, activation='relu', name='inception_3b_1_1')
+        inception_3b_3_3_reduce = conv_2d(inception_3a_output, 128, filter_size=1, activation='relu',
+                                          name='inception_3b_3_3_reduce')
+        inception_3b_3_3 = conv_2d(inception_3b_3_3_reduce, 192, filter_size=3, activation='relu',
+                                   name='inception_3b_3_3')
+        inception_3b_5_5_reduce = conv_2d(inception_3a_output, 32, filter_size=1, activation='relu',
+                                          name='inception_3b_5_5_reduce')
+        inception_3b_5_5 = conv_2d(inception_3b_5_5_reduce, 96, filter_size=5, name='inception_3b_5_5')
+        inception_3b_pool = max_pool_2d(inception_3a_output, kernel_size=3, strides=1, name='inception_3b_pool')
+        inception_3b_pool_1_1 = conv_2d(inception_3b_pool, 64, filter_size=1, activation='relu',
+                                        name='inception_3b_pool_1_1')
+        inception_3b_output = merge([inception_3b_1_1, inception_3b_3_3, inception_3b_5_5, inception_3b_pool_1_1],
+                                    mode='concat', axis=3, name='inception_3b_output')
+        pool3_3_3 = max_pool_2d(inception_3b_output, kernel_size=3, strides=2, name='pool3_3_3')
+        conv_4 = inception_3b_pool_1_1
+
+        # 4a
+        print(" 4a ")
+        inception_4a_1_1 = conv_2d(pool3_3_3, 192, filter_size=1, activation='relu', name='inception_4a_1_1')
+        inception_4a_3_3_reduce = conv_2d(pool3_3_3, 96, filter_size=1, activation='relu',
+                                          name='inception_4a_3_3_reduce')
+        inception_4a_3_3 = conv_2d(inception_4a_3_3_reduce, 208, filter_size=3, activation='relu',
+                                   name='inception_4a_3_3')
+        inception_4a_5_5_reduce = conv_2d(pool3_3_3, 16, filter_size=1, activation='relu',
+                                          name='inception_4a_5_5_reduce')
+        inception_4a_5_5 = conv_2d(inception_4a_5_5_reduce, 48, filter_size=5, activation='relu',
+                                   name='inception_4a_5_5')
+        inception_4a_pool = max_pool_2d(pool3_3_3, kernel_size=3, strides=1, name='inception_4a_pool')
+        inception_4a_pool_1_1 = conv_2d(inception_4a_pool, 64, filter_size=1, activation='relu',
+                                        name='inception_4a_pool_1_1')
+        inception_4a_output = merge([inception_4a_1_1, inception_4a_3_3, inception_4a_5_5, inception_4a_pool_1_1],
+                                    mode='concat', axis=3, name='inception_4a_output')
+        conv_5 = inception_4a_pool_1_1
+
+        # 4b
+        print(" 4b ")
+        inception_4b_1_1 = conv_2d(inception_4a_output, 160, filter_size=1, activation='relu', name='inception_4a_1_1')
+        inception_4b_3_3_reduce = conv_2d(inception_4a_output, 112, filter_size=1, activation='relu',
+                                          name='inception_4b_3_3_reduce')
+        inception_4b_3_3 = conv_2d(inception_4b_3_3_reduce, 224, filter_size=3, activation='relu',
+                                   name='inception_4b_3_3')
+        inception_4b_5_5_reduce = conv_2d(inception_4a_output, 24, filter_size=1, activation='relu',
+                                          name='inception_4b_5_5_reduce')
+        inception_4b_5_5 = conv_2d(inception_4b_5_5_reduce, 64, filter_size=5, activation='relu',
+                                   name='inception_4b_5_5')
+        inception_4b_pool = max_pool_2d(inception_4a_output, kernel_size=3, strides=1, name='inception_4b_pool')
+        inception_4b_pool_1_1 = conv_2d(inception_4b_pool, 64, filter_size=1, activation='relu',
+                                        name='inception_4b_pool_1_1')
+        inception_4b_output = merge([inception_4b_1_1, inception_4b_3_3, inception_4b_5_5, inception_4b_pool_1_1],
+                                    mode='concat', axis=3, name='inception_4b_output')
+        conv_6 = inception_4b_pool_1_1
+
+        # 4c
+        print(" 4c ")
+        inception_4c_1_1 = conv_2d(inception_4b_output, 128, filter_size=1, activation='relu', name='inception_4c_1_1')
+        inception_4c_3_3_reduce = conv_2d(inception_4b_output, 128, filter_size=1, activation='relu',
+                                          name='inception_4c_3_3_reduce')
+        inception_4c_3_3 = conv_2d(inception_4c_3_3_reduce, 256, filter_size=3, activation='relu',
+                                   name='inception_4c_3_3')
+        inception_4c_5_5_reduce = conv_2d(inception_4b_output, 24, filter_size=1, activation='relu',
+                                          name='inception_4c_5_5_reduce')
+        inception_4c_5_5 = conv_2d(inception_4c_5_5_reduce, 64, filter_size=5, activation='relu',
+                                   name='inception_4c_5_5')
+        inception_4c_pool = max_pool_2d(inception_4b_output, kernel_size=3, strides=1)
+        inception_4c_pool_1_1 = conv_2d(inception_4c_pool, 64, filter_size=1, activation='relu',
+                                        name='inception_4c_pool_1_1')
+        inception_4c_output = merge([inception_4c_1_1, inception_4c_3_3, inception_4c_5_5, inception_4c_pool_1_1],
+                                    mode='concat', axis=3, name='inception_4c_output')
+        conv_7 = inception_4c_pool_1_1
+
+        # 4d
+        print(" 4d ")
+        inception_4d_1_1 = conv_2d(inception_4c_output, 112, filter_size=1, activation='relu', name='inception_4d_1_1')
+        inception_4d_3_3_reduce = conv_2d(inception_4c_output, 144, filter_size=1, activation='relu',
+                                          name='inception_4d_3_3_reduce')
+        inception_4d_3_3 = conv_2d(inception_4d_3_3_reduce, 288, filter_size=3, activation='relu',
+                                   name='inception_4d_3_3')
+        inception_4d_5_5_reduce = conv_2d(inception_4c_output, 32, filter_size=1, activation='relu',
+                                          name='inception_4d_5_5_reduce')
+        inception_4d_5_5 = conv_2d(inception_4d_5_5_reduce, 64, filter_size=5, activation='relu',
+                                   name='inception_4d_5_5')
+        inception_4d_pool = max_pool_2d(inception_4c_output, kernel_size=3, strides=1, name='inception_4d_pool')
+        inception_4d_pool_1_1 = conv_2d(inception_4d_pool, 64, filter_size=1, activation='relu',
+                                        name='inception_4d_pool_1_1')
+        inception_4d_output = merge([inception_4d_1_1, inception_4d_3_3, inception_4d_5_5, inception_4d_pool_1_1],
+                                    mode='concat', axis=3, name='inception_4d_output')
+        conv_8 = inception_4d_pool_1_1
+
+        # 4e
+        print(" 4e ")
+        inception_4e_1_1 = conv_2d(inception_4d_output, 256, filter_size=1, activation='relu', name='inception_4e_1_1')
+        inception_4e_3_3_reduce = conv_2d(inception_4d_output, 160, filter_size=1, activation='relu',
+                                          name='inception_4e_3_3_reduce')
+        inception_4e_3_3 = conv_2d(inception_4e_3_3_reduce, 320, filter_size=3, activation='relu',
+                                   name='inception_4e_3_3')
+        inception_4e_5_5_reduce = conv_2d(inception_4d_output, 32, filter_size=1, activation='relu',
+                                          name='inception_4e_5_5_reduce')
+        inception_4e_5_5 = conv_2d(inception_4e_5_5_reduce, 128, filter_size=5, activation='relu',
+                                   name='inception_4e_5_5')
+        inception_4e_pool = max_pool_2d(inception_4d_output, kernel_size=3, strides=1, name='inception_4e_pool')
+        inception_4e_pool_1_1 = conv_2d(inception_4e_pool, 128, filter_size=1, activation='relu',
+                                        name='inception_4e_pool_1_1')
+        inception_4e_output = merge([inception_4e_1_1, inception_4e_3_3, inception_4e_5_5, inception_4e_pool_1_1],
+                                    axis=3, mode='concat')
+        pool4_3_3 = max_pool_2d(inception_4e_output, kernel_size=3, strides=2, name='pool_3_3')
+        conv_9 = inception_4e_pool_1_1
+
+        # 5a
+        print(" 5a ")
+        inception_5a_1_1 = conv_2d(pool4_3_3, 256, filter_size=1, activation='relu', name='inception_5a_1_1')
+        inception_5a_3_3_reduce = conv_2d(pool4_3_3, 160, filter_size=1, activation='relu',
+                                          name='inception_5a_3_3_reduce')
+        inception_5a_3_3 = conv_2d(inception_5a_3_3_reduce, 320, filter_size=3, activation='relu',
+                                   name='inception_5a_3_3')
+        inception_5a_5_5_reduce = conv_2d(pool4_3_3, 32, filter_size=1, activation='relu',
+                                          name='inception_5a_5_5_reduce')
+        inception_5a_5_5 = conv_2d(inception_5a_5_5_reduce, 128, filter_size=5, activation='relu',
+                                   name='inception_5a_5_5')
+        inception_5a_pool = max_pool_2d(pool4_3_3, kernel_size=3, strides=1, name='inception_5a_pool')
+        inception_5a_pool_1_1 = conv_2d(inception_5a_pool, 128, filter_size=1, activation='relu',
+                                        name='inception_5a_pool_1_1')
+        inception_5a_output = merge([inception_5a_1_1, inception_5a_3_3, inception_5a_5_5, inception_5a_pool_1_1],
+                                    axis=3, mode='concat')
+        conv_10 = inception_5a_pool_1_1
+
+        # 5b
+        print(" 5b ")
+        inception_5b_1_1 = conv_2d(inception_5a_output, 384, filter_size=1, activation='relu', name='inception_5b_1_1')
+        inception_5b_3_3_reduce = conv_2d(inception_5a_output, 192, filter_size=1, activation='relu',
+                                          name='inception_5b_3_3_reduce')
+        inception_5b_3_3 = conv_2d(inception_5b_3_3_reduce, 384, filter_size=3, activation='relu',
+                                   name='inception_5b_3_3')
+        inception_5b_5_5_reduce = conv_2d(inception_5a_output, 48, filter_size=1, activation='relu',
+                                          name='inception_5b_5_5_reduce')
+        inception_5b_5_5 = conv_2d(inception_5b_5_5_reduce, 128, filter_size=5, activation='relu',
+                                   name='inception_5b_5_5')
+        inception_5b_pool = max_pool_2d(inception_5a_output, kernel_size=3, strides=1, name='inception_5b_pool')
+        inception_5b_pool_1_1 = conv_2d(inception_5b_pool, 128, filter_size=1, activation='relu',
+                                        name='inception_5b_pool_1_1')
+        inception_5b_output = merge([inception_5b_1_1, inception_5b_3_3, inception_5b_5_5, inception_5b_pool_1_1],
+                                    axis=3, mode='concat')
+        pool5_7_7 = avg_pool_2d(inception_5b_output, kernel_size=7, strides=1)
+        pool5_7_7 = dropout(pool5_7_7, self.keep_prob)
+
+        conv_11 = inception_5b_pool_1_1
+
+        # fc
+        print(" fc ")
+        loss = fully_connected(pool5_7_7, self.num_classes+1, activation='softmax')
+        network = regression(loss, optimizer='momentum',
+                             loss='categorical_crossentropy',
+                             learning_rate=self.learning_rate)
+
+
+        # Wrap the network in a model object
+        model = tflearn.DNN(network, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6, conv_7,
+                    conv_8, conv_9, conv_10, conv_11]
+        return model, conv_arr
 
     def __build_ResNet(self):
         '''
@@ -466,287 +779,87 @@ class Net:
         ResNet (Residual Network) - the version of ResNet reconstructed to be compatible with the input images
         :return: The model and and convolution array
         '''
+        # Residual blocks
+        # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
+        n = 5
         print("Building ResNet")
         print(self.name)
+        print("Building" + self.name + " model ...")
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
 
+        # Define the network architecture
+        print("Define the network architecture...")
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                             data_preprocessing=self.__preprocessing(),
+                             data_augmentation=self.__data_augmentation(), name='input')
 
+        net = tflearn.conv_2d(net, 16, 3, regularizer='L2', weight_decay=0.0001, name='conv_1')
+        conv_1 = net
+        net = tflearn.residual_block(net, n, 16)
+        net = tflearn.residual_block(net, 1, 32, downsample=True)
+        net = tflearn.residual_block(net, n - 1, 32)
+        net = tflearn.residual_block(net, 1, 64, downsample=True)
+        net = tflearn.residual_block(net, n - 1, 64)
+        net = tflearn.batch_normalization(net)
+        net = tflearn.activation(net, 'relu')
+        net = tflearn.global_avg_pool(net)
+        # Regression
+        net = tflearn.fully_connected(net, self.num_classes+1, activation='softmax')
+        mom = tflearn.Momentum(0.1, lr_decay=0.1, decay_step=32000, staircase=True)
+        net = tflearn.regression(net, optimizer=mom,
+                                 loss='categorical_crossentropy')
 
-'''
-        # ----------------------------------------------------------------------------------------------------
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file, clip_gradients=0.)
+        conv_arr = [conv_1]
+        return model, conv_arr
 
-        # From article: We initialized the neuron biases in the second, fourth, and fifth convolutional layers, as well
-        # as in the fully-connected hidden layers, with the constant 1. ... We initialized the neuron biases in the
-        # remaining layers with the constant 0.
+    def __build_ResNeXt(self):
+        '''
+        Build the model
+        ResNeXt - Aggregated residual transformations network (ResNeXt)
+        :return: The model and and convolution array
+        '''
+        print("Building ResNeXt")
+        print(self.name)
+        print("Building" + self.name + " model ...")
+        # Residual blocks
+        # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
+        n = 5
 
-        # Input: 227x227x3.
-        with tf.name_scope('input'):
-            self.X = tf.placeholder(dtype=tf.float32,
-                                    shape=[None, self.input_height, self.input_width, self.input_channels], name='X')
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
 
-        # Labels: 1000.
-        with tf.name_scope('labels'):
-            self.Y = tf.placeholder(dtype=tf.float32, shape=[None, self.num_classes], name='Y')
+        # Define the network architecture
+        print("Define the network architecture...")
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                             data_preprocessing=self.__preprocessing(),
+                             data_augmentation=self.__data_augmentation(), name='input')
 
-        # Dropout keep prob.
-        with tf.name_scope('dropout'):
-            self.dropout_keep_prob = tf.placeholder(dtype=tf.float32, shape=(), name='dropout_keep_prob')
+        net = tflearn.conv_2d(net, 16, 3, regularizer='L2', weight_decay=0.0001, name='conv_1')
+        conv_1 = net
+        net = tflearn.resnext_block(net, n, 16, 32)
+        net = tflearn.resnext_block(net, 1, 32, 32, downsample=True)
+        net = tflearn.resnext_block(net, n - 1, 32, 32)
+        net = tflearn.resnext_block(net, 1, 64, 32, downsample=True)
+        net = tflearn.resnext_block(net, n - 1, 64, 32)
+        net = tflearn.batch_normalization(net)
+        net = tflearn.activation(net, 'relu')
+        net = tflearn.global_avg_pool(net)
+        # Regression
+        net = tflearn.fully_connected(net, self.num_classes+1, activation='softmax')
+        opt = tflearn.Momentum(0.1, lr_decay=0.1, decay_step=32000, staircase=True)
+        net = tflearn.regression(net, optimizer=opt,
+                                 loss='categorical_crossentropy')
 
-        # Layer 1.
-        # [Input] ==> 227x227x3
-        # --> 227x227x3 ==> [Convolution: size=(11x11x3)x96, strides=4, padding=valid] ==> 55x55x96
-        # --> 55x55x96 ==> [ReLU] ==> 55x55x96
-        # --> 55x55x96 ==> [Local Response Normalization] ==> 55x55x96
-        # --> 55x55x96 ==> [Max-Pool: size=3x3, strides=2, padding=valid] ==> 27x27x96
-        # --> [Output] ==> 27x27x96
-        # Note: 48*2=96, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer1'):
-            layer1_activations = self.__conv(input=self.X, filter_width=11, filter_height=11, filters_count=96,
-                                             stride_x=4, stride_y=4, padding='VALID',
-                                             init_biases_with_the_constant_1=False)
-            layer1_lrn = self.__local_response_normalization(input=layer1_activations)
-            layer1_pool = self.__max_pool(input=layer1_lrn, filter_width=3, filter_height=3, stride_x=2, stride_y=2,
-                                          padding='VALID')
-
-        # Layer 2.
-        # [Input] ==> 27x27x96
-        # --> 27x27x96 ==> [Convolution: size=(5x5x96)x256, strides=1, padding=same] ==> 27x27x256
-        # --> 27x27x256 ==> [ReLU] ==> 27x27x256
-        # --> 27x27x256 ==> [Local Response Normalization] ==> 27x27x256
-        # --> 27x27x256 ==> [Max-Pool: size=3x3, strides=2, padding=valid] ==> 13x13x256
-        # --> [Output] ==> 13x13x256
-        # Note: 128*2=256, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer2'):
-            layer2_activations = self.__conv(input=layer1_pool, filter_width=5, filter_height=5, filters_count=256,
-                                             stride_x=1, stride_y=1, padding='SAME',
-                                             init_biases_with_the_constant_1=True)
-            layer2_lrn = self.__local_response_normalization(input=layer2_activations)
-            layer2_pool = self.__max_pool(input=layer2_lrn, filter_width=3, filter_height=3, stride_x=2, stride_y=2,
-                                          padding='VALID')
-
-        # Layer 3.
-        # [Input] ==> 13x13x256
-        # --> 13x13x256 ==> [Convolution: size=(3x3x256)x384, strides=1, padding=same] ==> 13x13x384
-        # --> 13x13x384 ==> [ReLU] ==> 13x13x384
-        # --> [Output] ==> 13x13x384
-        # Note: 192*2=384, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer3'):
-            layer3_activations = self.__conv(input=layer2_pool, filter_width=3, filter_height=3, filters_count=384,
-                                             stride_x=1, stride_y=1, padding='SAME',
-                                             init_biases_with_the_constant_1=False)
-
-        # Layer 4.
-        # [Input] ==> 13x13x384
-        # --> 13x13x384 ==> [Convolution: size=(3x3x384)x384, strides=1, padding=same] ==> 13x13x384
-        # --> 13x13x384 ==> [ReLU] ==> 13x13x384
-        # --> [Output] ==> 13x13x384
-        # Note: 192*2=384, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer4'):
-            layer4_activations = self.__conv(input=layer3_activations, filter_width=3, filter_height=3,
-                                             filters_count=384, stride_x=1, stride_y=1, padding='SAME',
-                                             init_biases_with_the_constant_1=True)
-
-        # Layer 5.
-        # [Input] ==> 13x13x384
-        # --> 13x13x384 ==> [Convolution: size=(3x3x384)x256, strides=1, padding=same] ==> 13x13x256
-        # --> 13x13x256 ==> [ReLU] ==> 13x13x256
-        # --> 13x13x256 ==> [Max-Pool: size=3x3, strides=2, padding=valid] ==> 6x6x256
-        # --> [Output] ==> 6x6x256
-        # Note: 128*2=256, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer5'):
-            layer5_activations = self.__conv(input=layer4_activations, filter_width=3, filter_height=3,
-                                             filters_count=256, stride_x=1, stride_y=1, padding='SAME',
-                                             init_biases_with_the_constant_1=True)
-            layer5_pool = self.__max_pool(input=layer5_activations, filter_width=3, filter_height=3, stride_x=2,
-                                          stride_y=2, padding='VALID')
-
-        # Layer 6.
-        # [Input] ==> 6x6x256=9216
-        # --> 9216 ==> [Fully Connected: neurons=4096] ==> 4096
-        # --> 4096 ==> [ReLU] ==> 4096
-        # --> 4096 ==> [Dropout] ==> 4096
-        # --> [Output] ==> 4096
-        # Note: 2048*2=4096, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer6'):
-            pool5_shape = layer5_pool.get_shape().as_list()
-            flattened_input_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
-            layer6_fc = self.__fully_connected(input=tf.reshape(layer5_pool, shape=[-1, flattened_input_size]),
-                                               inputs_count=flattened_input_size, outputs_count=4096, relu=True,
-                                               init_biases_with_the_constant_1=True)
-            layer6_dropout = self.__dropout(input=layer6_fc)
-
-        # Layer 7.
-        # [Input] ==> 4096
-        # --> 4096 ==> [Fully Connected: neurons=4096] ==> 4096
-        # --> 4096 ==> [ReLU] ==> 4096
-        # --> 4096 ==> [Dropout] ==> 4096
-        # --> [Output] ==> 4096
-        # Note: 2048*2=4096, One GPU runs the layer-parts at the top while the other runs the layer-parts at the bottom.
-        with tf.name_scope('layer7'):
-            layer7_fc = self.__fully_connected(input=layer6_dropout, inputs_count=4096, outputs_count=4096, relu=True,
-                                               init_biases_with_the_constant_1=True)
-            layer7_dropout = self.__dropout(input=layer7_fc)
-
-        # Layer 8.
-        # [Input] ==> 4096
-        # --> 4096 ==> [Logits: neurons=1000] ==> 1000
-        # --> [Output] ==> 1000
-        with tf.name_scope('layer8'):
-            layer8_logits = self.__fully_connected(input=layer7_dropout, inputs_count=4096,
-                                                   outputs_count=self.num_classes, relu=False, name='logits')
-
-        # Cross Entropy.
-        with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=layer8_logits, labels=self.Y,
-                                                                       name='cross_entropy')
-            self.__variable_summaries(cross_entropy)
-
-        # Training.
-        with tf.name_scope('training'):
-            loss_operation = tf.reduce_mean(cross_entropy, name='loss_operation')
-            tf.summary.scalar(name='loss', tensor=loss_operation)
-
-            optimizer = tf.train.MomentumOptimizer(learning_rate=self.learning_rate, momentum=self.momentum)
-
-            # self.training_operation = optimizer.minimize(loss_operation, name='training_operation')
-
-            grads_and_vars = optimizer.compute_gradients(loss_operation)
-            self.training_operation = optimizer.apply_gradients(grads_and_vars, name='training_operation')
-
-            for grad, var in grads_and_vars:
-                if grad is not None:
-                    with tf.name_scope(var.op.name + '/gradients'):
-                        self.__variable_summaries(grad)
-
-        # Accuracy.
-        with tf.name_scope('accuracy'):
-            correct_prediction = tf.equal(tf.argmax(layer8_logits, 1), tf.argmax(self.Y, 1), name='correct_prediction')
-            self.accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy_operation')
-            tf.summary.scalar(name='accuracy', tensor=self.accuracy_operation)
-'''
-'''
-        def train_epoch(self, sess, X_data, Y_data, batch_size=128, file_writer=None, summary_operation=None,
-                    epoch_number=None):
-        # From article: We trained our models using stochastic gradient descent with a batch size of 128 examples.
-        num_examples = len(X_data)
-        step = 0
-        for offset in range(0, num_examples, batch_size):
-            end = offset + batch_size
-            batch_x, batch_y = X_data[offset:end], Y_data[offset:end]
-            if file_writer is not None and summary_operation is not None:
-                _, summary = sess.run([self.training_operation, summary_operation],
-                                      feed_dict={self.X: batch_x, self.Y: batch_y,
-                                                 self.dropout_keep_prob: self.keep_prob})
-                file_writer.add_summary(summary, epoch_number * (num_examples // batch_size + 1) + step)
-                step += 1
-            else:
-                sess.run(self.training_operation, feed_dict={self.X: batch_x, self.Y: batch_y,
-                                                             self.dropout_keep_prob: self.keep_prob})
-
-    def evaluate(self, sess, X_data, Y_data, batch_size=128):
-        num_examples = len(X_data)
-        total_accuracy = 0
-        for offset in range(0, num_examples, batch_size):
-            end = offset + batch_size
-            batch_x, batch_y = X_data[offset:end], Y_data[offset:end]
-            batch_accuracy = sess.run(self.accuracy_operation, feed_dict={self.X: batch_x, self.Y: batch_y,
-                                                                          self.dropout_keep_prob: 1.0})
-            total_accuracy += (batch_accuracy * len(batch_x))
-        return total_accuracy / num_examples
-
-    def save(self, sess, file_name):
-        saver = tf.train.Saver()
-        saver.save(sess, file_name)
-
-    def restore(self, sess, checkpoint_dir):
-        saver = tf.train.Saver()
-        saver.restore(sess, tf.train.latest_checkpoint(checkpoint_dir))
-
-    def __random_values(self, shape):
-        return tf.random_normal(shape=shape, mean=self.random_mean, stddev=self.random_stddev, dtype=tf.float32)
-
-    def __variable_summaries(self, var):
-        mean = tf.reduce_mean(var)
-        stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-        tf.summary.scalar('min', tf.reduce_min(var))
-        tf.summary.scalar('max', tf.reduce_max(var))
-        tf.summary.scalar('mean', mean)
-        tf.summary.scalar('stddev', stddev)
-        tf.summary.histogram('histogram', var)
-
-    def __conv(self, input, filter_width, filter_height, filters_count, stride_x, stride_y, padding='VALID',
-               init_biases_with_the_constant_1=False, name='conv'):
-        with tf.name_scope(name):
-            input_channels = input.get_shape()[-1].value
-            filters = tf.Variable(
-                self.__random_values(shape=[filter_height, filter_width, input_channels, filters_count]),
-                name='filters')
-            convs = tf.nn.conv2d(input=input, filter=filters, strides=[1, stride_y, stride_x, 1], padding=padding,
-                                 name='convs')
-            if init_biases_with_the_constant_1:
-                biases = tf.Variable(tf.ones(shape=[filters_count], dtype=tf.float32), name='biases')
-            else:
-                biases = tf.Variable(tf.zeros(shape=[filters_count], dtype=tf.float32), name='biases')
-            preactivations = tf.nn.bias_add(convs, biases, name='preactivations')
-            activations = tf.nn.relu(preactivations, name='activations')
-
-            with tf.name_scope('filter_summaries'):
-                self.__variable_summaries(filters)
-
-            with tf.name_scope('bias_summaries'):
-                self.__variable_summaries(biases)
-
-            with tf.name_scope('preactivations_histogram'):
-                tf.summary.histogram('preactivations', preactivations)
-
-            with tf.name_scope('activations_histogram'):
-                tf.summary.histogram('activations', activations)
-
-            return activations
-
-    def __local_response_normalization(self, input, name='lrn'):
-        # From article: Local Response Normalization: we used k=2, n=5, α=10^−4, and β=0.75.
-        with tf.name_scope(name):
-            lrn = tf.nn.local_response_normalization(input=input, depth_radius=2, alpha=10 ** -4,
-                                                     beta=0.75, name='local_response_normalization')
-            return lrn
-
-    def __max_pool(self, input, filter_width, filter_height, stride_x, stride_y, padding='VALID', name='pool'):
-        with tf.name_scope(name):
-            pool = tf.nn.max_pool(input, ksize=[1, filter_height, filter_width, 1], strides=[1, stride_y, stride_x, 1],
-                                  padding=padding, name='pool')
-            return pool
-
-    def __fully_connected(self, input, inputs_count, outputs_count, relu=True, init_biases_with_the_constant_1=False,
-                          name='fully_connected'):
-        with tf.name_scope(name):
-            wights = tf.Variable(self.__random_values(shape=[inputs_count, outputs_count]), name='wights')
-            if init_biases_with_the_constant_1:
-                biases = tf.Variable(tf.ones(shape=[outputs_count], dtype=tf.float32), name='biases')
-            else:
-                biases = tf.Variable(tf.zeros(shape=[outputs_count], dtype=tf.float32), name='biases')
-            preactivations = tf.nn.bias_add(tf.matmul(input, wights), biases, name='preactivations')
-            if relu:
-                activations = tf.nn.relu(preactivations, name='activations')
-
-            with tf.name_scope('wight_summaries'):
-                self.__variable_summaries(wights)
-
-            with tf.name_scope('bias_summaries'):
-                self.__variable_summaries(biases)
-
-            with tf.name_scope('preactivations_histogram'):
-                tf.summary.histogram('preactivations', preactivations)
-
-            if relu:
-                with tf.name_scope('activations_histogram'):
-                    tf.summary.histogram('activations', activations)
-
-            if relu:
-                return activations
-            else:
-                return preactivations
-
-    def __dropout(self, input, name='dropout'):
-        with tf.name_scope(name):
-            return tf.nn.dropout(input, keep_prob=self.dropout_keep_prob, name='dropout') 
-'''
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file, clip_gradients=0.)
+        conv_arr = [conv_1]
+        return model, conv_arr
