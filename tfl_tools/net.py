@@ -842,13 +842,12 @@ class Net:
         net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
                              data_preprocessing=self.__preprocessing(),
                              data_augmentation=self.__data_augmentation(), name='input')
-
         net = tflearn.conv_2d(net, 16, 3, regularizer='L2', weight_decay=0.0001, name='conv_1')
         conv_1 = net
         net = tflearn.resnext_block(net, n, 16, 32)
-        net = tflearn.resnext_block(net, 1, 32, 32, downsample=True)
+        net = tflearn.resnext_block(net, 1, 32, 32, downsample=True, downsample_strides=1)
         net = tflearn.resnext_block(net, n - 1, 32, 32)
-        net = tflearn.resnext_block(net, 1, 64, 32, downsample=True)
+        net = tflearn.resnext_block(net, 1, 64, 32, downsample=True, downsample_strides=1)
         net = tflearn.resnext_block(net, n - 1, 64, 32)
         net = tflearn.batch_normalization(net)
         net = tflearn.activation(net, 'relu')
@@ -860,6 +859,8 @@ class Net:
                                  loss='categorical_crossentropy')
 
         # Wrap the network in a model object
-        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file, clip_gradients=0.)
+        model = tflearn.DNN(net, tensorboard_verbose=3,
+                            checkpoint_path=self.check_point_file,
+                            clip_gradients=0.)
         conv_arr = [conv_1]
         return model, conv_arr

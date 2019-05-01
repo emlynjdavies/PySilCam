@@ -10,14 +10,14 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
-#DATABASE_PATH = '/mnt/DATA/dataset'
-#MODEL_PATH = '/mnt/DATA/model/modelResNeXt'
+# DATABASE_PATH = 'Z:/DATA/dataset_test'
+# MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = '/mnt/DATA/dataset'
+MODEL_PATH = '/mnt/DATA/model/modelResNeXt'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvResNeXt.out')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-#set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+#set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
 # -----------------------------
 
