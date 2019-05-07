@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
+import tflearn
 from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
@@ -10,16 +11,16 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-#DATABASE_PATH = 'Z:/DATA/dataset_test'
-#MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
+DATABASE_PATH = 'Z:/DATA/dataset_test'
+MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+#MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvAlexNet.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-#set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+#set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
 # -----------------------------
 
@@ -33,8 +34,8 @@ learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -
 momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
 
-n_epoch = 50  # 50
-batch_size = 128 # 128
+n_epoch = 3  # 50
+batch_size = 2 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels), mode='file', categorical_labels=True, normalize=True)
@@ -59,6 +60,9 @@ print(name)
 for trainX, trainY, testX, testY in data_set.gen():
 
     tf.reset_default_graph()
+    with tf.Graph().as_default(), tf.Session() as sess:
+        sess.run(tf.initialize_all_variables())
+        tflearn.config.init_training_mode()
     i = i + 1
     round_num = str(i)
     if i < 10:

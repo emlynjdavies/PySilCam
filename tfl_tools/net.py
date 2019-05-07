@@ -277,6 +277,8 @@ class Net:
         conv_1 = net
         # 2: Max pooling layer
         print('  2: Max pooling')
+        # kernel size, stride, padding
+
         net = max_pool_2d(net, 2, 2)
 
         # Layer 2:
