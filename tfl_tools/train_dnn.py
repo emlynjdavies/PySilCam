@@ -10,13 +10,13 @@ from net import Net
 # -- PATHS ---------------------------
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelORGNET'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'OrgNetDNNGPU.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'OrgNetDNNGPUSmall.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
 IMXY = 32
@@ -50,7 +50,7 @@ tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
 
-model_file = os.path.join(MODEL_PATH, name +'GPU/plankton-classifier.tfl')
+model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = LeNet.build_model(model_file)
 
 # Training
