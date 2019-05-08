@@ -1,4 +1,6 @@
 from sklearn import model_selection
+from sklearn.model_selection import train_test_split
+import numpy as np
 
 '''
 Generate the data for cross validation
@@ -16,6 +18,25 @@ class MakeData:
         self.X_data = X_data
         self.Y_data = Y_data
         self.n_splits = n_splits
+
+    def makeXY(self, split_percent = 0.05):
+        '''
+        Split data into training and test datasets
+        :param split_percent: # split the train and test data
+                              #  i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
+        '''
+        X_train, X_test, Y_train, Y_test = train_test_split(self.X_data, self.Y_data,
+                                                            test_size = split_percent,
+                                                            random_state = 42
+                                                            ) # stratify=self.Y_data,
+        print('Size of the training set ', len(X_train))
+        print('Size of the output training set ', len(Y_train))
+        print('Size of the test set ', len(X_test))
+        print('Size of the output test set ', len(Y_test))
+        print(np.unique(Y_train))
+        print(np.unique(Y_test))
+
+        return X_train, X_test, Y_train, Y_test
 
 
     def gen(self):
