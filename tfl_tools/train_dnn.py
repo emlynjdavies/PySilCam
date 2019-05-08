@@ -40,7 +40,7 @@ n_epoch = 50  # 50
 batch_size = 128 # 128
 
 print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
+X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels), mode='file', categorical_labels=True, normalize=True)
 n_splits = 0
 data_set = MakeData(X, Y, n_splits)
 
