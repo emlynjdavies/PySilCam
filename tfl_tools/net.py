@@ -179,6 +179,8 @@ class Net:
             return self.__build_ResNet()
         elif self.name == 'ResNeXt':
             return self.__build_ResNeXt()
+        elif self.name == 'PlanktonNet':
+            return self.__build_PlanktonNet()
 
     def __build_OrgNet(self):
         '''
@@ -438,6 +440,68 @@ class Net:
         model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
 
         conv_arr = [conv_1, conv_2, conv_3]
+        return model, conv_arr
+
+
+    def __build_PlanktonNet(self):
+        '''
+        Build the model
+        PlanktonNet - ZooplanktonNet: (Dai et al. 2016) achieve 93.7% accuracy
+        Architecture:
+            - For the 1st 3 conv layer bet 13x13, 11x11, 7x7 and 5x5 -->
+            11x11 in the 1st and 7x7 in the second layer was the winner
+            - Number of conv 256,384 and 512 capture features
+            from more dimensions so the higher the better (512 was the winner)
+        :return: The model and and convolution array
+        '''
+        print("Building PlanktonNet")
+        print(self.name)
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+        # Define the network architecture
+        print("Define the network architecture...")
+        #network = input_data(shape=[None, 227, 227, 3])
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        net = conv_2d(net, 96, 13, strides=4, activation='relu', name='conv_1')
+        conv_1 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = conv_2d(net, 256, 7, activation='relu', name='conv_2')
+        conv_2 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_3')
+        conv_3 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_4')
+        conv_4 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_5')
+        conv_5 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_3')
+        conv_3 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_4')
+        conv_4 = net
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_5')
+        conv_5 = net
+        net = max_pool_2d(net, 3, strides=2)
+        net = local_response_normalization(net)
+        net = fully_connected(net, 4096, activation='tanh')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, 4096, activation='tanh')
+        net = dropout(net, self.keep_prob)
+        net = fully_connected(net, self.num_classes + 1, activation='softmax')
+        net = regression(net, optimizer='momentum',
+                             loss='categorical_crossentropy',
+                             learning_rate=self.learning_rate, name='target')
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5]
         return model, conv_arr
 
     def __build_AlexNet(self):
