@@ -12,10 +12,10 @@ from net import Net
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelLeNet'
+MODEL_PATH = '/mnt/DATA/model/modelMINST'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'LeNetDNNGPUSMALL.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'MINSTDNNGPUSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -23,7 +23,7 @@ set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that conta
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-name='LeNet'
+name='MINST'
 input_width=32 # input_width=224
 input_height=32 # input_height=224
 input_channels=3
@@ -32,7 +32,7 @@ num_classes=7
 learning_rate=0.01 # 0.01 for LeNet -- 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet
 momentum=0.9
-keep_prob=0.8  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
+keep_prob=0.8  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.8 for MINST -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
 
 n_epoch = 50  # 50
