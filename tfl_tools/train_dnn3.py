@@ -12,10 +12,10 @@ from net import Net
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 # DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelPlanktonNet'
+MODEL_PATH = '/mnt/DATA/model/modelPlankNet'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'PlanktonGPUSMALL.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'PlankNetSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -23,7 +23,7 @@ set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that conta
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-name='PlanktonNet'
+name='PlankNet'
 input_width=227 # input_width=32
 input_height=227 # input_height=32
 input_channels=3

@@ -179,7 +179,7 @@ class Net:
             return self.__build_ResNet()
         elif self.name == 'ResNeXt':
             return self.__build_ResNeXt()
-        elif self.name == 'PlanktonNet':
+        elif self.name == 'PlankNet':
             return self.__build_PlanktonNet()
 
     def __build_OrgNet(self):
@@ -443,7 +443,7 @@ class Net:
         return model, conv_arr
 
 
-    def __build_PlanktonNet(self):
+    def __build_PlankNet(self):
         '''
         Build the model
         PlanktonNet - ZooplanktonNet: (Dai et al. 2016) achieve 93.7% accuracy
