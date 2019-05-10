@@ -180,7 +180,7 @@ class Net:
         elif self.name == 'ResNeXt':
             return self.__build_ResNeXt()
         elif self.name == 'PlankNet':
-            return self.__build_PlanktonNet()
+            return self.__build_PlanktNet()
 
     def __build_OrgNet(self):
         '''
