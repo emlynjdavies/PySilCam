@@ -12,7 +12,7 @@ from net import Net
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 # DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelRestNet'
+MODEL_PATH = '/mnt/DATA/model/modelResNet'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
 LOG_FILE = os.path.join(MODEL_PATH, 'RestNetDNNGPU.log')
