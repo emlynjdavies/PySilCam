@@ -24,8 +24,8 @@ set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that conta
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
 name='PlanktonNet'
-input_width=224 # input_width=32
-input_height=224 # input_height=32
+input_width=227 # input_width=32
+input_height=227 # input_height=32
 input_channels=3
 num_classes=7
 
