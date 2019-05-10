@@ -180,7 +180,7 @@ class Net:
         elif self.name == 'ResNeXt':
             return self.__build_ResNeXt()
         elif self.name == 'PlankNet':
-            return self.__build_PlanktNet()
+            return self.__build_PlankNet()
 
     def __build_OrgNet(self):
         '''
@@ -470,7 +470,7 @@ class Net:
         conv_1 = net
         net = max_pool_2d(net, 3, strides=2)
         net = local_response_normalization(net)
-        net = conv_2d(net, 256, 7, activation='relu', name='conv_2')
+        net = conv_2d(net, 256, 7, padding=3, activation='relu', name='conv_2')
         conv_2 = net
         net = max_pool_2d(net, 3, strides=2)
         net = local_response_normalization(net)
