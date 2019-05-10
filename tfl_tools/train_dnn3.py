@@ -29,8 +29,8 @@ input_height=227 # input_height=32
 input_channels=3
 num_classes=7
 
-learning_rate=0.0001 # 0.01 for LeNet -- 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
-                        # 0.0001 for VGGNet
+learning_rate=0.001 # 0.01 for LeNet -- 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+                        # 0.0001 for VGGNet -- 0.001 for PlankNet
 momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.8 for MINST -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
