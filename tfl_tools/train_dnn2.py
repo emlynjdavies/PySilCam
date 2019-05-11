@@ -10,8 +10,8 @@ from net import Net
 # -- PATHS ---------------------------
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-# DATABASE_PATH = '/mnt/DATA/dataset'
+# DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/dataset'
 MODEL_PATH = '/mnt/DATA/model/modelResNet'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
@@ -53,7 +53,7 @@ tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
 
-model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
+model_file = os.path.join(MODEL_PATH, name +'GPU/plankton-classifier.tfl')
 model, conv_arr = LeNet.build_model(model_file)
 
 # Training
