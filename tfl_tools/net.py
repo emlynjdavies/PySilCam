@@ -181,6 +181,8 @@ class Net:
             return self.__build_ResNeXt()
         elif self.name == 'PlankNet':
             return self.__build_PlankNet()
+        elif self.name == 'CoapNet':
+            return self.__build_CoapNet()
 
     def __build_OrgNet(self):
         '''
@@ -250,6 +252,71 @@ class Net:
         model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
 
         conv_arr = [conv_1, conv_2, conv_3, conv_4, conv_5, conv_6]
+        return model, conv_arr
+
+    def __build_CoapNet(self):
+        '''
+        Build the model based on LeCun proposed architecture
+        :return: The model and and convolution array
+        '''
+        print("Building" + self.name + " model ...")
+        # This resets all parameters and variables, leave this here
+        tf.reset_default_graph()
+        # Include the input layer, hidden layer(s), and set how you want to train the model
+        inputsize = self.input_width * self.input_height * self.input_channels
+        print("Inputlayer-size: %d" % (inputsize))
+
+        # Define the network architecture
+        print("Define the network architecture...")
+        net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                         data_preprocessing=self.__preprocessing(),
+                         data_augmentation=self.__data_augmentation(), name='input')
+        # Layer 1
+        print('Layer 1: Convolution layer with 64 filters, each 3x3x3')
+        # 1: Convolution layer with 64 filters, each 3x3x3
+        # incoming, number of filters, filter size, strides, padding, activation, bias, weigths_init, bias_init,
+        # regularizer, weight_decay
+        net = conv_2d (net, 64, 3, activation='relu', name='conv_1')
+        conv_1 = net
+        # 2: Max pooling layer
+        print('  2: Max pooling')
+        net = max_pool_2d(net, 2)
+
+        # Layer 2
+        print('Layer 2: Convolution layer with 128 filters, each 3x3x3')
+        # 2: Convolution layer with 128 filters, each 3x3x3
+        net = conv_2d(net, 128, 3, activation='relu', name='conv_2')
+        conv_2 = net
+        net = max_pool_2d(net, 2)
+
+        # Layer 3
+        print('Layer 3: Convolution layer with 256 filters, each 3x3x3')
+        # 3: Convolution layer with 256 filters, each 3x3x3
+        net = conv_2d(net, 256, 3, activation='relu', name='conv_3')
+        conv_3 = net
+        net = max_pool_2d(net, 2)
+
+        # Layer 3
+        print('Layer 3: Convolution layer with 256 filters, each 3x3x3')
+        # 4: Convolution layer with 512 filters, each 3x3x3
+        net = conv_2d(net, 512, 3, activation='relu', name='conv_4')
+        conv_4 = net
+        net = max_pool_2d(net, 2)
+
+        net = fully_connected(net, 512, activation='relu')
+        net = fully_connected(net, 256, activation='relu')
+        net = fully_connected(net, 256, activation='relu')
+
+        net = fully_connected(net, self.num_classes+1, activation='softmax')
+
+
+        net = regression(net, optimizer='adam', learning_rate=self.learning_rate,
+                             loss='categorical_crossentropy', name='target')
+
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4]
         return model, conv_arr
 
     def __build_LeNet(self):
