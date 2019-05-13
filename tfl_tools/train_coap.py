@@ -48,7 +48,6 @@ LeNet = Net(name, input_width, input_height, input_channels, num_classes, learni
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
-
 tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
