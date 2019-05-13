@@ -10,12 +10,12 @@ from net import Net
 # -- PATHS ---------------------------
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
-# DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelResNet'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+MODEL_PATH = '/mnt/DATA/model/modelResNeXt'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'RestNetDNNGPU.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'ResNeXtDNNGPUSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -23,7 +23,7 @@ set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that conta
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-name='ResNet'
+name='ResNeXt'
 input_width=32
 input_height=32
 input_channels=3
@@ -53,7 +53,7 @@ tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
 
-model_file = os.path.join(MODEL_PATH, name +'GPU/plankton-classifier.tfl')
+model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = LeNet.build_model(model_file)
 
 # Training
