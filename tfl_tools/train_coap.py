@@ -53,7 +53,7 @@ tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
 
-model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
+model_file = os.path.join(MODEL_PATH, name +'GPU/plankton-classifier.tfl')
 model, conv_arr = LeNet.build_model(model_file)
 
 # Training
