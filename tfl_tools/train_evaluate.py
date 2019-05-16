@@ -11,8 +11,8 @@ from net import Net
 # DATABASE_PATH = 'Z:/DATA/dataset_test'
 # MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelORGNET2'
-LOG_FILE = os.path.join(MODEL_PATH, 'cvORGNET.out')
+MODEL_PATH = '/mnt/DATA/model/modelCOAPNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'cvCOAPNET.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
@@ -22,9 +22,9 @@ set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains
 IMXY = 32
 # -----------------------------
 
-name='OrgNet'
-input_width=32
-input_height=32
+name='COAPNet'
+input_width=64
+input_height=64
 input_channels=3
 num_classes=7
 
