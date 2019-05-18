@@ -36,7 +36,9 @@ n_epoch = 50  # 50
 batch_size = 128 # 128
 
 print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(IMXY, IMXY, 3), mode='file', categorical_labels=True, normalize=True)
+X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
+                       mode='file', categorical_labels=True, normalize=True)
+
 n_splits = 10
 data_set = MakeData(X, Y, n_splits)
 
@@ -49,9 +51,11 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-LeNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
+fh.write(name)
+print(name)
 for trainX, trainY, testX, testY in data_set.gen():
 
     tf.reset_default_graph()
@@ -64,11 +68,11 @@ for trainX, trainY, testX, testY in data_set.gen():
     print("testY: ", testY)
 
     model_file = os.path.join(MODEL_PATH, 'round' + round_num + '/plankton-classifier.tfl')
-    model, conv_arr = LeNet.build_model(model_file)
+    model, conv_arr = myNet.build_model(model_file)
 
     # Training
     print("start training round %f ...", i)
-    LeNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+    myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
     # Save
     print("Saving model %f ..." % i)
@@ -76,7 +80,7 @@ for trainX, trainY, testX, testY in data_set.gen():
 
     # Evaluate
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        LeNet.evaluate(model, testX, testY)
+        myNet.evaluate(model, testX, testY)
 
     ## update summaries ###
     prediction.append(y_pred)
