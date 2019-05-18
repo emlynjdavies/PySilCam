@@ -159,6 +159,7 @@ class Net:
         :param model_file: the model file
         :return: The model and and convolution array
         '''
+        print(self.name)
         self.model_file = model_file
         print(self.model_file)
         if self.name == 'OrgNet':
@@ -182,6 +183,7 @@ class Net:
         elif self.name == 'PlankNet':
             return self.__build_PlankNet()
         elif self.name == 'CoapNet':
+            print(self.name)
             return self.__build_CoapNet()
 
     def __build_OrgNet(self):
