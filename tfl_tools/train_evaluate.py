@@ -8,10 +8,10 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-# DATABASE_PATH = 'Z:/DATA/dataset_test'
-# MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelCOAPNet'
+DATABASE_PATH = 'Z:/DATA/dataset_test'
+MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+#MODEL_PATH = '/mnt/DATA/model/modelCOAPNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvCOAPNET.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
@@ -32,8 +32,8 @@ learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -
 momentum=0.9
 keep_prob=0.75  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10
 
-n_epoch = 50  # 50
-batch_size = 128 # 128
+n_epoch = 3  # 50
+batch_size = 2 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
