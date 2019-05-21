@@ -8,10 +8,10 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
-#DATABASE_PATH = '/mnt/DATA/dataset'
-#MODEL_PATH = '/mnt/DATA/model/modelCOAPNet'
+# DATABASE_PATH = 'Z:/DATA/dataset_test'
+# MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = '/mnt/DATA/dataset'
+MODEL_PATH = '/mnt/DATA/model/modelCOAPNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvCOAPNET.out')
 # DATABASE_PATH = '/mnt/DATA/dataset'
 # MODEL_PATH = '/mnt/DATA/model/modelCV'
@@ -19,10 +19,10 @@ HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header fi
 set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
-IMXY = 32
+
 # -----------------------------
 
-name='COAPNet'
+name='CoapNet'
 input_width=64
 input_height=64
 input_channels=3
@@ -32,8 +32,8 @@ learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -
 momentum=0.9
 keep_prob=0.75  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10
 
-n_epoch = 3  # 50
-batch_size = 2 # 128
+n_epoch = 50  # 50
+batch_size = 128 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
@@ -93,7 +93,7 @@ for trainX, trainY, testX, testY in data_set.gen():
     normalised_confusion_matrix.append(norm_conf_matrix)
 
 
-for i in range(0, 10):
+for i in range(0, n_splits):
     fh.write("\nRound ")
     if i < 10:
         j = '0' + str(i)
@@ -137,11 +137,11 @@ fh.write("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
 fh.write("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
 
 print('Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(confusion_matrix[i])
 
 print('Normalized_Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
 
 fh.close

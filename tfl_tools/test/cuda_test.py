@@ -1,3 +1,4 @@
+# created a cudatest environment on GPU for testing
 from numba import cuda
 import numpy
 
