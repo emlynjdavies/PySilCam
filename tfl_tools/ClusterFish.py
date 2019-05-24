@@ -20,7 +20,7 @@ import skimage.exposure
 
 
 # directory = '../EGGTOX/2017-04-23-27 - EGGTOX larvae 3 dph/'
-directory = 'Z:/DATA/unclustered_test/'
+directory = '/mnt/DATA/unclustered_test/'
 #TSNE_NAME = '/2017-04-23-27 - EGGTOX larvae 3 dph-test'
 TSNE_NAME = 'testtsne'
 
@@ -127,6 +127,6 @@ for i in range(2):
     matplotlib.pyplot.figure(figsize = (16,12))
     imshow(full_image)
     
-    full_image.save('../' + TSNE_NAME + '-' + str(i) + '-tsne.tiff')
+    full_image.save(directory +'tsne/' + TSNE_NAME + '-' + str(i) + '-tsne.tiff')
     
 print('----THE END ----')
