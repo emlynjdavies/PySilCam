@@ -1,55 +1,45 @@
-# created a cudatest environment on GPU for testing
+from __future__ import division
 from numba import cuda
 import numpy
 import math
 
+
+# CUDA kernel
 @cuda.jit
-def my_kernel(io_array):
+def matmul(A, B, C):
+    """Perform matrix multiplication of C = A * B
     """
-    Code for kernel.
-    """
-    # Thread id in a 1D block
-    tx = cuda.threadIdx.x
-    # Block id in a 1D grid
-    ty = cuda.blockIdx.x
-    # Block width, i.e. number of threads per block
-    bw = cuda.blockDim.x
-    # Compute flattened index inside the array
-    pos = tx + ty * bw
-    if pos < io_array.size:  # Check array boundaries
-        io_array[pos] *= 2  # do the computation
+    row, col = cuda.grid(2)
+    if row < C.shape[0] and col < C.shape[1]:
+        tmp = 0.
+        for k in range(A.shape[1]):
+            tmp += A[row, k] * B[k, col]
+        C[row, col] = tmp
 
-def my_kernel_2D(io_array):
-    x, y = cuda.grid(2)
-    ### YOUR SOLUTION HERE
-    #tx = cuda.threadIdx.x
-    #ty = cuda.threadIdx.y
-    #bwx = cuda.blockDim.x
-    #bwy = cuda.blockDim.y
-    #if x < io_array.shape[0] and y < io_array.shape[1]:
-    io_array[x,y] *= 2  # do the computation
 
-print(cuda.gpus)
+# Host code
 
-# Create the data array - usually initialized some other way
-data = numpy.ones(256)
+# Initialize the data arrays
+A = numpy.full((24, 12), 3, numpy.float)  # matrix containing all 3's
+B = numpy.full((12, 22), 4, numpy.float)  # matrix containing all 4's
 
-# Set the number of threads in a block
-threadsperblock = 32
+# Copy the arrays to the device
+A_global_mem = cuda.to_device(A)
+B_global_mem = cuda.to_device(B)
 
-# Calculate the number of thread blocks in the grid
-blockspergrid = (data.size + (threadsperblock - 1)) // threadsperblock
+# Allocate memory on the device for the result
+C_global_mem = cuda.device_array((24, 22))
 
-# Now start the kernel
-my_kernel[blockspergrid, threadsperblock](data)
+# Configure the blocks
+threadsperblock = (16, 16)
+blockspergrid_x = int(math.ceil(A.shape[0] / threadsperblock[0]))
+blockspergrid_y = int(math.ceil(B.shape[1] / threadsperblock[1]))
+blockspergrid = (blockspergrid_x, blockspergrid_y)
 
-# Print the result
-print(data)
-print('###################################')
-data2 = numpy.ones((16, 16))
-threadsperblock2 = (16, 16)
-blockspergrid_x = math.ceil(data2.shape[0] / threadsperblock2[0])
-blockspergrid_y = math.ceil(data2.shape[1] / threadsperblock2[1])
-blockspergrid2 = (blockspergrid_x, blockspergrid_y)
-my_kernel_2D[blockspergrid2, threadsperblock2](data2)
-print(data2)
+# Start the kernel 
+matmul[blockspergrid, threadsperblock](A_global_mem, B_global_mem, C_global_mem)
+
+# Copy the result back to the host
+C = C_global_mem.copy_to_host()
+
+print(C)
