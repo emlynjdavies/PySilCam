@@ -23,7 +23,7 @@ def my_kernel_2D(io_array):
     x, y = cuda.grid(2)
     ### YOUR SOLUTION HERE
     tx = cuda.threadIdx.x
-    ty = cuda.blockIdx.y
+    ty = cuda.threadIdx.y
     #bwx = cuda.blockDim.x
     #bwy = cuda.blockDim.y
     io_array[tx,ty] *= 2  # do the computation
@@ -50,5 +50,5 @@ threadsperblock2 = (16, 16)
 blockspergrid_x = math.ceil(data2.shape[0] / threadsperblock2[0])
 blockspergrid_y = math.ceil(data2.shape[1] / threadsperblock2[1])
 blockspergrid2 = (blockspergrid_x, blockspergrid_y)
-#my_kernel_2D[blockspergrid2, threadsperblock2](data2)
+my_kernel_2D[blockspergrid2, threadsperblock2](data2)
 print(data2)
