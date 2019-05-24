@@ -63,6 +63,7 @@ def image2blackwhite_accurate(imc, greythresh):
     img_adapteq = skimage.exposure.equalize_adapthist(img,
             clip_limit=(1-greythresh),
             nbins=256)
+
     plt.imshow(img_adapteq)
     plt.title("equalize adapthist")
     plt.show()

@@ -7,7 +7,16 @@ def my_kernel(io_array):
     """
     Code for kernel.
     """
-    # code here
+    # Thread id in a 1D block
+    tx = cuda.threadIdx.x
+    # Block id in a 1D grid
+    ty = cuda.blockIdx.x
+    # Block width, i.e. number of threads per block
+    bw = cuda.blockDim.x
+    # Compute flattened index inside the array
+    pos = tx + ty * bw
+    if pos < io_array.size:  # Check array boundaries
+        io_array[pos] *= 2  # do the computation
 
 print(cuda.gpus)
 
