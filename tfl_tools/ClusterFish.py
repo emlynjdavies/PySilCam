@@ -20,7 +20,7 @@ import skimage.exposure
 
 
 # directory = '../EGGTOX/2017-04-23-27 - EGGTOX larvae 3 dph/'
-directory = '/mnt/DATA/unclustered_test/'
+directory = '/mnt/DATA/db1all/'
 #TSNE_NAME = '/2017-04-23-27 - EGGTOX larvae 3 dph-test'
 TSNE_NAME = 'testtsne'
 
