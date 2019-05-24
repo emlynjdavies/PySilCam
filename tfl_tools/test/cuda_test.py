@@ -22,12 +22,12 @@ def my_kernel(io_array):
 def my_kernel_2D(io_array):
     x, y = cuda.grid(2)
     ### YOUR SOLUTION HERE
-    tx = cuda.threadIdx.x
-    ty = cuda.threadIdx.y
+    #tx = cuda.threadIdx.x
+    #ty = cuda.threadIdx.y
     #bwx = cuda.blockDim.x
     #bwy = cuda.blockDim.y
-    if tx < io_array.shape[0] and ty < io_array.shape[1]:
-        io_array[tx,ty] *= 2  # do the computation
+    if x < io_array.shape[0] and y < io_array.shape[1]:
+        io_array[x,y] *= 2  # do the computation
 
 print(cuda.gpus)
 
