@@ -24,8 +24,8 @@ def my_kernel_2D(io_array):
     ### YOUR SOLUTION HERE
     tx = cuda.threadIdx.x
     ty = cuda.blockIdx.y
-    bwx = cuda.blockDim.x
-    bwy = cuda.blockDim.y
+    #bwx = cuda.blockDim.x
+    #bwy = cuda.blockDim.y
     io_array[tx,ty] *= 2  # do the computation
 
 print(cuda.gpus)
@@ -45,10 +45,10 @@ my_kernel[blockspergrid, threadsperblock](data)
 # Print the result
 print(data)
 print('###################################')
-data = numpy.ones((16, 16))
+data2 = numpy.ones((16, 16))
 threadsperblock = (16, 16)
 blockspergrid_x = math.ceil(data.shape[0] / threadsperblock[0])
 blockspergrid_y = math.ceil(data.shape[1] / threadsperblock[1])
 blockspergrid = (blockspergrid_x, blockspergrid_y)
-my_kernel_2D[blockspergrid, threadsperblock](data)
+my_kernel_2D[blockspergrid, threadsperblock](data2)
 print(data)
