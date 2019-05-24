@@ -10,15 +10,15 @@ from net import Net
 
 
 # -- PATHS ---------------------------
-#DATABASE_PATH = 'Z:/DATA/dataset_test'
-#MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelVGGNet'
+DATABASE_PATH = 'Z:/DATA/dataset_test'
+MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+#MODEL_PATH = '/mnt/DATA/model/modelVGGNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
 
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-# set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 
 IMXY = 32
 # -----------------------------
@@ -35,8 +35,8 @@ momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
 
-n_epoch = 50  # 50
-batch_size = 128 # 128
+n_epoch = 2  # 50
+batch_size = 3 # 128
 
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
