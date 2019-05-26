@@ -1,9 +1,11 @@
 import os
 import tensorflow as tf
+import h5py
 from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
+from tflearn.data_utils import build_hdf5_image_dataset
 
 
 
@@ -20,7 +22,7 @@ LOG_FILE = os.path.join(MODEL_PATH, 'VGGDNet.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 #set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-
+out_hd5 = os.path.join(MODEL_PATH,"dataset.h5")
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
@@ -36,12 +38,19 @@ momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
 
-n_epoch = 2  # 50
-batch_size = 3 # 128
+n_epoch = 50  # 50
+batch_size = 128 # 128
 
-print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
-                       mode='file', categorical_labels=True, normalize=True)
+#print('Call image_preloader ....')
+#X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
+#                       mode='file', categorical_labels=True, normalize=True)
+print('Call build hdf5 image dataset ....')
+build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
+                         mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
+h5f = h5py.File(out_hd5, 'r')
+X = h5f['X']
+Y = h5f['Y']
+
 n_splits = 0
 data_set = MakeData(X, Y, n_splits)
 

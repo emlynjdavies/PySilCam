@@ -1,10 +1,13 @@
 import os
 import numpy as np
+import h5py
 import tensorflow as tf
 from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
+from tflearn.data_utils import build_hdf5_image_dataset
+
 
 
 
@@ -17,9 +20,9 @@ MODEL_PATH = 'Z:/DATA/model/modelCV2'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
 
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+#set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-
+out_hd5 = os.path.join(MODEL_PATH,"dataset.h5")
 IMXY = 32
 # -----------------------------
 
@@ -38,11 +41,19 @@ keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for 
 n_epoch = 2  # 50
 batch_size = 3 # 128
 
-print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
-                       mode='file', categorical_labels=True, normalize=True)
+# print()
+build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
+                         mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
+h5f = h5py.File(out_hd5, 'r')
+X = h5f['X']
+Y = h5f['Y']
 
-n_splits = 10
+
+# print('Call image_preloader ....')
+#X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
+#                       mode='file', categorical_labels=True, normalize=True)
+
+n_splits = 2
 
 data_set = MakeData(X, Y, n_splits)
 
