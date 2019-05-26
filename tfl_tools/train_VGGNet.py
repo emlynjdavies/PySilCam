@@ -48,8 +48,8 @@ print('Call build hdf5 image dataset ....')
 build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
                          mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
 h5f = h5py.File(out_hd5, 'r')
-X = h5f['X']
-Y = h5f['Y']
+X = h5f['X'].value
+Y = h5f['Y'].value
 
 n_splits = 0
 data_set = MakeData(X, Y, n_splits)

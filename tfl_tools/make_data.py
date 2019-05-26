@@ -19,6 +19,39 @@ class MakeData:
         self.Y_data = Y_data
         self.n_splits = n_splits
 
+    def makeXYhdf5(self, split_percent = 0.05):
+        '''
+        Split data into training and test datasets
+        :param split_percent: # split the train and test data
+                              #  i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
+
+        X_train, X_test, Y_train, Y_test = train_test_split(self.X_data, self.Y_data,
+                                                            test_size = split_percent,
+                                                            random_state = 42
+                                                            ) # stratify=self.Y_data,
+        print('Size of the training set ', X_train.shape)
+        print('Size of the output training set ', Y_train.shape)
+        print('Size of the test set ', X_test.shape)
+        print('Size of the output test set ', Y_test)
+        '''
+        #print('Size of the training set ', self.X_data.shape)
+        #print('Size of the training set ', self.Y_data.shape)
+        X_train, X_test, Y_train, Y_test = train_test_split(self.X_data, self.Y_data,
+                                                            test_size=split_percent,
+                                                            random_state=42
+                                                            )  # stratify=self.Y_data,
+
+        #print(np.unique(Y_train))
+        #print(np.unique(Y_test))
+        print('Size of the training set ', len(X_train))
+        print('Size of the output training set ', len(Y_train))
+        print('Size of the test set ', len(X_test))
+        print('Size of the output test set ', len(Y_test))
+        print(np.unique(Y_train))
+        print(np.unique(Y_test))
+
+        return X_train, X_test, Y_train, Y_test
+
     def makeXY(self, split_percent = 0.05):
         '''
         Split data into training and test datasets
