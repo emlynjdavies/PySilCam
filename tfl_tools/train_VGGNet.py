@@ -53,17 +53,32 @@ batch_size = 128 # 128
 
 n_splits = 0
 data_set = MakeData(n_splits= n_splits)
+'''
 data_set.create_hdf5(set_file, DATABASE_PATH,
                     input_width = input_width, input_height = input_height, input_channels = 3,
                     split_percent =0.05, win = '')
 '''
+win = '' # ''_win' when operating on windows environment
+out_test_hd5 = os.path.join(DATABASE_PATH, 'image_set_test' + str(input_width) + win + ".h5")
+out_train_hd5 = os.path.join(DATABASE_PATH, 'image_set_train' + str(input_width) + win + ".h5")
+train_h5f = h5py.File(out_train_hd5, 'r')
+test_h5f = h5py.File(out_test_hd5, 'r')
+trainX = train_h5f['X']
+trainY = train_h5f['Y']
+testX = test_h5f['X']
+testY = test_h5f['Y']
+
+print(train_h5f['X'].shape)
+print(train_h5f['Y'].shape)
+print(test_h5f['X'].shape)
+print(test_h5f['Y'].shape)
+
+
 myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
-trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
+# trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
 tf.reset_default_graph()
-print("trainY: ", trainY)
-print("testY: ", testY)
 
 model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
@@ -100,4 +115,3 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
-'''
