@@ -44,7 +44,7 @@ batch_size = 128 # 128
 # print()
 n_splits = 10
 
-data_set = MakeData(n_splits)
+data_set = MakeData(n_splits=n_splits)
 data_set.create_CV_hdf5(set_file, DATABASE_PATH,
                     input_width = input_width, input_height = input_height, input_channels = 3,
                     win = '')
