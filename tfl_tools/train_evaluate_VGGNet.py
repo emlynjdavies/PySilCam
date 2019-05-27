@@ -40,7 +40,7 @@ n_epoch = 50  # 50
 batch_size = 128 # 128
 
 # print()
-n_splits = 3
+n_splits = 10
 win = '' # ''_win' when operating on windows environment
 
 data_set = MakeData(n_splits=n_splits)
