@@ -17,11 +17,11 @@ DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 # DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
-#MODEL_PATH = 'Z:/DATA/model/modelVGGNET'
+# MODEL_PATH = 'Z:/DATA/model/modelVGGNET'
 LOG_FILE = os.path.join(MODEL_PATH, 'VGGDNetGPUSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-#set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+# set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 out_hd5 = os.path.join(MODEL_PATH,"datasetsmall.h5")
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
@@ -44,16 +44,19 @@ batch_size = 128 # 128
 #print('Call image_preloader ....')
 #X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
 #                       mode='file', categorical_labels=True, normalize=True)
-print('Call build hdf5 image dataset ....')
-build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
-                         mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
-h5f = h5py.File(out_hd5, 'r')
-X = h5f['X'].value
-Y = h5f['Y'].value
+#print('Call build hdf5 image dataset ....')
+#build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
+#                         mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
+#h5f = h5py.File(out_hd5, 'r')
+#X = h5f['X'].value
+#Y = h5f['Y'].value
 
 n_splits = 0
-data_set = MakeData(X, Y, n_splits)
-
+data_set = MakeData(n_splits= n_splits)
+data_set.create_hdf5(set_file, DATABASE_PATH,
+                    input_width = input_width, input_height = input_height, input_channels = 3,
+                    split_percent =0.05, win = '')
+'''
 myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
@@ -97,3 +100,4 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
+'''

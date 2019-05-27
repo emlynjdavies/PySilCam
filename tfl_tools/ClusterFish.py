@@ -104,7 +104,7 @@ for i in range(2):
     images_ = []
     for j in range(len(ind1)):
         images_.append(images[int(ind1[j])])
-    
+
     tsne = TSNE(n_components=2, learning_rate=150, perplexity=30, angle=0.2, verbose=2).fit_transform(X[ind1,ind1])
 
     tx, ty = tsne[:,0], tsne[:,1]
