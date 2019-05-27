@@ -13,10 +13,10 @@ from tflearn.data_utils import build_hdf5_image_dataset
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
-#DATABASE_PATH = '/mnt/DATA/dataset'
-#MODEL_PATH = '/mnt/DATA/model/modelVGGNet'
+#DATABASE_PATH = 'Z:/DATA/dataset_test'
+#MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = '/mnt/DATA/dataset'
+MODEL_PATH = '/mnt/DATA/model/modelVGGNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
 
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
