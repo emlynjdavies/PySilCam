@@ -14,11 +14,11 @@ from tflearn.data_utils import build_hdf5_image_dataset
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelVGGNETSMALL'
+MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 # DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
 #MODEL_PATH = 'Z:/DATA/model/modelVGGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'VGGDNetSMALL.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'VGGDNetGPUSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 #set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -62,7 +62,7 @@ tf.reset_default_graph()
 print("trainY: ", trainY)
 print("testY: ", testY)
 
-model_file = os.path.join(MODEL_PATH, name +'GPU/plankton-classifier.tfl')
+model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
 
 # Training
