@@ -20,8 +20,8 @@ MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
 # MODEL_PATH = 'Z:/DATA/model/modelVGGNET'
 LOG_FILE = os.path.join(MODEL_PATH, 'VGGDNetGPUSMALL.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-# set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+# set_file = os.path.join(DATABASE_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
 out_hd5 = os.path.join(MODEL_PATH,"datasetsmall.h5")
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
