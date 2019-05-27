@@ -22,8 +22,6 @@ LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 #set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-
-IMXY = 32
 # -----------------------------
 
 name='VGGNet'
@@ -42,12 +40,13 @@ n_epoch = 50  # 50
 batch_size = 128 # 128
 
 # print()
-n_splits = 10
+n_splits = 3
+win = '' # ''_win' when operating on windows environment
 
 data_set = MakeData(n_splits=n_splits)
 data_set.create_CV_hdf5(set_file, DATABASE_PATH,
                     input_width = input_width, input_height = input_height, input_channels = 3,
-                    win = '')
+                    win = win)
 
 
 '''
