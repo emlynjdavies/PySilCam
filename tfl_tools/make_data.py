@@ -26,33 +26,41 @@ class MakeData:
 
     def create_CV_hdf5(self, set_file, database_path,
                     input_width = 227, input_height = 227, input_channels = 3,
-                    n =0.05, win = '_win'):
+                    win = '_win'):
         file_list = pd.read_csv(set_file,sep=' ', header=None)
 
-        X_train, X_test = train_test_split(file_list,
-                                           test_size=split_percent,
-                                           random_state=42
-                                           )
-        print('X_train ... ', X_train.shape)
-        print('X_test ... ', X_test.shape)
-        test_file = os.path.join(database_path, 'image_set_test' + win + '.dat')
-        train_file = os.path.join(database_path, 'image_set_train' + win + '.dat')
+        #X_train, X_test = train_test_split(file_list,
+        #                                   test_size=split_percent,
+        #                                   random_state=42
+        #                                   )
+        seed = 7
+        i = 0
+        for train_index, test_index in \
+                model_selection.KFold(n_splits=self.n_splits,shuffle=True,random_state=seed).split(file_list):
+            X_train, X_test = self.X_data[train_index], self.X_data[test_index]
+            if i < 10:
+                n = '0' + str(i)
+            else:
+                n = i
+            print('X_train ... ', X_train.shape)
+            print('X_test ... ', X_test.shape)
+            test_file = os.path.join(database_path, 'image_set_test' + n + win + '.dat')
+            train_file = os.path.join(database_path, 'image_set_train' + n + win + '.dat')
+            np.savetxt(test_file, X_test, delimiter=' ', fmt='%s')
+            np.savetxt(train_file, X_train, delimiter=' ', fmt='%s')
 
-        np.savetxt(test_file, X_test, delimiter=' ', fmt='%s')
-        np.savetxt(train_file, X_train, delimiter=' ', fmt='%s')
-
-        out_test_hd5 = os.path.join(database_path, 'image_set_test' + str(input_width) + win + ".h5")
-        out_train_hd5 = os.path.join(database_path, 'image_set_train' + str(input_width) + win + ".h5")
-        build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
-                                 mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
-        build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
-                                 mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
-        train_h5f = h5py.File(out_train_hd5, 'r')
-        test_h5f = h5py.File(out_test_hd5, 'r')
-        print(train_h5f['X'].shape)
-        print(train_h5f['Y'].shape)
-        print(test_h5f['X'].shape)
-        print(test_h5f['Y'].shape)
+            out_test_hd5 = os.path.join(database_path, 'image_set_test' + str(input_width) + n + win + ".h5")
+            out_train_hd5 = os.path.join(database_path, 'image_set_train' + str(input_width) + n + win + ".h5")
+            build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
+                                     mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
+            build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
+                                     mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
+            train_h5f = h5py.File(out_train_hd5, 'r')
+            test_h5f = h5py.File(out_test_hd5, 'r')
+            print(train_h5f['X'].shape)
+            print(train_h5f['Y'].shape)
+            print(test_h5f['X'].shape)
+            print(test_h5f['Y'].shape)
 
     def create_hdf5(self, set_file, database_path,
                     input_width = 227, input_height = 227, input_channels = 3,

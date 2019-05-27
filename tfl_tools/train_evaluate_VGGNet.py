@@ -20,9 +20,9 @@ MODEL_PATH = 'Z:/DATA/model/modelCV2'
 LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
 
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-#set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-out_hd5 = os.path.join(MODEL_PATH,"dataset.h5")
+set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
+#set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
+
 IMXY = 32
 # -----------------------------
 
@@ -38,20 +38,19 @@ momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
 
-n_epoch = 2  # 50
-batch_size = 3 # 128
+n_epoch = 50  # 50
+batch_size = 128 # 128
 
 # print()
-build_hdf5_image_dataset(set_file, image_shape=(input_width, input_height, input_channels),
-                         mode='file', output_path=out_hd5, categorical_labels=True, normalize=True)
-h5f = h5py.File(out_hd5, 'r')
-X = h5f['X'].value
-Y = h5f['Y'].value
+n_splits = 10
 
-n_splits = 2
+data_set = MakeData(n_splits)
+data_set.create_CV_hdf5(set_file, DATABASE_PATH,
+                    input_width = input_width, input_height = input_height, input_channels = 3,
+                    win = '')
 
-data_set = MakeData(X, Y, n_splits)
 
+'''
 i = 0
 prediction = []
 test = []
@@ -155,3 +154,4 @@ for i in range(0,10):
     print(normalised_confusion_matrix[i])
 
 fh.close
+'''
