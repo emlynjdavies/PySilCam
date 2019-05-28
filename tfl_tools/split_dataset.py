@@ -9,8 +9,8 @@ from tflearn.data_utils import build_hdf5_image_dataset
 # -- PATHS ---------------------------
 #DATABASE_PATH = 'Z:/DATA/dataset_test'                     # for windows running version test dataset
 
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'  # for ubuntu running version small dataset
-#DATABASE_PATH = '/mnt/DATA/dataset'                        # for ubuntu running version large dataset
+#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'  # for ubuntu running version small dataset
+DATABASE_PATH = '/mnt/DATA/dataset'                        # for ubuntu running version large dataset
 
 #DATABASE_PATH = 'Z:/DATA/silcam_classification_database'   # for windows running version small dataset
 #DATABASE_PATH = 'Z:/DATA/dataset'                          # for windows running version large dataset
@@ -21,8 +21,8 @@ win = ''                                                    # '_win' for windows
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-input_width=227
-input_height=227
+input_width=224
+input_height=224
 input_channels=3
 num_classes=7
 
