@@ -73,7 +73,7 @@ class MakeData:
         '''
         split full dataset from file into training and test sets
         :param set_file: # the file having all the list of images along with their assigned class
-                split_percent #  if 0.05 the split is a 5% for the testing set and 95% for the training dataset 
+                split_percent #  if 0.05 the split is a 5% for the testing set and 95% for the training dataset
         '''
         file_list = pd.read_csv(set_file,sep=' ', header=None)
         Train, Test = train_test_split(file_list,
