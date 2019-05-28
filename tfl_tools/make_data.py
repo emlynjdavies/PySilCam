@@ -69,38 +69,18 @@ class MakeData:
             print(test_h5f['Y'].shape)
 
 
-    def create_hdf5(self, set_file, database_path,
-                    input_width = 227, input_height = 227, input_channels = 3,
-                    split_percent =0.05, win = '_win'):
+    def split_train_test(self, set_file, split_percent =0.05):
+        '''
+        split full dataset from file into training and test sets
+        :param set_file: # the file having all the list of images along with their assigned class
+                split_percent #  if 0.05 the split is a 5% for the testing set and 95% for the training dataset 
+        '''
         file_list = pd.read_csv(set_file,sep=' ', header=None)
-
-        X_train, X_test = train_test_split(file_list,
+        Train, Test = train_test_split(file_list,
                                            test_size=split_percent,
                                            random_state=42
                                            )
-        print('X_train ... ', X_train.shape)
-        print('X_test ... ', X_test.shape)
-        test_file = os.path.join(database_path, 'image_set_test' + win + '.dat')
-        train_file = os.path.join(database_path, 'image_set_train' + win + '.dat')
-
-        np.savetxt(test_file, X_test, delimiter=' ', fmt='%s')
-        np.savetxt(train_file, X_train, delimiter=' ', fmt='%s')
-
-        out_test_hd5 = os.path.join(database_path, 'image_set_test' + str(input_width) + win + ".h5")
-        out_train_hd5 = os.path.join(database_path, 'image_set_train' + str(input_width) + win + ".h5")
-        build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
-                                 mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
-        build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
-                                 mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
-        train_h5f = h5py.File(out_train_hd5, 'r')
-        test_h5f = h5py.File(out_test_hd5, 'r')
-        print(train_h5f['X'].shape)
-        print(train_h5f['Y'].shape)
-        print(test_h5f['X'].shape)
-        print(test_h5f['Y'].shape)
-
-
-
+        return Train, Test
 
 
     def makeXY(self, split_percent = 0.05):

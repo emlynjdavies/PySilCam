@@ -27,8 +27,8 @@ out_hd5 = os.path.join(MODEL_PATH,"datasetsmall.h5")
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
 name='VGGNet'
-input_width=224
-input_height=224
+input_width=227
+input_height=227
 input_channels=3
 num_classes=7
 
@@ -53,7 +53,7 @@ batch_size = 128 # 128
 
 n_splits = 0
 data_set = MakeData(n_splits= n_splits)
-'''
+
 data_set.create_hdf5(set_file, DATABASE_PATH,
                     input_width = input_width, input_height = input_height, input_channels = 3,
                     split_percent =0.05, win = '')
@@ -115,3 +115,4 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
+'''
