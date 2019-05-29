@@ -66,7 +66,7 @@ def split_CV(n_splits = 10, save_split = True):
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
 def build_hd5(test_file, train_file, round = ''):
-    test_filename = IMSETTEST + round + WIN + '.h5'   # str(input_width) + 
+    test_filename = IMSETTEST # + round + WIN + '.h5'   # str(input_width) +
     print('Building hdf5 for the test set... ', test_filename)
     '''
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
