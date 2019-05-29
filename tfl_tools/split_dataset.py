@@ -29,8 +29,10 @@ image_set_test = 'image_set_test'                           # name of the test s
 image_set_train = 'image_set_train'                         # name of the train set file
 
 def split_train_test(save_split = True):
-    test_file = os.path.join(DATABASE_PATH, image_set_test + WIN + '.dat')
-    train_file = os.path.join(DATABASE_PATH, image_set_train + WIN + '.dat')
+    test_filename = image_set_test + WIN + '.dat'
+    train_filename = image_set_train + WIN + '.dat'
+    test_file = os.path.join(DATABASE_PATH, test_filename)
+    train_file = os.path.join(DATABASE_PATH, train_filename)
     print('Make Split')
     n_splits = 0
     data_set = MakeData(n_splits= n_splits)
@@ -53,16 +55,19 @@ def split_CV(n_splits = 10, save_split = True):
             round_num = '0' + round_num
         print('train.shape ... ', train.shape)
         print('test.shape ... ', test.shape)
-        test_file = os.path.join(DATABASE_PATH, image_set_test + round_num + WIN + '.dat')
-        train_file = os.path.join(DATABASE_PATH, image_set_train + round_num + WIN + '.dat')
+        test_filename = image_set_test + round_num + WIN + '.dat'
+        train_filename = image_set_train + round_num + WIN + '.dat'
+        test_file = os.path.join(DATABASE_PATH, test_filename)
+        train_file = os.path.join(DATABASE_PATH, train_filename)
         if save_split:
-            print('writing to test file ', test_file)
+            print('writing to test file ', test_filename)
             np.savetxt(test_file, test, delimiter=' ', fmt='%s')
-            print('writing to train file ', train_file)
+            print('writing to train file ', train_filename)
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
 def build_hd5(test_file, train_file, round = ''):
-    out_test_hd5 = os.path.join(DATABASE_PATH, image_set_test + str(input_width) + round + WIN + ".h5")
+    test_filename = image_set_test + str(input_width) + round + WIN + ".h5"
+    out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
     print('Building hdf5 for the test set... ', test_file)
     build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
                              mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
@@ -71,7 +76,8 @@ def build_hd5(test_file, train_file, round = ''):
     print('Test set output shape: ', test_h5f['Y'].shape)
 
     print('Building hdf5 for the training set...', train_file)
-    out_train_hd5 = os.path.join(DATABASE_PATH, image_set_train + str(input_width) + round + WIN + ".h5")
+    train_filename = image_set_train + str(input_width) + round + WIN + ".h5"
+    out_train_hd5 = os.path.join(DATABASE_PATH, train_filename)
     build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
                              mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
     train_h5f = h5py.File(out_train_hd5, 'r')
