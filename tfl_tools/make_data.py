@@ -8,7 +8,7 @@ import tflearn
 from tflearn.data_utils import build_hdf5_image_dataset
 
 '''
-Generate the data for cross validation
+Generate the data for cross validation or the normal train-test split
 '''
 
 
@@ -23,6 +23,8 @@ class MakeData:
         self.X_data = X_data
         self.Y_data = Y_data
         self.n_splits = n_splits
+
+    #### REMOVE create_CV_hdf5 after the ubuntu run ################
 
     def create_CV_hdf5(self, set_file, database_path,
                     input_width = 227, input_height = 227, input_channels = 3,
@@ -68,6 +70,8 @@ class MakeData:
             print(test_h5f['X'].shape)
             print(test_h5f['Y'].shape)
 
+    #### END OF create_CV_hdf5  ################
+
 
     def split_train_test(self, set_file, split_percent =0.05):
         '''
@@ -81,6 +85,18 @@ class MakeData:
                                            random_state=42
                                            )
         return Train, Test
+
+    def split_CV(self, set_file):
+        '''
+        split full dataset from file following the cross validation approach
+        :param set_file: # the file having all the list of images along with their assigned class
+        '''
+        file_list = pd.read_csv(set_file,sep=' ', header=None)
+        seed = 7
+        for train_index, test_index in \
+                model_selection.KFold(n_splits=self.n_splits,shuffle=True,random_state=seed).split(file_list):
+            Train, Test = file_list.iloc[train_index], file_list.iloc[test_index]
+            yield Train, Test
 
 
     def makeXY(self, split_percent = 0.05):
