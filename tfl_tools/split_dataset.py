@@ -66,8 +66,10 @@ def split_CV(n_splits = 10, save_split = True):
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
 def build_hd5(test_file, train_file, round = ''):
-    test_filename = IMSETTEST + round + WIN + '.h5'   # str(input_width) +
+    test_filename = IMSETTEST + str(input_width) + round + WIN + '.h5'
     print('Building hdf5 for the test set... ', test_filename)
+    train_filename = IMSETTRAIN + str(input_width) + round + WIN + '.h5'
+    print('Building hdf5 for the training set... ', train_filename)
     '''
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
     build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
@@ -76,7 +78,7 @@ def build_hd5(test_file, train_file, round = ''):
     print('Test set input shape: ', test_h5f['X'].shape)
     print('Test set output shape: ', test_h5f['Y'].shape)
 
-    train_filename = image_set_train + str(input_width) + round + WIN + '.h5'
+    
     print('Building hdf5 for the training set...', train_filename)
     out_train_hd5 = os.path.join(DATABASE_PATH, train_filename)
     build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
