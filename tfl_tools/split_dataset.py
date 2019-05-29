@@ -25,12 +25,12 @@ input_width=227
 input_height=227
 input_channels=3
 num_classes=7
-IMTEST = 'image_set_test'                           # name of the test set file
-IMTRAIN = 'image_set_train'                         # name of the train set file
+IMSETTEST = 'image_set_test'                           # name of the test set file
+IMSETTRAIN = 'image_set_train'                         # name of the train set file
 
 def split_train_test(save_split = True):
-    test_filename = IMTEST + WIN + '.dat'
-    train_filename = IMTRAIN + WIN + '.dat'
+    test_filename = IMSETTEST + WIN + '.dat'
+    train_filename = IMSETTRAIN + WIN + '.dat'
     test_file = os.path.join(DATABASE_PATH, test_filename)
     train_file = os.path.join(DATABASE_PATH, train_filename)
     print('Make Split')
@@ -55,8 +55,8 @@ def split_CV(n_splits = 10, save_split = True):
             round_num = '0' + round_num
         print('train.shape ... ', train.shape)
         print('test.shape ... ', test.shape)
-        test_filename = IMTEST + round_num + WIN + '.dat'
-        train_filename = IMTRAIN + round_num + WIN + '.dat'
+        test_filename = IMSETTEST + round_num + WIN + '.dat'
+        train_filename = IMSETTRAIN + round_num + WIN + '.dat'
         test_file = os.path.join(DATABASE_PATH, test_filename)
         train_file = os.path.join(DATABASE_PATH, train_filename)
         if save_split:
@@ -66,7 +66,7 @@ def split_CV(n_splits = 10, save_split = True):
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
 def build_hd5(test_file, train_file, round = ''):
-    test_filename = IMTEST + str(input_width) + round + WIN + '.h5'
+    test_filename = IMSETTEST + round + WIN + '.h5'   # str(input_width) + 
     print('Building hdf5 for the test set... ', test_filename)
     '''
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
@@ -100,15 +100,15 @@ for i in range(1,11):
         round_num = '0' + str(i)
     else:
         round_num = str(i)
-    test_filename = IMTEST + round_num + WIN + '.dat'
+    test_filename = IMSETTEST + round_num + WIN + '.dat'
     print(test_filename)
     test_file = os.path.join(DATABASE_PATH, test_filename)
-    train_filename = IMTRAIN + round_num + WIN + '.dat'
+    train_filename = IMSETTRAIN + round_num + WIN + '.dat'
     print(train_filename)
     train_file = os.path.join(DATABASE_PATH, train_filename)
     if test_file and train_file:
-        print('Test: ' + DATABASE_PATH, IMTEST + round_num + WIN + '.dat' +
-              ' and \nTrain: ' + DATABASE_PATH, IMTRAIN + round_num + WIN + '.dat'
+        print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
+              ' and \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files exist')
         build_hd5(test_file, train_file, round)
 
