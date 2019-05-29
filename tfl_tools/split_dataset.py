@@ -107,7 +107,11 @@ for i in range(1,11):
     print(train_filename)
     train_file = os.path.join(DATABASE_PATH, train_filename)
     if test_file and train_file:
-        build_hd5(test_file, train_file, round)
+        print('Test: ' + DATABASE_PATH, image_set_test + round_num + WIN + '.dat' +
+              'or \n Train: ' + DATABASE_PATH, image_set_train + round_num + WIN + '.dat'
+              + 'files exist')
+        #build_hd5(test_file, train_file, round)
+
     else:
         print('Test: ' + DATABASE_PATH, image_set_test + round_num + WIN + '.dat' +
               'or \n Train: ' + DATABASE_PATH, image_set_train + round_num + WIN + '.dat'
