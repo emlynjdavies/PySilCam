@@ -110,7 +110,7 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, image_set_test + round_num + WIN + '.dat' +
               'or \n Train: ' + DATABASE_PATH, image_set_train + round_num + WIN + '.dat'
               + 'files exist')
-        #build_hd5(test_file, train_file, round)
+        build_hd5(test_file, train_file, round)
 
     else:
         print('Test: ' + DATABASE_PATH, image_set_test + round_num + WIN + '.dat' +
