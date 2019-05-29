@@ -66,7 +66,7 @@ def split_CV(n_splits = 10, save_split = True):
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
 def build_hd5(test_file, train_file, round = ''):
-    test_filename = IMSETTEST + round # + WIN + '.h5'   # str(input_width) +
+    test_filename = IMSETTEST + round + WIN + '.h5'   # str(input_width) +
     print('Building hdf5 for the test set... ', test_filename)
     '''
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
@@ -110,9 +110,9 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
               ' and \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files exist')
-        build_hd5(test_file, train_file, round)
+        build_hd5(test_file, train_file, round=round_num)
 
     else:
-        print('Test: ' + DATABASE_PATH, IMTEST + round_num + WIN + '.dat' +
-              'or \nTrain: ' + DATABASE_PATH, IMTRAIN + round_num + WIN + '.dat'
+        print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
+              'or \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files do not exist')
