@@ -89,7 +89,7 @@ def build_hd5(test_file, train_file, round = ''):
 # for one split: training - test sets 5% and 95%
 test_file = os.path.join(DATABASE_PATH, image_set_test + WIN + '.dat')
 train_file = os.path.join(DATABASE_PATH, image_set_train + WIN + '.dat')
-test_file, train_file = split_train_test()
+train_file, test_file = split_train_test()
 build_hd5(test_file, train_file)
 '''
 # for cross validation splitting (default number of splits n_splits = 10)

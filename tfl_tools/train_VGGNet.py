@@ -6,15 +6,16 @@ from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
 from tflearn.data_utils import build_hdf5_image_dataset
+from split_dataset import build_hd5, split_train_test
 
 
 
 # -- PATHS ---------------------------
-#DATABASE_PATH = 'Z:/DATA/dataset_test'
-#MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = 'Z:/DATA/dataset_test'
+MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
+#MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 # DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
 # MODEL_PATH = 'Z:/DATA/model/modelVGGNET'
@@ -27,8 +28,8 @@ out_hd5 = os.path.join(MODEL_PATH,"datasetsmall.h5")
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
 name='VGGNet'
-input_width=227
-input_height=227
+input_width=224
+input_height=224
 input_channels=3
 num_classes=7
 
@@ -38,8 +39,8 @@ momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET
 
-n_epoch = 50  # 50
-batch_size = 128 # 128
+n_epoch = 3  # 50
+batch_size = 5 # 128
 
 #print('Call image_preloader ....')
 #X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
@@ -51,13 +52,19 @@ batch_size = 128 # 128
 #X = h5f['X'].value
 #Y = h5f['Y'].value
 
-n_splits = 0
-data_set = MakeData(n_splits= n_splits)
+#n_splits = 0
+#data_set = MakeData(n_splits= n_splits)
 
-data_set.create_hdf5(set_file, DATABASE_PATH,
-                    input_width = input_width, input_height = input_height, input_channels = 3,
-                    split_percent =0.05, win = '')
-'''
+#data_set.create_hdf5(set_file, DATABASE_PATH,
+#                    input_width = input_width, input_height = input_height, input_channels = 3,
+#                    split_percent =0.05, win = '')
+# for one split: training - test sets 5% and 95%
+test_file = os.path.join(DATABASE_PATH, 'image_set_test.dat')
+train_file = os.path.join(DATABASE_PATH, 'image_set_train.dat')
+train_file, test_file = split_train_test()
+build_hd5(test_file, train_file)
+
+
 win = '' # ''_win' when operating on windows environment
 out_test_hd5 = os.path.join(DATABASE_PATH, 'image_set_test' + str(input_width) + win + ".h5")
 out_train_hd5 = os.path.join(DATABASE_PATH, 'image_set_train' + str(input_width) + win + ".h5")
@@ -115,4 +122,3 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
-'''
