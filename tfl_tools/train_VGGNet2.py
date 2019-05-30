@@ -52,8 +52,8 @@ train_h5f = h5py.File(out_train_hd5, 'r')
 test_h5f = h5py.File(out_test_hd5, 'r')
 trainX = train_h5f['X']
 trainY = train_h5f['Y']
-testX = test_h5f['X']
-testY = test_h5f['Y']
+testX = test_h5f['X'].value
+testY = test_h5f['Y'].value
 
 # trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
 tf.reset_default_graph()
