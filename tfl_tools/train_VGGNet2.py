@@ -54,8 +54,8 @@ trainX = train_h5f['X']
 trainY = train_h5f['Y']
 testX = test_h5f['X']
 testY = test_h5f['Y']
-print('testX.shape ', type(testX), testX.shape)
-print('testY.shape', type(testY) , testY.shape)
+print('testX.shape ', type(testX), testX.shape, testX[0])
+print('testY.shape', type(testY) , testY.shape, testY[0])
 
 # trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
 tf.reset_default_graph()
