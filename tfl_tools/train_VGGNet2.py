@@ -48,10 +48,10 @@ fh = open(LOG_FILE, 'w')
 
 out_test_hd5 = os.path.join(DATABASE_PATH, 'image_set_test' + str(input_width) + ".h5")
 out_train_hd5 = os.path.join(DATABASE_PATH, 'image_set_train' + str(input_width) + ".h5")
-train_h5f = h5py.File(out_train_hd5, 'r')
-test_h5f = h5py.File(out_test_hd5, 'r')
-trainX = train_h5f['X']
-trainY = train_h5f['Y']
+# train_h5f = h5py.File(out_train_hd5, 'r')
+test_h5f = h5py.File(out_test_hd5, 'r+')
+#trainX = train_h5f['X']
+#trainY = train_h5f['Y']
 testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
@@ -63,13 +63,13 @@ tf.reset_default_graph()
 model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
 model.load(model_file)
-predictions = model.predict(testX)
-print(predictions)
+#predictions = model.predict(testX)
+#print(predictions)
 # Evaluate
 
-#y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalised_confusion_matrix = \
-#    myNet.evaluate(model, testX, testY)
-'''
+y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalised_confusion_matrix = \
+    myNet.evaluate(model, testX, testY)
+
 fh.write("\nRound ")
 fh.write("\nPredictions: ")
 for el in y_pred:
@@ -90,4 +90,3 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
-'''
