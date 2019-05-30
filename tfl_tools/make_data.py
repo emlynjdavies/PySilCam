@@ -43,32 +43,32 @@ class MakeData:
             if i < 10:
                 n = '0' + str(i)
             else:
-                n = i
-            print('X_train ... ', X_train.shape)
-            print('X_test ... ', X_test.shape)
+                n = str(i)
+                print('X_train ... ', X_train.shape)
+                print('X_test ... ', X_test.shape)
 
-            test_file = os.path.join(database_path, 'image_set_test' + n + win + '.dat')
-            train_file = os.path.join(database_path, 'image_set_train' + n + win + '.dat')
-            print('writing to test file ', test_file)
-            print('writing to train file ', train_file)
-            np.savetxt(test_file, X_test, delimiter=' ', fmt='%s')
-            np.savetxt(train_file, X_train, delimiter=' ', fmt='%s')
+                test_file = os.path.join(database_path, 'image_set_test' + n + win + '.dat')
+                train_file = os.path.join(database_path, 'image_set_train' + n + win + '.dat')
+                print('writing to test file ', test_file)
+                print('writing to train file ', train_file)
+                np.savetxt(test_file, X_test, delimiter=' ', fmt='%s')
+                np.savetxt(train_file, X_train, delimiter=' ', fmt='%s')
 
 
-            out_test_hd5 = os.path.join(database_path, 'image_set_test' + str(input_width) + n + win + ".h5")
-            out_train_hd5 = os.path.join(database_path, 'image_set_train' + str(input_width) + n + win + ".h5")
-            print('writing to test hd5 file ', out_test_hd5)
-            print('writing to train hd5 file ', out_train_hd5)
-            build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
-                                     mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
-            build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
-                                     mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
-            train_h5f = h5py.File(out_train_hd5, 'r')
-            test_h5f = h5py.File(out_test_hd5, 'r')
-            print(train_h5f['X'].shape)
-            print(train_h5f['Y'].shape)
-            print(test_h5f['X'].shape)
-            print(test_h5f['Y'].shape)
+                out_test_hd5 = os.path.join(database_path, 'image_set_test' + str(input_width) + n + win + ".h5")
+                out_train_hd5 = os.path.join(database_path, 'image_set_train' + str(input_width) + n + win + ".h5")
+                print('writing to test hd5 file ', out_test_hd5)
+                print('writing to train hd5 file ', out_train_hd5)
+                build_hdf5_image_dataset(train_file, image_shape=(input_width, input_height, input_channels),
+                                         mode='file', output_path=out_train_hd5, categorical_labels=True, normalize=True)
+                build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
+                                         mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
+                train_h5f = h5py.File(out_train_hd5, 'r')
+                test_h5f = h5py.File(out_test_hd5, 'r')
+                print(train_h5f['X'].shape)
+                print(train_h5f['Y'].shape)
+                print(test_h5f['X'].shape)
+                print(test_h5f['Y'].shape)
 
     #### END OF create_CV_hdf5  ################
 
