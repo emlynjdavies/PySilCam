@@ -43,17 +43,12 @@ keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for 
 
 n_epoch = 50  # 50
 batch_size = 128 # 128
-'''
-# for one split: training - test sets 5% and 95%
-#test_file = os.path.join(DATABASE_PATH, 'image_set_test.dat')
-#train_file = os.path.join(DATABASE_PATH, 'image_set_train.dat')
-train_file, test_file = split_train_test()
-build_hd5(test_file, train_file)
+myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+                momentum, keep_prob)
+fh = open(LOG_FILE, 'w')
 
-
-win = '' # ''_win' when operating on windows environment
-out_test_hd5 = os.path.join(DATABASE_PATH, 'image_set_test' + str(input_width) + win + ".h5")
-out_train_hd5 = os.path.join(DATABASE_PATH, 'image_set_train' + str(input_width) + win + ".h5")
+out_test_hd5 = os.path.join(DATABASE_PATH, 'image_set_test' + str(input_width) + ".h5")
+out_train_hd5 = os.path.join(DATABASE_PATH, 'image_set_train' + str(input_width) + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r')
 test_h5f = h5py.File(out_test_hd5, 'r')
 trainX = train_h5f['X']
@@ -61,29 +56,11 @@ trainY = train_h5f['Y']
 testX = test_h5f['X']
 testY = test_h5f['Y']
 
-print(train_h5f['X'].shape)
-print(train_h5f['Y'].shape)
-print(test_h5f['X'].shape)
-print(test_h5f['Y'].shape)
-
-'''
-myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
-                momentum, keep_prob)
-fh = open(LOG_FILE, 'w')
 # trainX, testX, trainY, testY = data_set.makeXY(SPLIT_PERCENT)
 tf.reset_default_graph()
 
 model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
-'''
-# Training
-print("start training for NN  ...", name)
-myNet.train(model, trainX, trainY, testX, testY, name, n_epoch, batch_size)
-
-# Save
-print("Saving model ...", name)
-model.save(model_file)
-'''
 # Evaluate
 y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalised_confusion_matrix = \
     myNet.evaluate(model, testX, testY)
