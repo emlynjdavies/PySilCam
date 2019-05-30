@@ -62,10 +62,13 @@ tf.reset_default_graph()
 
 model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
+predictions = model.predict(testX)
+print(predictions)
 # Evaluate
-y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalised_confusion_matrix = \
-    myNet.evaluate(model, testX, testY)
 
+#y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalised_confusion_matrix = \
+#    myNet.evaluate(model, testX, testY)
+'''
 fh.write("\nRound ")
 fh.write("\nPredictions: ")
 for el in y_pred:
@@ -86,3 +89,4 @@ print("confusion_matrix: ", confusion_matrix)
 print("Normalized_confusion_matrix: ", normalised_confusion_matrix)
 
 fh.close
+'''
