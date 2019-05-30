@@ -62,6 +62,7 @@ tf.reset_default_graph()
 
 model_file = os.path.join(MODEL_PATH, name +'GPUSMALL/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
+model.load(model_file)
 predictions = model.predict(testX)
 print(predictions)
 # Evaluate
