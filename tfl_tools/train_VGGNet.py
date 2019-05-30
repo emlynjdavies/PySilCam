@@ -11,8 +11,10 @@ from split_dataset import build_hd5, split_train_test
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = 'Z:/DATA/dataset_test'
+#MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = '/mnt/DATA/dataset_test'
+MODEL_PATH = '/mnt/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 #DATABASE_PATH = '/mnt/DATA/dataset'
 #MODEL_PATH = '/mnt/DATA/model/modelVGGNET'
