@@ -6,7 +6,6 @@ from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
 from tflearn.data_utils import build_hdf5_image_dataset
-from split_dataset import build_hd5, split_train_test
 
 
 
