@@ -113,8 +113,8 @@ class Net:
         '''
         # print("\nTest prediction for x = ", testX)
         print("model evaluation ")
-        print('testX.type',testX.type)
-        print('testY.type', testY.type)
+        print('testX.type',type(testX))
+        print('testY.type', type(testY))
         predictions = model.predict(testX)
         # predictions = [int(i) for i in model.predict(testX)]
         print("predictions: ", predictions)
