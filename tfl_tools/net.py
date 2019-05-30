@@ -115,9 +115,10 @@ class Net:
         print("model evaluation ")
         print('testX.type',type(testX))
         print('testY.type', type(testY))
-        predictions = model.predict(testX)
+        predictions = model.predict_label(testX)
         # predictions = [int(i) for i in model.predict(testX)]
         print("predictions: ", predictions)
+        '''
         y_pred = []
         for pred in predictions:
             y_pred.append(np.argmax(pred))
@@ -148,6 +149,7 @@ class Net:
         print("Confusion matrix (normalised to % of total test data):")
         print(normalized_confusion_matrix)
         return y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
+        '''
 
     def build_model(self, model_file):
         '''
