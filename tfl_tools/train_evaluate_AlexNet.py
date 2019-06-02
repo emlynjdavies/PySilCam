@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1.out')
 # -----------------------------

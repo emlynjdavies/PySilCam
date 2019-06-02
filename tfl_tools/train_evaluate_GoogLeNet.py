@@ -16,9 +16,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelGoogleNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1-v2.out')
 # -----------------------------
 
 name='GoogLeNet'
@@ -75,6 +75,9 @@ for i in range(0,n_splits):
 
     tf.reset_default_graph()
     tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.8, soft_placement=True) # num_cores default is All
+    sess = tf.InteractiveSession()
+    with tf.device('/cpu:0'):
+        tflearn.config.init_training_mode()
 
     model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
@@ -97,6 +100,7 @@ for i in range(0,n_splits):
         VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
         # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
         #    model2 = model
+    sess.run(tf.initialize_all_variables())
 
     # Save
     print("Saving model %f ..." % i)
