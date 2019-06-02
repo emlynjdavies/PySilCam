@@ -262,7 +262,7 @@ class Net:
 
     def __build_CoapNet(self):
         '''
-        Build the model based on LeCun proposed architecture
+        Build the model based on CoapNet proposed architecture
         :return: The model and and convolution array
         '''
         print("Building" + self.name + " model ...")

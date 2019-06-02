@@ -5,25 +5,24 @@ from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
+import h5py
+import tflearn
 
-
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 # -- PATHS ---------------------------
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelGoogleNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'cvVGGNet.out')
-HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-#set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-
+LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1.out')
 # -----------------------------
 
 name='GoogLeNet'
-input_width=227
-input_height=227
+input_width=224
+input_height=224
 input_channels=3
 num_classes=7
 
@@ -35,15 +34,7 @@ keep_prob=0.4  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for 
 
 n_epoch = 50  # 50
 batch_size = 128 # 128
-
-print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
-                       mode='file', categorical_labels=True, normalize=True)
-
-
-n_splits = 10
-
-data_set = MakeData(X, Y, n_splits)
+n_splits = 1  # 10 for cross_validation, 1 for one time run
 
 i = 0
 prediction = []
@@ -59,22 +50,48 @@ VGGNet = Net(name, input_width, input_height, input_channels, num_classes, learn
 fh = open(LOG_FILE, 'w')
 fh.write(name)
 print(name)
-for trainX, trainY, testX, testY in data_set.gen():
+#for trainX, trainY, testX, testY in data_set.gen():
+for i in range(0,n_splits):
+
+    if n_splits > 1:
+        i = i + 1
+        round_num = str(i)
+        if i < 10:
+            round_num = '0' + round_num
+    else:
+        round_num = ''
+
+    out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
+    out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
+    train_h5f = h5py.File(out_train_hd5, 'r+')
+    test_h5f = h5py.File(out_test_hd5, 'r+')
+    trainX = train_h5f['X']
+    trainY = train_h5f['Y']
+    testX = test_h5f['X']
+    testY = test_h5f['Y']
+    print('testX.shape ', type(testX), testX.shape, testX[0])
+    print('testY.shape', type(testY), testY.shape, testY[0])
 
     tf.reset_default_graph()
-    i = i + 1
-    round_num = str(i)
-    if i < 10:
-        round_num = '0' + round_num
-    print("Round # ", round_num)
-    print("trainY: ", trainY)
-    print("testY: ", testY)
+    tflearn.init_graph(set_seed=8888, num_cores=16, gpu_memory_fraction=0.3)
 
-    model_file = os.path.join(MODEL_PATH, 'round' + round_num + '/plankton-classifier.tfl')
-    model, conv_arr = VGGNet.build_model(model_file)
+    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
+
+
+    # 2 different computation graphs but sharing the same weights
+    with tf.device('/gpu:0'):
+        model, conv_arr = VGGNet.build_model(model_file)
+        # Force all Variables to reside on the CPU.
+        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+            model1 = model
+    # Reuse Variables for the next model
+    tf.get_variable_scope().reuse_variables()
+    with tf.device('/gpu:1'):
+        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+            model2 = model
 
     # Training
-    print("start training round %f ...", i)
+    print("start training round ", round_num)
     VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
     # Save
@@ -96,7 +113,7 @@ for trainX, trainY, testX, testY in data_set.gen():
     normalised_confusion_matrix.append(norm_conf_matrix)
 
 
-for i in range(0, 10):
+for i in range(0, n_splits):
     fh.write("\nRound ")
     if i < 10:
         j = '0' + str(i)
@@ -140,11 +157,11 @@ fh.write("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
 fh.write("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
 
 print('Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(confusion_matrix[i])
 
 print('Normalized_Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
 
 fh.close
