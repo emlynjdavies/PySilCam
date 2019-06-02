@@ -1,47 +1,41 @@
 import os
 import numpy as np
 import tensorflow as tf
-import tflearn
+
 from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
+import h5py
+import tflearn
 
-
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = 'Z:/DATA/dataset_test'
+#MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-#MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'cvAlexNet.out')
-# DATABASE_PATH = '/mnt/DATA/dataset'
-# MODEL_PATH = '/mnt/DATA/model/modelCV'
-HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-#set_file = os.path.join(MODEL_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
-set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
-
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+MODEL_PATH = '/mnt/DATA/model/modelGoogleNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1.out')
 # -----------------------------
 
 name='AlexNet'
-input_width=227
-input_height=227
+input_width=224
+input_height=224
 input_channels=3
 num_classes=7
 
 learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+                        # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
-keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
+keep_prob=0.4  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
+                # 0.5 for VGGNET -- 0.4 for GoogLeNet
 
-n_epoch = 3  # 50
-batch_size = 2 # 128
-
-print('Call image_preloader ....')
-X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels), mode='file', categorical_labels=True, normalize=True)
-n_splits = 10
-
-data_set = MakeData(X, Y, n_splits)
+n_epoch = 50  # 50
+batch_size = 128 # 128
+n_splits = 1  # 10 for cross_validation, 1 for one time run
 
 i = 0
 prediction = []
@@ -52,31 +46,57 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+VGGNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 fh.write(name)
 print(name)
-for trainX, trainY, testX, testY in data_set.gen():
+#for trainX, trainY, testX, testY in data_set.gen():
+for i in range(0,n_splits):
+
+    if n_splits > 1:
+        i = i + 1
+        round_num = str(i)
+        if i < 10:
+            round_num = '0' + round_num
+    else:
+        round_num = ''
+
+    out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
+    out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
+    train_h5f = h5py.File(out_train_hd5, 'r+')
+    test_h5f = h5py.File(out_test_hd5, 'r+')
+    trainX = train_h5f['X']
+    trainY = train_h5f['Y']
+    testX = test_h5f['X']
+    testY = test_h5f['Y']
+    print('testX.shape ', type(testX), testX.shape, testX[0])
+    print('testY.shape', type(testY), testY.shape, testY[0])
 
     tf.reset_default_graph()
-    with tf.Graph().as_default(), tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
-        tflearn.config.init_training_mode()
-    i = i + 1
-    round_num = str(i)
-    if i < 10:
-        round_num = '0' + round_num
-    print("Round # ", round_num)
-    print("trainY: ", trainY)
-    print("testY: ", testY)
+    tflearn.config.init_graph(seed=8888, num_cores=16, gpu_memory_fraction=0.3)
 
-    model_file = os.path.join(MODEL_PATH, 'round' + round_num + '/plankton-classifier.tfl')
-    model, conv_arr = AlexNet.build_model(model_file)
+    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-    # Training
-    print("start training round %f ...", i)
-    AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+
+    with tf.device('/gpu:0'):
+        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
+        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
+        model, conv_arr = VGGNet.build_model(model_file)
+
+        # Force all Variables to reside on the CPU.
+        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+        #    model1 = model
+    # Reuse Variables for the next model
+    tf.get_variable_scope().reuse_variables()
+    with tf.device('/gpu:1'):
+        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
+        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
+        # Training
+        print("start training round ", round_num)
+        VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+        #    model2 = model
 
     # Save
     print("Saving model %f ..." % i)
@@ -84,7 +104,7 @@ for trainX, trainY, testX, testY in data_set.gen():
 
     # Evaluate
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        AlexNet.evaluate(model, testX, testY)
+        VGGNet.evaluate(model, testX, testY)
 
     ## update summaries ###
     prediction.append(y_pred)
@@ -97,7 +117,7 @@ for trainX, trainY, testX, testY in data_set.gen():
     normalised_confusion_matrix.append(norm_conf_matrix)
 
 
-for i in range(0, 10):
+for i in range(0, n_splits):
     fh.write("\nRound ")
     if i < 10:
         j = '0' + str(i)
@@ -141,11 +161,11 @@ fh.write("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
 fh.write("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
 
 print('Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(confusion_matrix[i])
 
 print('Normalized_Confusion_Matrix')
-for i in range(0,10):
+for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
 
 fh.close
