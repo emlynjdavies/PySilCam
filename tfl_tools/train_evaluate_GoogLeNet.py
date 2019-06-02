@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
+
 from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
@@ -78,21 +79,22 @@ for i in range(0,n_splits):
     model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 
-    # 2 different computation graphs but sharing the same weights
     with tf.device('/gpu:0'):
-        model, conv_arr = VGGNet.build_model(model_file)
+        with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
+            model, conv_arr = VGGNet.build_model(model_file)
+
         # Force all Variables to reside on the CPU.
-        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-            model1 = model
+        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+        #    model1 = model
     # Reuse Variables for the next model
     tf.get_variable_scope().reuse_variables()
     with tf.device('/gpu:1'):
-        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-            model2 = model
-
-    # Training
-    print("start training round ", round_num)
-    VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+        with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
+            # Training
+            print("start training round ", round_num)
+            VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+        #    model2 = model
 
     # Save
     print("Saving model %f ..." % i)
