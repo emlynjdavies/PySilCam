@@ -81,7 +81,7 @@ for i in range(0,n_splits):
 
     with tf.device('/gpu:0'):
         #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
-        with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
+        with tf.variable_scope([tflearn.variables.variable], caching_device='/cpu:0'):
             model, conv_arr = VGGNet.build_model(model_file)
 
         # Force all Variables to reside on the CPU.
@@ -90,7 +90,7 @@ for i in range(0,n_splits):
     # Reuse Variables for the next model
     tf.get_variable_scope().reuse_variables()
     with tf.device('/gpu:1'):
-        with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
+        with tf.variable_scope([tflearn.variables.variable], caching_device='/cpu:0'):
         #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
             # Training
             print("start training round ", round_num)
