@@ -73,7 +73,7 @@ for i in range(0,n_splits):
     print('testY.shape', type(testY), testY.shape, testY[0])
 
     tf.reset_default_graph()
-    tflearn.init_graph(set_seed=8888, num_cores=16, gpu_memory_fraction=0.3)
+    tflearn.config.init_graph(set_seed=8888, num_cores=16, gpu_memory_fraction=0.3)
 
     model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
