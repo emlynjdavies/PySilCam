@@ -17,8 +17,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-MODEL_PATH = '/mnt/DATA/model/modelGoogleNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1.out')
+MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1.out')
 # -----------------------------
 
 name='AlexNet'
