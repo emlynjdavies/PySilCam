@@ -72,16 +72,13 @@ for i in range(0,n_splits):
     testY = test_h5f['Y']
     print('testX.shape ', type(testX), testX.shape, testX[0])
     print('testY.shape', type(testY), testY.shape, testY[0])
+    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
     tf.reset_default_graph()
     tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.8, soft_placement=True) # num_cores default is All
     sess = tf.InteractiveSession()
     with tf.device('/cpu:0'):
         tflearn.config.init_training_mode()
-
-    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
-
-
     with tf.device('/gpu:0'):
         #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
         #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
