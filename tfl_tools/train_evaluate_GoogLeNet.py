@@ -74,7 +74,7 @@ for i in range(0,n_splits):
     print('testY.shape', type(testY), testY.shape, testY[0])
 
     tf.reset_default_graph()
-    tflearn.config.init_graph(seed=8888, num_cores=16, gpu_memory_fraction=0.3)
+    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.8, soft_placement=True) # num_cores default is All
 
     model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
@@ -139,7 +139,7 @@ for i in range(0, n_splits):
     fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
     print("confusion_matrix: ", confusion_matrix[i])
     print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
-
+'''
 print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
 print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
 fh.write("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
@@ -167,5 +167,5 @@ for i in range(0,n_splits):
 print('Normalized_Confusion_Matrix')
 for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
-
+'''
 fh.close
