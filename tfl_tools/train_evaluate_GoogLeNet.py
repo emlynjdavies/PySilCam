@@ -77,8 +77,9 @@ for i in range(0,n_splits):
     tf.reset_default_graph()
     tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.8, soft_placement=True) # num_cores default is All
     sess = tf.InteractiveSession()
-    with tf.device('/cpu:0'):
-        tflearn.config.init_training_mode()
+    #with tf.device('/cpu:0'):
+        #tflearn.config.init_training_mode()
+    tflearn.config.init_training_mode()
     with tf.device('/gpu:0'):
         #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
         #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
@@ -88,7 +89,7 @@ for i in range(0,n_splits):
         # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
         #    model1 = model
     # Reuse Variables for the next model
-    tf.get_variable_scope().reuse_variables()
+    #tf.get_variable_scope().reuse_variables()
     with tf.device('/gpu:1'):
         #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
         #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
