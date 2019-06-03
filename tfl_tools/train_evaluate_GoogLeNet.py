@@ -17,8 +17,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
 #DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-MODEL_PATH = '/mnt/DATA/model/modelGoogleNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'VGGNetDB1.out')
+MODEL_PATH = '/mnt/DATA/model/modelGoogLeNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'GoogLeNetDB1.out')
 # -----------------------------
 
 name='GoogLeNet'
@@ -51,7 +51,7 @@ VGGNet = Net(name, input_width, input_height, input_channels, num_classes, learn
 fh = open(LOG_FILE, 'w')
 fh.write(name)
 print(name)
-#for trainX, trainY, testX, testY in data_set.gen():
+'''
 for i in range(0,n_splits):
 
     if n_splits > 1:
@@ -61,68 +61,52 @@ for i in range(0,n_splits):
             round_num = '0' + round_num
     else:
         round_num = ''
+'''
+round_num = ''
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
+train_h5f = h5py.File(out_train_hd5, 'r+')
+test_h5f = h5py.File(out_test_hd5, 'r+')
+trainX = train_h5f['X']
+trainY = train_h5f['Y']
+testX = test_h5f['X']
+testY = test_h5f['Y']
+print('testX.shape ', type(testX), testX.shape, testX[0])
+print('testY.shape', type(testY), testY.shape, testY[0])
 
-    out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
-    out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
-    train_h5f = h5py.File(out_train_hd5, 'r+')
-    test_h5f = h5py.File(out_test_hd5, 'r+')
-    trainX = train_h5f['X']
-    trainY = train_h5f['Y']
-    testX = test_h5f['X']
-    testY = test_h5f['Y']
-    print('testX.shape ', type(testX), testX.shape, testX[0])
-    print('testY.shape', type(testY), testY.shape, testY[0])
-    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
+tf.reset_default_graph()
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+config = tf.ConfigProto(allow_soft_placement=True)
+config.gpu_options.allocator_type='BFC'
+config.gpu_options.per_process_gpu_memory_fraction=0.9
+sess = tf.Session(config=config)
 
-    tf.reset_default_graph()
-    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-    config = tf.ConfigProto(allow_soft_placement=True)
-    config.gpu_options.allocator_type = 'BFC'
-    config.gpu_options.per_process_gpu_memory_fraction = 0.9
-    #sess = tf.Session(config=config)
 
-    sess = tf.InteractiveSession(config=config)
-    #with tf.device('/cpu:0'):
-        #tflearn.config.init_training_mode()
-    tflearn.config.init_training_mode()
-    with tf.device('/gpu:0'):
-        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
-        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
-        model, conv_arr = VGGNet.build_model(model_file)
+with tf.device('/gpu:0'):
+    model, conv_arr = VGGNet.build_model(model_file)
 
-        # Force all Variables to reside on the CPU.
-        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-        #    model1 = model
-    # Reuse Variables for the next model
-    #tf.get_variable_scope().reuse_variables()
-    with tf.device('/gpu:1'):
-        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
-        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
-        # Training
-        print("start training round ", round_num)
-        VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-        #    model2 = model
-    sess.run(tf.initialize_all_variables())
+print("start training round ", round_num)
+VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
-    # Save
-    print("Saving model %f ..." % i)
-    model.save(model_file)
+# Save
+print("Saving model %f ..." % i)
+model.save(model_file)
 
-    # Evaluate
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
+# Evaluate
+y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+VGGNet.evaluate(model, testX, testY)
 
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
+## update summaries ###
+prediction.append(y_pred)
+test.append(y_true)
+accuracy.append(acc)
+precision.append(pre)
+recall.append(rec)
+f1_score.append(f1sc)
+confusion_matrix.append(conf_matrix)
+normalised_confusion_matrix.append(norm_conf_matrix)
 
 
 for i in range(0, n_splits):
