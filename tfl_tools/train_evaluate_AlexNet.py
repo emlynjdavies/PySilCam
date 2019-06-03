@@ -74,7 +74,11 @@ for i in range(0,n_splits):
     print('testY.shape', type(testY), testY.shape, testY[0])
 
     tf.reset_default_graph()
-    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.8, soft_placement=True) # num_cores default is All
+    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+    config = tf.ConfigProto(allow_soft_placement=True)
+    config.gpu_options.allocator_type='BFC'
+    config.gpu_options.per_process_gpu_memory_fraction=0.9
+    sess = tf.Session(config=config)
 
     model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
