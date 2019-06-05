@@ -94,39 +94,26 @@ print('TSNE training')
 tsne = TSNE(n_components=2, learning_rate=150, perplexity=30, angle=0.2, verbose=2).fit_transform(X)
 print('  OK.')
 
-from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters=2, random_state=0).fit(tsne)
-p = kmeans.predict(tsne)
+tx, ty = tsne[:,0], tsne[:,1]
+tx = (tx-np.min(tx)) / (np.max(tx) - np.min(tx))
+ty = (ty-np.min(ty)) / (np.max(ty) - np.min(ty))
+plt.plot(tx, ty,'.')
 
-for i in range(2):
-    ind1 = np.argwhere(p==i)
-    
-    images_ = []
-    for j in range(len(ind1)):
-        images_.append(images[int(ind1[j])])
+width = 20000
+height = 20000
+max_dim = 500
 
-    tsne = TSNE(n_components=2, learning_rate=150, perplexity=30, angle=0.2, verbose=2).fit_transform(X[ind1,ind1])
+print('PLotting')
+full_image = Image.new('RGB', (width, height))
+for img, x, y in tqdm(zip(images, tx, ty)):
+    tile = Image.open(img)
+    rs = max(1, tile.width/max_dim, tile.height/max_dim)
+    tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
+    full_image.paste(tile, (int((width-max_dim)*x), int((height-max_dim)*y)))
 
-    tx, ty = tsne[:,0], tsne[:,1]
-    tx = (tx-np.min(tx)) / (np.max(tx) - np.min(tx))
-    ty = (ty-np.min(ty)) / (np.max(ty) - np.min(ty))
-    plt.plot(tx, ty,'.')
-    
-    width = 20000
-    height = 20000
-    max_dim = 500
-    
-    print('PLotting')
-    full_image = Image.new('RGB', (width, height))
-    for img, x, y in tqdm(zip(images_, tx, ty)):
-        tile = Image.open(img)
-        rs = max(1, tile.width/max_dim, tile.height/max_dim)
-        tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
-        full_image.paste(tile, (int((width-max_dim)*x), int((height-max_dim)*y)))
-    
-    matplotlib.pyplot.figure(figsize = (16,12))
-    imshow(full_image)
-    
-    full_image.save(directory +'tsne/' + TSNE_NAME + '-' + str(i) + '-tsne.tiff')
+matplotlib.pyplot.figure(figsize = (16,12))
+imshow(full_image)
+
+full_image.save(directory +'tsne/' + TSNE_NAME + '-tsne.tiff')
     
 print('----THE END ----')
