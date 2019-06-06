@@ -108,7 +108,8 @@ full_image = Image.new('RGB', (width, height))
 for img, x, y in tqdm(zip(images, tx, ty)):
     tile = Image.open(img)
     rs = max(1, tile.width/max_dim, tile.height/max_dim)
-    tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
+    #tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
+    tile = tile.resize((max(1,int(tile.width / rs)), max(1,int(tile.height / rs))), Image.ANTIALIAS)
     full_image.paste(tile, (int((width-max_dim)*x), int((height-max_dim)*y)))
 
 matplotlib.pyplot.figure(figsize = (16,12))
