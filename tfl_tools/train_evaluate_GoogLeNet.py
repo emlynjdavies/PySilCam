@@ -65,6 +65,7 @@ for i in range(0,n_splits):
         round_num = ''
 '''
 round_num = ''
+'''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -75,6 +76,7 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
+'''
 print(mg.num_gpus)
 print(mg.TOWER_NAME)
 '''
