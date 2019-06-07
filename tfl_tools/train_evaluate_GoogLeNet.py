@@ -62,7 +62,7 @@ for i in range(0,n_splits):
     else:
         round_num = ''
 '''
-round_num = 'GoogleNetGPUSMALL'
+round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -80,7 +80,7 @@ config = tf.ConfigProto(allow_soft_placement=True)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.9
 sess = tf.Session(config=config)
-
+round_num = 'GoogleNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 # with tf.device('/gpu:0'):
