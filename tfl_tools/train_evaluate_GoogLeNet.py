@@ -62,7 +62,7 @@ for i in range(0,n_splits):
     else:
         round_num = ''
 '''
-round_num = ''
+round_num = 'GoogleNetGPUSMALL'
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -83,54 +83,55 @@ sess = tf.Session(config=config)
 
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
+# with tf.device('/gpu:0'):
+for d in ['/device:GPU:0', '/device:GPU:1']:
+    with tf.device(d):
+        model, conv_arr = VGGNet.build_model(model_file)
 
-with tf.device('/gpu:0'):
-    model, conv_arr = VGGNet.build_model(model_file)
+with tf.device('/cpu:0'):
+    print("start training round ", round_num)
+    VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+    # Save
+    print("Saving model %f ..." % i)
+    model.save(model_file)
+    # Evaluate
+    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+        VGGNet.evaluate(model, testX, testY)
 
-print("start training round ", round_num)
-VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-
-# Save
-print("Saving model %f ..." % i)
-model.save(model_file)
-
-# Evaluate
-y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-VGGNet.evaluate(model, testX, testY)
-
-## update summaries ###
-prediction.append(y_pred)
-test.append(y_true)
-accuracy.append(acc)
-precision.append(pre)
-recall.append(rec)
-f1_score.append(f1sc)
-confusion_matrix.append(conf_matrix)
-normalised_confusion_matrix.append(norm_conf_matrix)
+    ## update summaries ###
+    prediction.append(y_pred)
+    test.append(y_true)
+    accuracy.append(acc)
+    precision.append(pre)
+    recall.append(rec)
+    f1_score.append(f1sc)
+    confusion_matrix.append(conf_matrix)
+    normalised_confusion_matrix.append(norm_conf_matrix)
 
 
-for i in range(0, n_splits):
-    fh.write("\nRound ")
-    if i < 10:
-        j = '0' + str(i)
-    fh.write(j)
-    print("Round ", j)
-    fh.write("\nPredictions: ")
-    for el in y_pred:
-        fh.write("%s " % el)
-    fh.write("\ny_true: ")
-    for el in y_true:
-        fh.write("%s " % el)
-    print("\nAccuracy: {}%".format(100*accuracy[i]))
-    fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
-    print("Precision: {}%".format(100 * precision[i]))
-    fh.write("\tPrecision: {}%".format(100 * precision[i]))
-    print("Recall: {}%".format(100 * recall[i]))
-    fh.write("\tRecall: {}%".format(100 * recall[i]))
-    print("F1_Score: {}%".format(100 * f1_score[i]))
-    fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
-    print("confusion_matrix: ", confusion_matrix[i])
-    print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+    for i in range(0, n_splits):
+        fh.write("\nRound ")
+        if i < 10:
+            j = '0' + str(i)
+        fh.write(j)
+        print("Round ", j)
+        fh.write("\nPredictions: ")
+        for el in y_pred:
+            fh.write("%s " % el)
+        fh.write("\ny_true: ")
+        for el in y_true:
+            fh.write("%s " % el)
+        print("\nAccuracy: {}%".format(100*accuracy[i]))
+        fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
+        print("Precision: {}%".format(100 * precision[i]))
+        fh.write("\tPrecision: {}%".format(100 * precision[i]))
+        print("Recall: {}%".format(100 * recall[i]))
+        fh.write("\tRecall: {}%".format(100 * recall[i]))
+        print("F1_Score: {}%".format(100 * f1_score[i]))
+        fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
+        print("confusion_matrix: ", confusion_matrix[i])
+        print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+    fh.close
 '''
 print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
 print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
@@ -159,5 +160,6 @@ for i in range(0,n_splits):
 print('Normalized_Confusion_Matrix')
 for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
-'''
 fh.close
+'''
+
