@@ -10,6 +10,10 @@ import h5py
 import tflearn
 
 from train_over_gpus import train_multi_gpu as mg
+from datetime import datetime
+import os.path
+import re
+import time
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
@@ -64,8 +68,9 @@ for i in range(0,n_splits):
     else:
         round_num = ''
 '''
+round_path = 'GoogleNetGPUSMALL'
+model_file = os.path.join(MODEL_PATH, round_path + '/plankton-classifier.tfl')
 round_num = ''
-'''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -76,10 +81,10 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
-'''
+
 print(mg.num_gpus)
 print(mg.TOWER_NAME)
-'''
+
 # ###########################################################################
 """Train CIFAR-10 for a number of steps."""
 with tf.Graph().as_default(), tf.device('/cpu:0'):
@@ -90,38 +95,37 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         initializer=tf.constant_initializer(0), trainable=False)
 
     # Calculate the learning rate schedule.
-    #num_batches_per_epoch = (cifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN /
-    #                         FLAGS.batch_size / FLAGS.num_gpus)
-    num_batches_per_epoch = (trainY.shape[0] /
-                             batch_size / num_gpus)
-    # decay_steps = int(num_batches_per_epoch * cifar10.NUM_EPOCHS_PER_DECAY)
+    num_batches_per_epoch = (trainX.shape[0] /
+                             batch_size / mg.num_gpus)
+    decay_steps = int(num_batches_per_epoch * mg.NUM_EPOCHS_PER_DECAY)
 
     # Decay the learning rate exponentially based on the number of steps.
-    #lr = tf.train.exponential_decay(cifar10.INITIAL_LEARNING_RATE,
-    #                                global_step,
-    #                                decay_steps,
-    #                                cifar10.LEARNING_RATE_DECAY_FACTOR,
-    #                                staircase=True)
+    lr = tf.train.exponential_decay(learning_rate,
+                                    global_step,
+                                    decay_steps,
+                                    mg.LEARNING_RATE_DECAY_FACTOR,
+                                    staircase=True)
 
     # Create an optimizer that performs gradient descent.
-    #opt = tf.train.GradientDescentOptimizer(lr)
+    opt = tf.train.GradientDescentOptimizer(lr)
 
     # Get images and labels for CIFAR-10.
     images, labels = trainX, trainY
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
-        [images, labels], capacity=2 * num_gpus)
+        [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
     tower_grads = []
     with tf.variable_scope(tf.get_variable_scope()):
-        for i in range(num_gpus):
+        for i in range(mg.num_gpus):
             with tf.device('/gpu:%d' % i):
-                with tf.name_scope('%s_%d' % (TOWER_NAME, i)) as scope:
+                with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     # Dequeues one batch for the GPU
                     image_batch, label_batch = batch_queue.dequeue()
                     # Calculate the loss for one tower of the CIFAR model. This function
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
-                    loss = tower_loss(scope, image_batch, label_batch)
+                    model, conv_arr = VGGNet.build_model(model_file)
+                    loss = mg.tower_loss(scope, model, label_batch)
 
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
@@ -137,7 +141,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # We must calculate the mean of each gradient. Note that this is the
     # synchronization point across all towers.
-    grads = average_gradients(tower_grads)
+    grads = mg.average_gradients(tower_grads)
 
     # Add a summary to track the learning rate.
     summaries.append(tf.summary.scalar('learning_rate', lr))
@@ -156,7 +160,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Track the moving averages of all trainable variables.
     variable_averages = tf.train.ExponentialMovingAverage(
-        cifar10.MOVING_AVERAGE_DECAY, global_step)
+        mg.MOVING_AVERAGE_DECAY, global_step)
     variables_averages_op = variable_averages.apply(tf.trainable_variables())
 
     # Group all updates to into a single train op.
@@ -176,15 +180,15 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # implementations.
     sess = tf.Session(config=tf.ConfigProto(
         allow_soft_placement=True,
-        log_device_placement=FLAGS.log_device_placement))
+        log_device_placement=mg.log_device_placement))
     sess.run(init)
 
     # Start the queue runners.
     tf.train.start_queue_runners(sess=sess)
 
-    summary_writer = tf.summary.FileWriter(FLAGS.train_dir, sess.graph)
+    summary_writer = tf.summary.FileWriter(MODEL_PATH + '/' + round_path, sess.graph)
 
-    for step in xrange(FLAGS.max_steps):
+    for step in range(mg.max_steps):
         start_time = time.time()
         _, loss_value = sess.run([train_op, loss])
         duration = time.time() - start_time
@@ -192,9 +196,9 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
         if step % 10 == 0:
-            num_examples_per_step = FLAGS.batch_size * FLAGS.num_gpus
+            num_examples_per_step = batch_size * mg.num_gpus
             examples_per_sec = num_examples_per_step / duration
-            sec_per_batch = duration / FLAGS.num_gpus
+            sec_per_batch = duration / mg.num_gpus
 
             format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f '
                           'sec/batch)')
@@ -206,11 +210,11 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
             summary_writer.add_summary(summary_str, step)
 
         # Save the model checkpoint periodically.
-        if step % 1000 == 0 or (step + 1) == FLAGS.max_steps:
-            checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
+        if step % 1000 == 0 or (step + 1) == mg.max_steps:
+            checkpoint_path = os.path.join(MODEL_PATH + '/' + round_path, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step)
+
 # #######################################################################################            
-'''
 '''
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
