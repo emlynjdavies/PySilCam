@@ -8,7 +8,6 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-
 from train_over_gpus import train_multi_gpu as mg
 from datetime import datetime
 import os.path
@@ -72,6 +71,7 @@ model_file = os.path.join(MODEL_PATH, round_path + '/plankton-classifier.tfl')
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
+
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
@@ -80,7 +80,6 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
-
 print(mg.num_gpus)
 print(mg.TOWER_NAME)
 
@@ -109,11 +108,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     opt = tf.train.GradientDescentOptimizer(lr)
 
     # Get images and labels for CIFAR-10.
-    images = tf.convert_to_tensor(trainX, dtype=tf.float32)
+    #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
-    labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    print('images ', images.shape, images[0], type(images))
-    print('labels', labels.shape, labels[0], type(labels))
+    #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
+    images, labels = tf.data.Dataset.from_tensor_slices((out_train_hd5))
+    print('images ', images.output_types, images.output_shapes)
+    print('labels', labels.output_types, labels.output_shapes)
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
