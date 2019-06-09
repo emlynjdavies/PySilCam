@@ -114,29 +114,22 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    dataset = tf.data.Dataset.from_generator(h5gen(out_train_hd5),
-                                             output_types= tf.float32
-                                             )
-    iter = dataset.make_one_shot_iterator().get_next()
-
-    # Example on how to read elements
-    while True:
-        try:
-            with tf.Session() as sess:
-                data = sess.run(iter)
-                print(data.shape)
-            print(data.shape)
-        except tf.errors.OutOfRangeError:
-            print('done.')
-            break
+    dataset = tf.data.Dataset.from_tensor_slices((out_train_hd5))
+    dataset = dataset.map(
+        lambda images, labels: tuple(tf.py_func(
+            h5gen, out_train_hd5, [tf.float32, tf.float32]))
+    )
+    #iter = dataset.make_one_shot_iterator().get_next()
+    dataset = dataset.batch(batch_size)
+    iterator = dataset.make_one_shot_iterator()
+    next_batch = iterator.get_next()
 
     #images, labels = el["X"], el["Y"]
     #print('images ', images.output_types, images.output_shapes)
     #print('labels', labels.output_types, labels.output_shapes)
-    '''
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
-        [images,labels], capacity=2 * mg.num_gpus)
+        [next_batch["images"],next_batch["labels"]], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
     tower_grads = []
     with tf.variable_scope(tf.get_variable_scope()):
@@ -240,7 +233,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
             checkpoint_path = os.path.join(MODEL_PATH + '/' + round_path, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step)
 #######################################################################################
-'''
+
 # #######################################################################################            
 '''
 tf.reset_default_graph()
