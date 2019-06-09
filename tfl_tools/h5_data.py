@@ -6,6 +6,6 @@ class h5gen:
 
     def __call__(self):
         with h5py.File(self.file, 'r') as hf:
-            yield hf["X"], hf["Y"]
+            yield hf #hf["X"], hf["Y"]
             #for im, lbl in hf["X"], hf["Y"]:
             #    yield im, lbl
