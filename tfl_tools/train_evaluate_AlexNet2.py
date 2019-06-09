@@ -109,8 +109,9 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     opt = tf.train.GradientDescentOptimizer(lr)
 
     # Get images and labels for CIFAR-10.
-    images, labels = tf.convert_to_tensor(trainX, dtype=tf.float32), \
-                     tf.convert_to_tensor(trainY, dtype=tf.int32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
+    images = tf.convert_to_tensor(trainX, dtype=tf.float32)
+
+    labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
     print('images ', images.shape, images[0], type(images))
     print('labels', labels.shape, labels[0], type(labels))
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
