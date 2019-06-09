@@ -119,9 +119,11 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                                            output_shapes=(tf.TensorShape([None, 1])))
     iter = dataset.make_one_shot_iterator()
     el = iter.get_next()
-    images, labels = el["X"], el["Y"]
-    print('images ', images.output_types, images.output_shapes)
-    print('labels', labels.output_types, labels.output_shapes)
+    print('el ', el.shape, el.output_shapes)
+    #images, labels = el["X"], el["Y"]
+    #print('images ', images.output_types, images.output_shapes)
+    #print('labels', labels.output_types, labels.output_shapes)
+    '''
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images,labels], capacity=2 * mg.num_gpus)
@@ -228,7 +230,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
             checkpoint_path = os.path.join(MODEL_PATH + '/' + round_path, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step)
 #######################################################################################
-
+'''
 # #######################################################################################            
 '''
 tf.reset_default_graph()
