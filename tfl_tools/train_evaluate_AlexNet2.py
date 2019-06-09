@@ -109,7 +109,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     opt = tf.train.GradientDescentOptimizer(lr)
 
     # Get images and labels for CIFAR-10.
-    images, labels = trainX, trainY
+    images, labels = trainX, trainY.argmax(axis=0)
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
