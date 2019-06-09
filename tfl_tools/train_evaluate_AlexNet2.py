@@ -109,7 +109,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     opt = tf.train.GradientDescentOptimizer(lr)
 
     # Get images and labels for CIFAR-10.
-    images, labels = trainX, trainY.argmax(axis=0)
+    images, labels = trainX, np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
     print('images ', images[0])
     print('labels', labels[0])
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
