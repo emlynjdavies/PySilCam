@@ -117,9 +117,17 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     dataset = tf.data.Dataset.from_generator(h5gen(out_train_hd5),
                                              output_types= tf.float32
                                              )
-    iter = dataset.make_one_shot_iterator()
-    el = iter.get_next()
-    print('el ', el.shape)
+    iter = dataset.make_one_shot_iterator().get_next()
+
+    # Example on how to read elements
+    while True:
+        try:
+            data = tf.Session.run(iter)
+            print(data.shape)
+        except tf.errors.OutOfRangeError:
+            print('done.')
+            break
+
     #images, labels = el["X"], el["Y"]
     #print('images ', images.output_types, images.output_shapes)
     #print('labels', labels.output_types, labels.output_shapes)
