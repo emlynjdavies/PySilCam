@@ -110,8 +110,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Get images and labels for CIFAR-10.
     images, labels = trainX, np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    print('images ', images[0])
-    print('labels', labels[0])
+    print('images ', images.shape, images[0])
+    print('labels', labels.shape, labels[0])
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
@@ -122,6 +122,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     # Dequeues one batch for the GPU
                     image_batch, label_batch = batch_queue.dequeue()
+                    '''
+                    ################################################################
                     # Calculate the loss for one tower of the CIFAR model. This function
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
@@ -214,7 +216,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         if step % 1000 == 0 or (step + 1) == mg.max_steps:
             checkpoint_path = os.path.join(MODEL_PATH + '/' + round_path, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step)
-
+#######################################################################################
+'''
 # #######################################################################################            
 '''
 tf.reset_default_graph()
