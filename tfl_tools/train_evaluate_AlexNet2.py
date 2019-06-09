@@ -114,9 +114,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    dataset = tf.data.Dataset.from_generator(h5gen(out_train_hd5),
-                                           output_types= tf.float32,
-                                           output_shapes=(tf.TensorShape([None, 1])))
+    dataset = tf.data.Dataset.from_generator(h5gen(out_train_hd5))
     iter = dataset.make_one_shot_iterator()
     el = iter.get_next()
     print('el ', el.shape)
