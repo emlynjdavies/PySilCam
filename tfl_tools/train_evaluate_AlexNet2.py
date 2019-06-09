@@ -122,7 +122,9 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Example on how to read elements
     while True:
         try:
-            data = tf.Session.run(iter)
+            with tf.Session() as sess:
+                data = sess.run(iter)
+                print(data.shape)
             print(data.shape)
         except tf.errors.OutOfRangeError:
             print('done.')
