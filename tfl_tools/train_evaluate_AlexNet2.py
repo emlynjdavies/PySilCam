@@ -111,11 +111,11 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    images = tf.data.Dataset.from_tensor_slices((out_train_hd5))
+    images, labels = tf.data.Dataset.from_tensor_slices(out_train_hd5)
     print('images ', images.output_types, images.output_shapes)
-    #print('labels', labels.output_types, labels.output_shapes)
+    print('labels', labels.output_types, labels.output_shapes)
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
-        [images], capacity=2 * mg.num_gpus)
+        [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
     tower_grads = []
     with tf.variable_scope(tf.get_variable_scope()):
