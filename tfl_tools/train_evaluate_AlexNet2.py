@@ -110,6 +110,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Get images and labels for CIFAR-10.
     images, labels = trainX, trainY.argmax(axis=0)
+    print('images ', images[0])
+    print('labels', labels[0])
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images, labels], capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
