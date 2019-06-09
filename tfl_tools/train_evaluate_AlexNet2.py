@@ -9,6 +9,7 @@ from net import Net
 import h5py
 import tflearn
 from train_over_gpus import train_multi_gpu as mg
+from h5_data import h5gen
 from datetime import datetime
 import os.path
 import re
@@ -71,15 +72,17 @@ model_file = os.path.join(MODEL_PATH, round_path + '/plankton-classifier.tfl')
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
-
+'''
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
 trainY = train_h5f['Y']
 testX = test_h5f['X']
 testY = test_h5f['Y']
+
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
+'''
 print(mg.num_gpus)
 print(mg.TOWER_NAME)
 
@@ -93,7 +96,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         initializer=tf.constant_initializer(0), trainable=False)
 
     # Calculate the learning rate schedule.
-    num_batches_per_epoch = (trainX.shape[0] /
+    num_batches_per_epoch = (387 /     # trainX.shape[0]
                              batch_size / mg.num_gpus)
     decay_steps = int(num_batches_per_epoch * mg.NUM_EPOCHS_PER_DECAY)
 
@@ -111,11 +114,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    images, labels = tf.data.Dataset.from_tensor_slices([trainX, trainY])
-    print('images ', images.output_types, images.output_shapes)
-    print('labels', labels.output_types, labels.output_shapes)
+    #images, labels = tf.data.Dataset.from_tensor_slices([trainX, trainY])
+    #print('images ', images.output_types, images.output_shapes)
+    #print('labels', labels.output_types, labels.output_shapes)
+
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
-        [images, labels], capacity=2 * mg.num_gpus)
+        h5gen(out_train_hd5), capacity=2 * mg.num_gpus)
     # Calculate the gradients for each model tower.
     tower_grads = []
     with tf.variable_scope(tf.get_variable_scope()):
@@ -124,7 +128,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     # Dequeues one batch for the GPU
                     image_batch, label_batch = batch_queue.dequeue()
-                    '''
+
                     ################################################################
                     # Calculate the loss for one tower of the CIFAR model. This function
                     # constructs the entire CIFAR model but shares the variables across
@@ -219,7 +223,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
             checkpoint_path = os.path.join(MODEL_PATH + '/' + round_path, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step)
 #######################################################################################
-'''
+
 # #######################################################################################            
 '''
 tf.reset_default_graph()
