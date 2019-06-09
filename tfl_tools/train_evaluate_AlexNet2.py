@@ -119,7 +119,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                                            output_shapes=(tf.TensorShape([None, 1])))
     iter = dataset.make_one_shot_iterator()
     el = iter.get_next()
-    print('el ', el.shape, el.output_shapes)
+    print('el ', el.shape)
     #images, labels = el["X"], el["Y"]
     #print('images ', images.output_types, images.output_shapes)
     #print('labels', labels.output_types, labels.output_shapes)
