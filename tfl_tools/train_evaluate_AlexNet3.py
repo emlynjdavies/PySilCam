@@ -123,10 +123,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     set_y = tf.assign(Y, place_y, validate_shape=False)
 
     dataset = tf.data.Dataset.from_tensor_slices((set_x, set_y))
-    #dataset = dataset.map(
-    #    lambda images, labels: tuple(tf.py_func(
-    #        h5gen, out_train_hd5, [tf.float32, tf.float32]))
-    #)
     #iter = dataset.make_one_shot_iterator().get_next()
     dataset = dataset.prefetch(-1)
     dataset = dataset.repeat().batch(batch_size)
@@ -140,8 +136,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #print('images ', images.output_types, images.output_shapes)
     #print('labels', labels.output_types, labels.output_shapes)
     '''
-    images = trainX
-    labels = trainY
+    X = tf.Variable([0.0])
+    place_x = tf.placeholder(trainX.dtype, trainX.shape)
+    Y = tf.Variable([0.0])
+    place_y = tf.placeholder(trainY.dtype, trainY.shape)
+    images = tf.assign(X, place_x, validate_shape=False)
+    labels = tf.assign(Y, place_y, validate_shape=False)
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images,labels], capacity=2 * mg.num_gpus)
