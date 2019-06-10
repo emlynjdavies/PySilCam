@@ -126,8 +126,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     model, conv_arr = VGGNet.build_model(model_file)
                     #loss = mg.tower_loss(scope, model, label_batch)
 
+                    print("start training round ", round_num)
+                    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
+
 
 
     # Build an initialization operation to run below.
@@ -143,8 +147,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     config.gpu_options.allocator_type='BFC'
     config.gpu_options.per_process_gpu_memory_fraction=0.4
     sess = tf.Session(config=config)
-    print("start training round ", round_num)
-    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+
     # Save
     print("Saving model %f ..." % i)
     model.save(model_file)
