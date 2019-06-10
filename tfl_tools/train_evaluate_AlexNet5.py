@@ -84,6 +84,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
+tf.reset_default_graph()
 
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Calculate the learning rate schedule.
@@ -107,7 +108,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     model, conv_arr = AlexNet.build_model(model_file)
                     print("start training round ", round_num)
                     tflearn.is_training(True, session=sess)
-                    AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+                    AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
                     tf.get_variable_scope().reuse_variables()
     # Save
     print("Saving model %f ..." % i)
