@@ -88,12 +88,6 @@ tf.reset_default_graph()
 
 with tf.Graph().as_default(), tf.device('/cpu:0'):
 
-    # Create a variable to count the number of train() calls. This equals the
-    # number of batches processed * FLAGS.num_gpus.
-    global_step = tf.get_variable(
-        'global_step', [],
-        initializer=tf.constant_initializer(0), trainable=False)
-
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
             with tf.device('/gpu:%d' % i):
