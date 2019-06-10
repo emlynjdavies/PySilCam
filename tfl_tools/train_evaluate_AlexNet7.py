@@ -8,7 +8,7 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-
+from train_over_gpus import train_multi_gpu as mg
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
@@ -85,10 +85,11 @@ model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 
 with tf.device('/cpu:0'):
-    for d in ['/device:GPU:0', '/device:GPU:1']:
-        with tf.device(d):
-            model, conv_arr = AlexNet.build_model(model_file)
-            tf.get_variable_scope().reuse_variables()
+    with tf.variable_scope(tf.get_variable_scope()):
+        for i in range(mg.num_gpus):
+            with tf.device('/gpu:%d' % i):
+                model, conv_arr = AlexNet.build_model(model_file)
+                tf.get_variable_scope().reuse_variables()
     print("start training round ", round_num)
     AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
     # Save
