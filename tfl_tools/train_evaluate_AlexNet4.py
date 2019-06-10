@@ -120,7 +120,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     # Dequeues one batch for the GPU
                     image_batch, label_batch = batch_queue.dequeue()
-
                     ################################################################
                     # Calculate the loss for one tower of the CIFAR model. This function
                     # constructs the entire CIFAR model but shares the variables across
@@ -130,15 +129,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
+                    print("start training round ", round_num)
+                    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+                    # Save
+                    print("Saving model %f ..." % i)
+                    model.save(model_file)
 
-
-    # Track the moving averages of all trainable variables.
-    variable_averages = tf.train.ExponentialMovingAverage(
-        mg.MOVING_AVERAGE_DECAY, global_step)
-    variables_averages_op = variable_averages.apply(tf.trainable_variables())
-
-    # Create a saver.
-    saver = tf.train.Saver(tf.global_variables())
 
     # Build an initialization operation to run below.
     init = tf.global_variables_initializer()
@@ -149,9 +145,47 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     sess.run(init)
 
     # Start the queue runners.
-    tf.train.start_queue_runners(sess=sess)
+    #tf.train.start_queue_runners(sess=sess)
 
-    summary_writer = tf.summary.FileWriter(MODEL_PATH + '/' + round_path, sess.graph)
+    # Evaluate
+    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+        VGGNet.evaluate(model, testX, testY)
+
+    ## update summaries ###
+    prediction.append(y_pred)
+    test.append(y_true)
+    accuracy.append(acc)
+    precision.append(pre)
+    recall.append(rec)
+    f1_score.append(f1sc)
+    confusion_matrix.append(conf_matrix)
+    normalised_confusion_matrix.append(norm_conf_matrix)
+
+    for i in range(0, n_splits):
+        fh.write("\nRound ")
+        if i < 10:
+            j = '0' + str(i)
+        fh.write(j)
+        print("Round ", j)
+        fh.write("\nPredictions: ")
+        for el in y_pred:
+            fh.write("%s " % el)
+        fh.write("\ny_true: ")
+        for el in y_true:
+            fh.write("%s " % el)
+        print("\nAccuracy: {}%".format(100 * accuracy[i]))
+        fh.write("\nAccuracy: {}%".format(100 * accuracy[i]))
+        print("Precision: {}%".format(100 * precision[i]))
+        fh.write("\tPrecision: {}%".format(100 * precision[i]))
+        print("Recall: {}%".format(100 * recall[i]))
+        fh.write("\tRecall: {}%".format(100 * recall[i]))
+        print("F1_Score: {}%".format(100 * f1_score[i]))
+        fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
+        print("confusion_matrix: ", confusion_matrix[i])
+        print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+    fh.close
+
+    #summary_writer = tf.summary.FileWriter(MODEL_PATH + '/' + round_path, sess.graph)
 
 # #######################################################################################            
 '''
