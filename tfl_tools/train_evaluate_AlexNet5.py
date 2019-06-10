@@ -86,9 +86,8 @@ round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 tf.reset_default_graph()
 
-with tf.device('/cpu:0'): # tf.Graph().as_default(),
+with tf.Graph().as_default(), tf.device('/cpu:0'):
 
-    '''
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
     global_step = tf.get_variable(
@@ -107,20 +106,18 @@ with tf.device('/cpu:0'): # tf.Graph().as_default(),
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images, labels], capacity=2 * mg.num_gpus)
-    '''
 
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
             with tf.device('/gpu:%d' % i):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
-                    #image_batch, label_batch = batch_queue.dequeue()
+                    image_batch, label_batch = batch_queue.dequeue()
                     model, conv_arr = AlexNet.build_model(model_file)
+
+                    print("start training round ", round_num)
+                    tflearn.is_training(True, session=sess)
+                    AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
                     tf.get_variable_scope().reuse_variables()
-
-    print("start training round ", round_num)
-    tflearn.is_training(True, session=sess)
-    AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-
 
     # Save
     print("Saving model %f ..." % i)
