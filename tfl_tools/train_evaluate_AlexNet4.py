@@ -121,20 +121,12 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
             with tf.device('/gpu:%d' % i):
-                with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
-                    # Dequeues one batch for the GPU
-                    image_batch, label_batch = batch_queue.dequeue()
-                    ################################################################
-                    # Calculate the loss for one tower of the CIFAR model. This function
-                    # constructs the entire CIFAR model but shares the variables across
-                    # all towers.
                 model, conv_arr = VGGNet.build_model(model_file)
-                #loss = mg.tower_loss(scope, model, label_batch)
                 # Reuse variables for the next tower.
                 tf.get_variable_scope().reuse_variables()
 
                 print("start training round ", round_num)
-                VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+                VGGNet.train(model, images, labels, testX, testY, round_num, n_epoch, batch_size)
 
 
 
