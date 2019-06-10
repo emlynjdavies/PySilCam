@@ -96,9 +96,9 @@ tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=Tru
 config = tf.ConfigProto(allow_soft_placement=True)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.4
-init = tf.global_variables_initializer()
+
 sess = tf.Session(config=config)
-sess.run(init)
+sess.run(tf.global_variables_initializer())
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
@@ -131,6 +131,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
                     model, conv_arr = VGGNet.build_model(model_file)
+                    tflearn.is_training(True, session=sess)
 
                     print("start training round ", round_num)
                     VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
@@ -142,6 +143,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     model.save(model_file)
 
 # Evaluate
+tflearn.is_training(False, session=sess)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
     VGGNet.evaluate(model, testX, testY)
 
