@@ -113,8 +113,16 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Get images and labels for CIFAR-10.
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
 
+
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    dataset = tf.data.Dataset.from_tensor_slices((trainX, trainY))
+    X = tf.Variable([0.0])
+    place_x = tf.placeholder(trainX.dtype, trainX.shape)
+    Y = tf.Variable([0.0])
+    place_y = tf.placeholder(trainY.dtype, trainY.shape)
+    set_x = tf.assign(X, place_x, validate_shape=False)
+    set_y = tf.assign(Y, place_y, validate_shape=False)
+
+    dataset = tf.data.Dataset.from_tensor_slices((set_x, set_y))
     #dataset = dataset.map(
     #    lambda images, labels: tuple(tf.py_func(
     #        h5gen, out_train_hd5, [tf.float32, tf.float32]))
