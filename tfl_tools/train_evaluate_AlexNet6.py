@@ -86,17 +86,15 @@ round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 tf.reset_default_graph()
 
-for i in range(mg.num_gpus):
-    with tf.device('/gpu:%d' % i):
+for d in ['/device:GPU:0', '/device:GPU:1']:
+    with tf.device(d):
         model, conv_arr = AlexNet.build_model(model_file)
-        tf.get_variable_scope().reuse_variables()
 
 with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     print("start training round ", round_num)
     tflearn.is_training(True, session=sess)
     AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-
 
     # Save
     print("Saving model %f ..." % i)
