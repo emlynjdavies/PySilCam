@@ -90,8 +90,8 @@ with tf.device('/cpu:0'):
             with tf.device('/gpu:%d' % i):
                 model, conv_arr = AlexNet.build_model(model_file)
                 tf.get_variable_scope().reuse_variables()
-    print("start training round ", round_num)
-    AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+                print("start training round ", round_num)
+                AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
     # Save
     print("Saving model %f ..." % i)
     model.save(model_file)
