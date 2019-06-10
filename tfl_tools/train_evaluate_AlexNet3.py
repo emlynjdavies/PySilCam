@@ -88,17 +88,6 @@ print(mg.TOWER_NAME)
 
 # ###########################################################################
 """Train CIFAR-10 for a number of steps."""
-#sess = tf.Session(config=tf.ConfigProto(
-    #    allow_soft_placement=True,
-    #    log_device_placement=mg.log_device_placement))
-tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
-config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.4
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
-tf.reset_default_graph()
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 with tf.Graph().as_default(), tf.device('/cpu:0'):
@@ -199,10 +188,19 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Start running operations on the Graph. allow_soft_placement must be set to
     # True to build towers on GPU, as some of the ops do not have GPU
     # implementations.
-    sess = tf.Session(config=config)
-    #sess = tf.Session(config=tf.ConfigProto(
-    #    allow_soft_placement=True,
-    #    log_device_placement=mg.log_device_placement))
+    #tf.reset_default_graph()
+    #tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True)  # num_cores default is All
+    #config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+    #config.gpu_options.allocator_type = 'BFC'
+    #config.gpu_options.per_process_gpu_memory_fraction = 0.4
+    #config.gpu_options.allow_growth = True
+    #sess = tf.Session(config=config)
+    #tf.reset_default_graph()
+
+    #sess = tf.Session(config=config)
+    sess = tf.Session(config=tf.ConfigProto(
+        allow_soft_placement=True,
+        log_device_placement=mg.log_device_placement))
     sess.run(init)
 
     # Start the queue runners.
