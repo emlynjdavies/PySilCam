@@ -91,6 +91,12 @@ print(mg.TOWER_NAME)
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 tf.reset_default_graph()
+
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
+config = tf.ConfigProto(allow_soft_placement=True)
+config.gpu_options.allocator_type='BFC'
+config.gpu_options.per_process_gpu_memory_fraction=0.4
+sess = tf.Session(config=config)
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
@@ -128,6 +134,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
+                    print("start training round ", round_num)
+                    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
 
     # Build an initialization operation to run below.
     #init = tf.global_variables_initializer()
@@ -136,14 +144,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #    allow_soft_placement=True,
     #    log_device_placement=mg.log_device_placement))
     #sess.run(init)
-    tf.reset_default_graph()
-    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
-    config = tf.ConfigProto(allow_soft_placement=True)
-    config.gpu_options.allocator_type='BFC'
-    config.gpu_options.per_process_gpu_memory_fraction=0.4
-    sess = tf.Session(config=config)
-    print("start training round ", round_num)
-    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+
 
 
     # Save
