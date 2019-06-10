@@ -88,7 +88,18 @@ print(mg.TOWER_NAME)
 
 # ###########################################################################
 """Train CIFAR-10 for a number of steps."""
+#sess = tf.Session(config=tf.ConfigProto(
+    #    allow_soft_placement=True,
+    #    log_device_placement=mg.log_device_placement))
 tf.reset_default_graph()
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+config = tf.ConfigProto(allow_soft_placement=True)
+config.gpu_options.allocator_type='BFC'
+config.gpu_options.per_process_gpu_memory_fraction=0.4
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+round_num = 'AlexNetGPUSMALL'
+model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
@@ -110,33 +121,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(lr)
-    '''
-    # Get images and labels for CIFAR-10.
-    #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
-    
 
-    #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
-    X = tf.Variable([0.0])
-    place_x = tf.placeholder(trainX.dtype, trainX.shape)
-    Y = tf.Variable([0.0])
-    place_y = tf.placeholder(trainY.dtype, trainY.shape)
-    set_x = tf.assign(X, place_x, validate_shape=False)
-    set_y = tf.assign(Y, place_y, validate_shape=False)
-
-    dataset = tf.data.Dataset.from_tensor_slices((set_x, set_y))
-    #iter = dataset.make_one_shot_iterator().get_next()
-    dataset = dataset.prefetch(-1)
-    dataset = dataset.repeat().batch(batch_size)
-    # iterator = dataset.make_one_shot_iterator()
-    iterator = dataset.make_initializable_iterator()
-    next_batch = iterator.get_next()
-    images, labels = next_batch['input'], next_batch['target']
-    tf.summary.image('images', images)
-
-    #images, labels = el["X"], el["Y"]
-    #print('images ', images.output_types, images.output_shapes)
-    #print('labels', labels.output_types, labels.output_shapes)
-    '''
     X = tf.Variable([0.0])
     place_x = tf.placeholder(trainX.dtype, trainX.shape)
     Y = tf.Variable([0.0])
@@ -213,9 +198,10 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Start running operations on the Graph. allow_soft_placement must be set to
     # True to build towers on GPU, as some of the ops do not have GPU
     # implementations.
-    sess = tf.Session(config=tf.ConfigProto(
-        allow_soft_placement=True,
-        log_device_placement=mg.log_device_placement))
+    sess = tf.Session(config=config)
+    #sess = tf.Session(config=tf.ConfigProto(
+    #    allow_soft_placement=True,
+    #    log_device_placement=mg.log_device_placement))
     sess.run(init)
 
     # Start the queue runners.
