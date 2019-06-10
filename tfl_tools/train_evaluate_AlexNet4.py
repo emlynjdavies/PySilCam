@@ -101,7 +101,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (trainX.shape[0] /
                              batch_size / mg.num_gpus)
-    decay_steps = int(num_batches_per_epoch * mg.NUM_EPOCHS_PER_DECAY)
 
     X = tf.Variable([0.0])
     place_x = tf.placeholder(trainX.dtype, trainX.shape)
@@ -134,6 +133,19 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # Save
                     print("Saving model %f ..." % i)
                     model.save(model_file)
+                    # Evaluate
+                    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+                        VGGNet.evaluate(model, testX, testY)
+
+                    ## update summaries ###
+                    prediction.append(y_pred)
+                    test.append(y_true)
+                    accuracy.append(acc)
+                    precision.append(pre)
+                    recall.append(rec)
+                    f1_score.append(f1sc)
+                    confusion_matrix.append(conf_matrix)
+                    normalised_confusion_matrix.append(norm_conf_matrix)
 
 
     # Build an initialization operation to run below.
@@ -147,19 +159,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Start the queue runners.
     #tf.train.start_queue_runners(sess=sess)
 
-    # Evaluate
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
 
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
 
     for i in range(0, n_splits):
         fh.write("\nRound ")
@@ -185,97 +185,5 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
     fh.close
 
-    #summary_writer = tf.summary.FileWriter(MODEL_PATH + '/' + round_path, sess.graph)
 
-# #######################################################################################            
-'''
-tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True)
-config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.9
-sess = tf.Session(config=config)
-round_num = 'GoogleNetGPUSMALL'
-model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
-
-# with tf.device('/gpu:0'):
-for d in ['/device:GPU:0', '/device:GPU:1']:
-    with tf.device(d):
-        model, conv_arr = VGGNet.build_model(model_file)
-
-with tf.device('/cpu:0'):
-    print("start training round ", round_num)
-    VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-    # Save
-    print("Saving model %f ..." % i)
-    model.save(model_file)
-    # Evaluate
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
-
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
-
-
-    for i in range(0, n_splits):
-        fh.write("\nRound ")
-        if i < 10:
-            j = '0' + str(i)
-        fh.write(j)
-        print("Round ", j)
-        fh.write("\nPredictions: ")
-        for el in y_pred:
-            fh.write("%s " % el)
-        fh.write("\ny_true: ")
-        for el in y_true:
-            fh.write("%s " % el)
-        print("\nAccuracy: {}%".format(100*accuracy[i]))
-        fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
-        print("Precision: {}%".format(100 * precision[i]))
-        fh.write("\tPrecision: {}%".format(100 * precision[i]))
-        print("Recall: {}%".format(100 * recall[i]))
-        fh.write("\tRecall: {}%".format(100 * recall[i]))
-        print("F1_Score: {}%".format(100 * f1_score[i]))
-        fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
-        print("confusion_matrix: ", confusion_matrix[i])
-        print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
-    fh.close
-'''
-'''
-print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
-print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
-fh.write("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
-fh.write("\nOverall_STD_Accuracy: %.3f%%" % (stdev(accuracy)*100.0))
-
-print("\tOverall_Precision: %.3f%%" % (mean(precision)*100.0))
-print("\tOverall_STD_Precision: %.3f%%" % (stdev(precision)*100.0))
-fh.write("\tOverall_Precision: %.3f%% " % (mean(precision)*100.0))
-fh.write("\tOverall_STD_Precision: %.3f%% " % (stdev(precision)*100.0))
-
-print("\tOverall_Recall: %.3f%% " % (mean(recall)*100.0))
-print("\tOverall_STD_Recall: %.3f%% " % (stdev(recall)*100.0))
-fh.write("\tOverall_Recall: %.3f%% " % (mean(recall)*100.0))
-fh.write("\tOverall_STD_Recall: %.3f%% " % (stdev(recall)*100.0))
-
-print("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
-print("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
-fh.write("\tOverall_F1Score: %.3f%% " % (mean(f1_score)*100.0))
-fh.write("\tOverall_STD_F1Score: %.3f%% " % (stdev(f1_score)*100.0))
-
-print('Confusion_Matrix')
-for i in range(0,n_splits):
-    print(confusion_matrix[i])
-
-print('Normalized_Confusion_Matrix')
-for i in range(0,n_splits):
-    print(normalised_confusion_matrix[i])
-fh.close
-'''
 
