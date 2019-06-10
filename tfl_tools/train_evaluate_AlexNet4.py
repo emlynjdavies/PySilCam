@@ -133,19 +133,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # Save
                     print("Saving model %f ..." % i)
                     model.save(model_file)
-                    # Evaluate
-                    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-                        VGGNet.evaluate(model, testX, testY)
-
-                    ## update summaries ###
-                    prediction.append(y_pred)
-                    test.append(y_true)
-                    accuracy.append(acc)
-                    precision.append(pre)
-                    recall.append(rec)
-                    f1_score.append(f1sc)
-                    confusion_matrix.append(conf_matrix)
-                    normalised_confusion_matrix.append(norm_conf_matrix)
 
 
     # Build an initialization operation to run below.
@@ -156,10 +143,19 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         log_device_placement=mg.log_device_placement))
     sess.run(init)
 
-    # Start the queue runners.
-    #tf.train.start_queue_runners(sess=sess)
+    # Evaluate
+    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+        VGGNet.evaluate(model, testX, testY)
 
-
+    ## update summaries ###
+    prediction.append(y_pred)
+    test.append(y_true)
+    accuracy.append(acc)
+    precision.append(pre)
+    recall.append(rec)
+    f1_score.append(f1sc)
+    confusion_matrix.append(conf_matrix)
+    normalised_confusion_matrix.append(norm_conf_matrix)
 
     for i in range(0, n_splits):
         fh.write("\nRound ")
