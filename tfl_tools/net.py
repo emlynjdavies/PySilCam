@@ -619,7 +619,7 @@ class Net:
         net = fully_connected(net, 4096, activation='tanh')
         net = dropout(net, self.keep_prob)
         net = fully_connected(net, 4096, activation='tanh')
-        net = dropout(net, self.keep_prob)
+        #net = dropout(net, self.keep_prob)
         net = fully_connected(net, self.num_classes + 1, activation='softmax')
         net = regression(net, optimizer='momentum',
                              loss='categorical_crossentropy',
