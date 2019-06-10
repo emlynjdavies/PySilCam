@@ -106,10 +106,11 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     image_batch, label_batch = batch_queue.dequeue()
                     model, conv_arr = AlexNet.build_model(model_file)
-                    print("start training round ", round_num)
-                    tflearn.is_training(True, session=sess)
-                    AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
-                    tf.get_variable_scope().reuse_variables()
+    print("start training round ", round_num)
+    tflearn.is_training(True, session=sess)
+    AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+    tf.get_variable_scope().reuse_variables()
+
     # Save
     print("Saving model %f ..." % i)
     model.save(model_file)
