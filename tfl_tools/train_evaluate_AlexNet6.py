@@ -97,9 +97,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
             with tf.device('/gpu:%d' % i):
-                with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
-                    model, conv_arr = AlexNet.build_model(model_file)
-                    tf.get_variable_scope().reuse_variables()
+                model, conv_arr = AlexNet.build_model(model_file)
+                tf.get_variable_scope().reuse_variables()
 
     print("start training round ", round_num)
     tflearn.is_training(True, session=sess)
