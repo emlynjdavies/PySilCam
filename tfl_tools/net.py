@@ -590,7 +590,7 @@ class Net:
         '''
         print("Building AlexNet")
         print(self.name)
-        #tf.reset_default_graph()
+        tf.reset_default_graph()
         # Include the input layer, hidden layer(s), and set how you want to train the model
         inputsize = self.input_width * self.input_height * self.input_channels
         print("Inputlayer-size: %d" % (inputsize))

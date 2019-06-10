@@ -8,7 +8,6 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-from train_over_gpus import train_multi_gpu as mg
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
@@ -76,33 +75,29 @@ print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+config = tf.ConfigProto(allow_soft_placement=True)
 config.gpu_options.allocator_type='BFC'
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction=0.3
+config.gpu_options.per_process_gpu_memory_fraction=0.9
 sess = tf.Session(config=config)
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
-tf.reset_default_graph()
 
+# with tf.device('/gpu:0'):
 for d in ['/device:GPU:0', '/device:GPU:1']:
     with tf.device(d):
         model, conv_arr = AlexNet.build_model(model_file)
 
-with tf.Graph().as_default(), tf.device('/cpu:0'):
-
+with tf.device('/cpu:0'):
     print("start training round ", round_num)
-    tflearn.is_training(True, session=sess)
     AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-
     # Save
     print("Saving model %f ..." % i)
     model.save(model_file)
     # Evaluate
-    tflearn.is_training(False, session=sess)
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        AlexNet.evaluate(model, testX, testY)
+        VGGNet.evaluate(model, testX, testY)
+
     ## update summaries ###
     prediction.append(y_pred)
     test.append(y_true)
@@ -113,30 +108,30 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     confusion_matrix.append(conf_matrix)
     normalised_confusion_matrix.append(norm_conf_matrix)
 
-for i in range(0, n_splits):
-    fh.write("\nRound ")
-    if i < 10:
-        j = '0' + str(i)
-    fh.write(j)
-    print("Round ", j)
-    fh.write("\nPredictions: ")
-    for el in y_pred:
-        fh.write("%s " % el)
-    fh.write("\ny_true: ")
-    for el in y_true:
-        fh.write("%s " % el)
-    print("\nAccuracy: {}%".format(100*accuracy[i]))
-    fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
-    print("Precision: {}%".format(100 * precision[i]))
-    fh.write("\tPrecision: {}%".format(100 * precision[i]))
-    print("Recall: {}%".format(100 * recall[i]))
-    fh.write("\tRecall: {}%".format(100 * recall[i]))
-    print("F1_Score: {}%".format(100 * f1_score[i]))
-    fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
-    print("confusion_matrix: ", confusion_matrix[i])
-    print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
-fh.close
 
+    for i in range(0, n_splits):
+        fh.write("\nRound ")
+        if i < 10:
+            j = '0' + str(i)
+        fh.write(j)
+        print("Round ", j)
+        fh.write("\nPredictions: ")
+        for el in y_pred:
+            fh.write("%s " % el)
+        fh.write("\ny_true: ")
+        for el in y_true:
+            fh.write("%s " % el)
+        print("\nAccuracy: {}%".format(100*accuracy[i]))
+        fh.write("\nAccuracy: {}%".format(100*accuracy[i]))
+        print("Precision: {}%".format(100 * precision[i]))
+        fh.write("\tPrecision: {}%".format(100 * precision[i]))
+        print("Recall: {}%".format(100 * recall[i]))
+        fh.write("\tRecall: {}%".format(100 * recall[i]))
+        print("F1_Score: {}%".format(100 * f1_score[i]))
+        fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
+        print("confusion_matrix: ", confusion_matrix[i])
+        print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+    fh.close
 '''
 print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
 print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
