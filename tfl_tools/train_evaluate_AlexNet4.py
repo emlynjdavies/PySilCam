@@ -126,7 +126,7 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
                     model, conv_arr = VGGNet.build_model(model_file)
-                    loss = mg.tower_loss(scope, model, label_batch)
+                    #loss = mg.tower_loss(scope, model, label_batch)
 
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
