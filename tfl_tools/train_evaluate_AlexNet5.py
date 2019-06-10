@@ -84,15 +84,16 @@ config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
-tf.reset_default_graph()
 
-with tf.Graph().as_default(), tf.device('/cpu:0'):
+
+with tf.Graph().as_default(), sess, tf.device('/cpu:0'):
+    tf.reset_default_graph()
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
     global_step = tf.get_variable(
         'global_step', [],
         initializer=tf.constant_initializer(0), trainable=False)
-    
+
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (trainX.shape[0] /
                              batch_size / mg.num_gpus)
