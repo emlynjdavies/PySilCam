@@ -106,27 +106,28 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                 with tf.name_scope('%s_%d' % (mg.TOWER_NAME, i)) as scope:
                     image_batch, label_batch = batch_queue.dequeue()
                     model, conv_arr = AlexNet.build_model(model_file)
-    print("start training round ", round_num)
-    tflearn.is_training(True, session=sess)
-    AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
-    tf.get_variable_scope().reuse_variables()
+                    
+print("start training round ", round_num)
+tflearn.is_training(True, session=sess)
+AlexNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+tf.get_variable_scope().reuse_variables()
 
-    # Save
-    print("Saving model %f ..." % i)
-    model.save(model_file)
-    # Evaluate
-    tflearn.is_training(False, session=sess)
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        AlexNet.evaluate(model, testX, testY)
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
+# Save
+print("Saving model %f ..." % i)
+model.save(model_file)
+# Evaluate
+tflearn.is_training(False, session=sess)
+y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+    AlexNet.evaluate(model, testX, testY)
+## update summaries ###
+prediction.append(y_pred)
+test.append(y_true)
+accuracy.append(acc)
+precision.append(pre)
+recall.append(rec)
+f1_score.append(f1sc)
+confusion_matrix.append(conf_matrix)
+normalised_confusion_matrix.append(norm_conf_matrix)
 
 for i in range(0, n_splits):
     fh.write("\nRound ")
