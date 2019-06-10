@@ -590,7 +590,7 @@ class Net:
         '''
         print("Building AlexNet")
         print(self.name)
-        #tf.reset_default_graph()
+        tf.reset_default_graph()
         # Include the input layer, hidden layer(s), and set how you want to train the model
         inputsize = self.input_width * self.input_height * self.input_channels
         print("Inputlayer-size: %d" % (inputsize))
@@ -617,9 +617,9 @@ class Net:
         net = max_pool_2d(net, 3, strides=2)
         net = local_response_normalization(net)
         net = fully_connected(net, 4096, activation='tanh')
-        #net = dropout(net, self.keep_prob)
+        net = dropout(net, self.keep_prob)
         net = fully_connected(net, 4096, activation='tanh')
-        #net = dropout(net, self.keep_prob)
+        net = dropout(net, self.keep_prob)
         net = fully_connected(net, self.num_classes + 1, activation='softmax')
         net = regression(net, optimizer='momentum',
                              loss='categorical_crossentropy',
