@@ -77,7 +77,7 @@ print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True)
+config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction=0.3
@@ -89,7 +89,10 @@ tf.reset_default_graph()
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
-    global_step = tf.get_variable(0, name='global_step', trainable=False)
+    #global_step = tf.get_variable(
+    #    'global_step', [],
+    #    initializer=tf.constant_initializer(0), trainable=False)
+    global_step = tf.get_variable(0, name = 'global_step', trainable = False)
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (trainX.shape[0] /
                              batch_size / mg.num_gpus)
