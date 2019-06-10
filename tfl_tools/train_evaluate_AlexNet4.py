@@ -100,9 +100,10 @@ sess = tf.Session(config=config)
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
-    global_step = tf.get_variable(
-        'global_step', [],
-        initializer=tf.constant_initializer(0), trainable=False)
+    #global_step = tf.get_variable(
+    #    'global_step', [],
+    #    initializer=tf.constant_initializer(0), trainable=False)
+    global_step = tf.Variable(0, name='global_step', trainable=False)
 
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (trainX.shape[0] /
