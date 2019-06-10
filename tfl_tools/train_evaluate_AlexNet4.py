@@ -128,11 +128,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
-                    print("start training round ", round_num)
-                    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
-                    # Save
-                    print("Saving model %f ..." % i)
-                    model.save(model_file)
 
 
     # Build an initialization operation to run below.
@@ -142,6 +137,11 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
         allow_soft_placement=True,
         log_device_placement=mg.log_device_placement))
     sess.run(init)
+    print("start training round ", round_num)
+    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
+    # Save
+    print("Saving model %f ..." % i)
+    model.save(model_file)
 
     # Evaluate
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
