@@ -75,10 +75,10 @@ print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
 config = tf.ConfigProto(allow_soft_placement=True)
 config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.9
+config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
@@ -96,7 +96,7 @@ with tf.device('/cpu:0'):
     model.save(model_file)
     # Evaluate
     y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
+        AlexNet.evaluate(model, testX, testY)
 
     ## update summaries ###
     prediction.append(y_pred)
