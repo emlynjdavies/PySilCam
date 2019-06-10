@@ -131,12 +131,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
 
-                    # Retain the summaries from the final tower.
-                    summaries = tf.get_collection(tf.GraphKeys.SUMMARIES, scope)
-
-    # Add histograms for trainable variables.
-    for var in tf.trainable_variables():
-        summaries.append(tf.summary.histogram(var.op.name, var))
 
     # Track the moving averages of all trainable variables.
     variable_averages = tf.train.ExponentialMovingAverage(
@@ -145,9 +139,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Create a saver.
     saver = tf.train.Saver(tf.global_variables())
-
-    # Build the summary operation from the last tower summaries.
-    summary_op = tf.summary.merge(summaries)
 
     # Build an initialization operation to run below.
     init = tf.global_variables_initializer()
