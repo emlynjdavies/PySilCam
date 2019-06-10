@@ -93,11 +93,13 @@ print(mg.TOWER_NAME)
     #    log_device_placement=mg.log_device_placement))
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True)
+config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
+config.gpu_options.log_device_placement=True
 sess = tf.Session(config=config)
+tf.reset_default_graph()
 round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 with tf.Graph().as_default(), tf.device('/cpu:0'):
