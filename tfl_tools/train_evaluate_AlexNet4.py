@@ -117,7 +117,6 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images,labels], capacity=2 * mg.num_gpus)
-    # Calculate the gradients for each model tower.
 
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
@@ -138,56 +137,47 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     tf.get_variable_scope().reuse_variables()
 
 
-    # Build an initialization operation to run below.
-    #init = tf.global_variables_initializer()
+# Save
+print("Saving model %f ..." % i)
+model.save(model_file)
 
-    #sess = tf.Session(config=tf.ConfigProto(
-    #    allow_soft_placement=True,
-    #    log_device_placement=mg.log_device_placement))
-    #sess.run(init)
+# Evaluate
+y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+    VGGNet.evaluate(model, testX, testY)
 
+## update summaries ###
+prediction.append(y_pred)
+test.append(y_true)
+accuracy.append(acc)
+precision.append(pre)
+recall.append(rec)
+f1_score.append(f1sc)
+confusion_matrix.append(conf_matrix)
+normalised_confusion_matrix.append(norm_conf_matrix)
 
-    # Save
-    print("Saving model %f ..." % i)
-    model.save(model_file)
-
-    # Evaluate
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
-
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
-
-    for i in range(0, n_splits):
-        fh.write("\nRound ")
-        if i < 10:
-            j = '0' + str(i)
-        fh.write(j)
-        print("Round ", j)
-        fh.write("\nPredictions: ")
-        for el in y_pred:
-            fh.write("%s " % el)
-        fh.write("\ny_true: ")
-        for el in y_true:
-            fh.write("%s " % el)
-        print("\nAccuracy: {}%".format(100 * accuracy[i]))
-        fh.write("\nAccuracy: {}%".format(100 * accuracy[i]))
-        print("Precision: {}%".format(100 * precision[i]))
-        fh.write("\tPrecision: {}%".format(100 * precision[i]))
-        print("Recall: {}%".format(100 * recall[i]))
-        fh.write("\tRecall: {}%".format(100 * recall[i]))
-        print("F1_Score: {}%".format(100 * f1_score[i]))
-        fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
-        print("confusion_matrix: ", confusion_matrix[i])
-        print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
-    fh.close
+for i in range(0, n_splits):
+    fh.write("\nRound ")
+    if i < 10:
+        j = '0' + str(i)
+    fh.write(j)
+    print("Round ", j)
+    fh.write("\nPredictions: ")
+    for el in y_pred:
+        fh.write("%s " % el)
+    fh.write("\ny_true: ")
+    for el in y_true:
+        fh.write("%s " % el)
+    print("\nAccuracy: {}%".format(100 * accuracy[i]))
+    fh.write("\nAccuracy: {}%".format(100 * accuracy[i]))
+    print("Precision: {}%".format(100 * precision[i]))
+    fh.write("\tPrecision: {}%".format(100 * precision[i]))
+    print("Recall: {}%".format(100 * recall[i]))
+    fh.write("\tRecall: {}%".format(100 * recall[i]))
+    print("F1_Score: {}%".format(100 * f1_score[i]))
+    fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
+    print("confusion_matrix: ", confusion_matrix[i])
+    print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+fh.close
 
 
 
