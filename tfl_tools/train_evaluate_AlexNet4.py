@@ -100,10 +100,9 @@ sess = tf.Session(config=config)
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
-    #global_step = tf.get_variable(
-    #    'global_step', [],
-    #    initializer=tf.constant_initializer(0), trainable=False)
-    global_step = tf.Variable(0, name='global_step', trainable=False)
+    global_step = tf.get_variable(
+        'global_step', [],
+        initializer=tf.constant_initializer(0), trainable=False)
 
     # Calculate the learning rate schedule.
     num_batches_per_epoch = (trainX.shape[0] /
@@ -130,18 +129,15 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
                     # constructs the entire CIFAR model but shares the variables across
                     # all towers.
                     model, conv_arr = VGGNet.build_model(model_file)
+
+                    print("start training round ", round_num)
+                    VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
                     # Reuse variables for the next tower.
                     tf.get_variable_scope().reuse_variables()
 
-                print("start training round ", round_num)
-                VGGNet.train(model, image_batch, label_batch, testX, testY, round_num, n_epoch, batch_size)
-
-
-
-
-# Save
-print("Saving model %f ..." % i)
-model.save(model_file)
+    # Save
+    print("Saving model %f ..." % i)
+    model.save(model_file)
 
 # Evaluate
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
