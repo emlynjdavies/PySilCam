@@ -109,10 +109,10 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
 
     # Create an optimizer that performs gradient descent.
     opt = tf.train.GradientDescentOptimizer(lr)
-
+    '''
     # Get images and labels for CIFAR-10.
     #images = tf.convert_to_tensor(trainX, dtype=tf.float32)
-
+    
 
     #labels = tf.convert_to_tensor(trainY, dtype=tf.float32) #np.amax(trainY, axis=1) #trainY[trainY.argmax(axis=0)]
     X = tf.Variable([0.0])
@@ -130,7 +130,8 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #iter = dataset.make_one_shot_iterator().get_next()
     dataset = dataset.prefetch(-1)
     dataset = dataset.repeat().batch(batch_size)
-    iterator = dataset.make_one_shot_iterator()
+    # iterator = dataset.make_one_shot_iterator()
+    iterator = dataset.make_initializable_iterator()
     next_batch = iterator.get_next()
     images, labels = next_batch['input'], next_batch['target']
     tf.summary.image('images', images)
@@ -138,6 +139,9 @@ with tf.Graph().as_default(), tf.device('/cpu:0'):
     #images, labels = el["X"], el["Y"]
     #print('images ', images.output_types, images.output_shapes)
     #print('labels', labels.output_types, labels.output_shapes)
+    '''
+    images = trainX
+    labels = trainY
 
     batch_queue = tf.contrib.slim.prefetch_queue.prefetch_queue(
         [images,labels], capacity=2 * mg.num_gpus)
