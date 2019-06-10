@@ -86,7 +86,7 @@ round_num = 'AlexNetGPUSMALL'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 tf.reset_default_graph()
 
-with tf.Graph().as_default(), tf.device('/cpu:0'):
+with tf.device('/cpu:0'): # tf.Graph().as_default(),
 
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
