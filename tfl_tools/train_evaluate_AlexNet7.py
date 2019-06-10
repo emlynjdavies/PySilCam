@@ -18,7 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 #DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1v2.out')
 # -----------------------------
 
 name='AlexNet'
@@ -63,8 +63,8 @@ for i in range(0,n_splits):
         round_num = ''
 '''
 round_num = ''
-out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
-out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test2' + str(input_width) + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train2' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
@@ -80,7 +80,7 @@ config = tf.ConfigProto(allow_soft_placement=True)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
-round_num = 'AlexNetGPUSMALL'
+round_num = 'AlexNetGPUSMALL2'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 
