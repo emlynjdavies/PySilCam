@@ -88,6 +88,7 @@ print(mg.TOWER_NAME)
 
 # ###########################################################################
 """Train CIFAR-10 for a number of steps."""
+tf.reset_default_graph()
 with tf.Graph().as_default(), tf.device('/cpu:0'):
     # Create a variable to count the number of train() calls. This equals the
     # number of batches processed * FLAGS.num_gpus.
