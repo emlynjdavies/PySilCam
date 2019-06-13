@@ -189,6 +189,9 @@ class Net:
         elif self.name == 'CoapNet':
             print(self.name)
             return self.__build_CoapNet()
+        elif self.name == 'CoapNetGPU':
+            print(self.name)
+            return self.__build_CoapNetGPU()
 
     def __build_OrgNet(self):
         '''
@@ -323,6 +326,78 @@ class Net:
 
         net = regression(net, optimizer='adam', learning_rate=self.learning_rate,
                          loss='categorical_crossentropy', name='target')
+
+        # Wrap the network in a model object
+        model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
+
+        conv_arr = [conv_1, conv_2, conv_3, conv_4]
+        return model, conv_arr
+
+    def __build_CoapNetGPU(self):
+        with tf.device('/gpu:0'):
+
+            '''
+            Build the model based on CoapNet proposed architecture
+            :return: The model and and convolution array
+            '''
+            print("Building" + self.name + " model ...")
+            # This resets all parameters and variables, leave this here
+            tf.reset_default_graph()
+            # Include the input layer, hidden layer(s), and set how you want to train the model
+            inputsize = self.input_width * self.input_height * self.input_channels
+            print("Inputlayer-size: %d" % (inputsize))
+
+            # Define the network architecture
+            print("Define the network architecture...")
+            net = input_data(shape=[None, self.input_width, self.input_height, self.input_channels],
+                             data_preprocessing=self.__preprocessing(),
+                             data_augmentation=self.__data_augmentation(), name='input')
+            # Layer 1
+            print('Layer 1: Convolution layer with 32 filters, each 3x3x3')
+            # 1: Convolution layer with 64 filters, each 3x3x3
+            # incoming, number of filters, filter size, strides, padding, activation, bias, weigths_init, bias_init,
+            # regularizer, weight_decay
+            net = conv_2d(net, 64, 3, activation='relu', name='conv_1')
+            conv_1 = net
+            # 2: Max pooling layer
+            print('  2: Max pooling')
+            net = max_pool_2d(net, 2)
+
+            # Layer 2:
+            print('Layer 2:')
+            # 3: Convolution layer with 128 filters size 3 and stride 1
+            print('1: Convolution again')
+            net = conv_2d(net, 128, 3, activation='relu', name='conv_2')
+            conv_2 = net
+            net = max_pool_2d(net, 2)
+
+            # Layer 3
+            print('Layer 3: Convolution layer with 256 filters, each 3x3x3')
+            # 3: Convolution layer with 256 filters, each 3x3x3
+            net = conv_2d(net, 256, 3, activation='relu', name='conv_3')
+            conv_3 = net
+            net = max_pool_2d(net, 2)
+
+            # Layer 4
+            print('Layer 4: Convolution layer with 512 filters, each 3x3x3')
+            # 4: Convolution layer with 512 filters, each 3x3x3
+            net = conv_2d(net, 512, 3, activation='relu', name='conv_4')
+            conv_4 = net
+            net = max_pool_2d(net, 2)
+
+        with tf.device('/gpu:1'):
+            # Step 6: Fully-connected 512 node neural network
+            print('Step 6: Fully-connected 512 node neural network')
+            net = fully_connected(net, 512, activation='relu')
+
+            net = fully_connected(net, 256, activation='relu')
+            net = fully_connected(net, 256, activation='relu')
+
+            # Step 8: Fully-connected neural network with outputs to make the final prediction
+            net = fully_connected(net, self.num_classes + 1, activation='softmax')
+
+            net = regression(net, optimizer='adam', learning_rate=self.learning_rate,
+                             loss='categorical_crossentropy', name='target')
 
         # Wrap the network in a model object
         model = tflearn.DNN(net, tensorboard_verbose=3, checkpoint_path=self.check_point_file)
