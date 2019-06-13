@@ -78,8 +78,9 @@ print('testY.shape', type(testY), testY.shape, testY[0])
 '''
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True)
+config = tf.ConfigProto(allow_soft_placement=True, device_count = {'GPU':2})
 print('config.eval_distribute', config.eval_distribute)
+
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)

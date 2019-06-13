@@ -4,6 +4,7 @@ from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
+import tflearn
 
 
 
@@ -41,6 +42,15 @@ batch_size = 128 # 128
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
                        mode='file', categorical_labels=True, normalize=True)
+
+tf.reset_default_graph()
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
+config = tf.ConfigProto(allow_soft_placement=True, device_count = {'GPU':2})
+
+config.gpu_options.allocator_type='BFC'
+config.gpu_options.per_process_gpu_memory_fraction=0.3
+sess = tf.Session(config=config)
+
 n_splits = 0
 data_set = MakeData(X, Y, n_splits)
 
