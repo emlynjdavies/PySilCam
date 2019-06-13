@@ -9,8 +9,10 @@ import tflearn
 
 
 # -- PATHS ---------------------------
-DATABASE_PATH = 'Z:/DATA/dataset_test'
-MODEL_PATH = 'Z:/DATA/model/modelCV2'
+#DATABASE_PATH = 'Z:/DATA/dataset_test'
+DATABASE_PATH = '/mnt/DATA/dataset_test'
+MODEL_PATH = '/mnt/DATA/model/modelCV2'
+#MODEL_PATH = 'Z:/DATA/model/modelCV2'
 # DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 #DATABASE_PATH = '/mnt/DATA/dataset'
 #MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
