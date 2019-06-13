@@ -9,11 +9,11 @@ import tflearn
 
 
 # -- PATHS ---------------------------
-# DATABASE_PATH = 'Z:/DATA/dataset_test'
-# MODEL_PATH = 'Z:/DATA/model/modelCV2'
+DATABASE_PATH = 'Z:/DATA/dataset_test'
+MODEL_PATH = 'Z:/DATA/model/modelCV2'
 # DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-DATABASE_PATH = '/mnt/DATA/dataset'
-MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
+#DATABASE_PATH = '/mnt/DATA/dataset'
+#MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
 LOG_FILE = os.path.join(MODEL_PATH, 'CoapDNNGPU2.log')
@@ -52,7 +52,9 @@ config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
 
 n_splits = 0
+print('start make data ....')
 data_set = MakeData(X, Y, n_splits)
+print('after make data ....')
 print('Start building the model ....')
 LeNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
