@@ -77,13 +77,14 @@ print('testY.shape', type(testY), testY.shape, testY[0])
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
 config = tf.ConfigProto(allow_soft_placement=True)
+print('config.eval_distribute', config.eval_distribute)
 config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.3
 sess = tf.Session(config=config)
 round_num = 'AlexNetGPUSMALL2'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-
+'''
 with tf.device('/cpu:0'):
     with tf.variable_scope(tf.get_variable_scope()):
         for i in range(mg.num_gpus):
@@ -133,6 +134,7 @@ with tf.device('/cpu:0'):
         print("confusion_matrix: ", confusion_matrix[i])
         print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
     fh.close
+'''
 '''
 print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
 print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
