@@ -4,21 +4,18 @@ from tflearn.data_utils import image_preloader  # shuffle,
 from statistics import mean,stdev
 from make_data import MakeData
 from net import Net
-import tflearn
 
 
 
 # -- PATHS ---------------------------
-#DATABASE_PATH = 'Z:/DATA/dataset_test'
-DATABASE_PATH = '/mnt/DATA/dataset_test'
-MODEL_PATH = '/mnt/DATA/model/modelCV2'
-#MODEL_PATH = 'Z:/DATA/model/modelCV2'
+# DATABASE_PATH = 'Z:/DATA/dataset_test'
+# MODEL_PATH = 'Z:/DATA/model/modelCV2'
 # DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-#DATABASE_PATH = '/mnt/DATA/dataset'
-#MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
+DATABASE_PATH = '/mnt/DATA/dataset'
+MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
 #DATABASE_PATH = 'Z:/DATA/dataset'
 #MODEL_PATH = 'Z:/DATA/model/modelORGNET'
-LOG_FILE = os.path.join(MODEL_PATH, 'CoapDNNGPU2.log')
+LOG_FILE = os.path.join(MODEL_PATH, 'CoapDNNGPU.log')
 HEADER_FILE = os.path.join(MODEL_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that contains the list of images of the testing dataset along with their classes
 # set_file = os.path.join(MODEL_PATH,"image_set_win.dat")     # the file that contains the list of images of the testing dataset along with their classes
@@ -26,7 +23,7 @@ set_file = os.path.join(DATABASE_PATH,"image_set.dat")     # the file that conta
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-name='CoapNetGPU'
+name='CoapNet'
 input_width=64 # input_width=32
 input_height=64 # input_height=32
 input_channels=3
@@ -44,20 +41,9 @@ batch_size = 128 # 128
 print('Call image_preloader ....')
 X, Y = image_preloader(set_file, image_shape=(input_width, input_height, input_channels),
                        mode='file', categorical_labels=True, normalize=True)
-print('After image_preloader ....')
-tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
-config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True, device_count = {'GPU':2})
-
-config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.3
-sess = tf.Session(config=config)
-
 n_splits = 0
-print('start make data ....')
 data_set = MakeData(X, Y, n_splits)
-print('after make data ....')
-print('Start building the model ....')
+
 LeNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')

@@ -8,17 +8,16 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 # -- PATHS ---------------------------
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
-#DATABASE_PATH = '/mnt/DATA/dataset'
+DATABASE_PATH = '/mnt/DATA/dataset'
 #DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB2_v1.out')
 # -----------------------------
 
 name='AlexNet'
@@ -46,12 +45,12 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-VGGNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 fh.write(name)
 print(name)
-#for trainX, trainY, testX, testY in data_set.gen():
+'''
 for i in range(0,n_splits):
 
     if n_splits > 1:
@@ -61,64 +60,54 @@ for i in range(0,n_splits):
             round_num = '0' + round_num
     else:
         round_num = ''
-
-    out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
-    out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
-    train_h5f = h5py.File(out_train_hd5, 'r+')
-    test_h5f = h5py.File(out_test_hd5, 'r+')
-    trainX = train_h5f['X']
-    trainY = train_h5f['Y']
-    testX = test_h5f['X']
-    testY = test_h5f['Y']
-    print('testX.shape ', type(testX), testX.shape, testX[0])
-    print('testY.shape', type(testY), testY.shape, testY[0])
-
-    tf.reset_default_graph()
-    tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
-    config = tf.ConfigProto(allow_soft_placement=True)
-    config.gpu_options.allocator_type='BFC'
-    config.gpu_options.per_process_gpu_memory_fraction=0.9
-    sess = tf.Session(config=config)
-
-    model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
+'''
 
 
-    with tf.device('/gpu:0'):
-        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
-        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
-        model, conv_arr = VGGNet.build_model(model_file)
+round_num = ''
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_testdb2_' + str(input_width) + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
+train_h5f = h5py.File(out_train_hd5, 'r+')
+test_h5f = h5py.File(out_test_hd5, 'r+')
+trainX = train_h5f['X']
+trainY = train_h5f['Y']
+testX = test_h5f['X']
+testY = test_h5f['Y']
+print('testX.shape ', type(testX), testX.shape, testX[0])
+print('testY.shape', type(testY), testY.shape, testY[0])
 
-        # Force all Variables to reside on the CPU.
-        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-        #    model1 = model
-    # Reuse Variables for the next model
-    tf.get_variable_scope().reuse_variables()
-    with tf.device('/gpu:1'):
-        #with tf.variable_scope(tflearn.variables.variable, caching_device='/cpu:0'):
-        #with tf.variable_scope([tflearn.variables.variable], device='/cpu:0'):
-        # Training
-        print("start training round ", round_num)
-        VGGNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
-        # with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
-        #    model2 = model
+tf.reset_default_graph()
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
+#config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
+config = tf.ConfigProto(allow_soft_placement=True)
 
-    # Save
-    print("Saving model %f ..." % i)
-    model.save(model_file)
+config.gpu_options.allocator_type='BFC'
+config.gpu_options.per_process_gpu_memory_fraction=0.3
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+round_num = 'AlexNetGPU'
+model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-    # Evaluate
-    y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-        VGGNet.evaluate(model, testX, testY)
+model, conv_arr = AlexNet.build_model(model_file)
+tf.get_variable_scope().reuse_variables()
+print("start training round ", round_num)
+AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
-    ## update summaries ###
-    prediction.append(y_pred)
-    test.append(y_true)
-    accuracy.append(acc)
-    precision.append(pre)
-    recall.append(rec)
-    f1_score.append(f1sc)
-    confusion_matrix.append(conf_matrix)
-    normalised_confusion_matrix.append(norm_conf_matrix)
+# Save
+print("Saving model %f ..." % i)
+model.save(model_file)
+# Evaluate
+y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
+    AlexNet.evaluate(model, testX, testY)
+
+## update summaries ###
+prediction.append(y_pred)
+test.append(y_true)
+accuracy.append(acc)
+precision.append(pre)
+recall.append(rec)
+f1_score.append(f1sc)
+confusion_matrix.append(conf_matrix)
+normalised_confusion_matrix.append(norm_conf_matrix)
 
 
 for i in range(0, n_splits):
@@ -143,6 +132,7 @@ for i in range(0, n_splits):
     fh.write("\tF1_Score: {}%".format(100 * f1_score[i]))
     print("confusion_matrix: ", confusion_matrix[i])
     print("Normalized_confusion_matrix: ", normalised_confusion_matrix[i])
+fh.close
 '''
 print("\nOverall_Accuracy: %.3f%% " % (mean(accuracy)*100.0))
 print("\nOverall_STD_Accuracy: %.3f%% " % (stdev(accuracy)*100.0))
@@ -171,5 +161,6 @@ for i in range(0,n_splits):
 print('Normalized_Confusion_Matrix')
 for i in range(0,n_splits):
     print(normalised_confusion_matrix[i])
-'''
 fh.close
+'''
+
