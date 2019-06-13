@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB1.out')
 # -----------------------------
@@ -65,8 +65,8 @@ for i in range(0,n_splits):
 
 
 round_num = ''
-out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test2' + str(input_width) + round_num + ".h5")
-out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train2' + str(input_width) + round_num + ".h5")
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
@@ -77,8 +77,7 @@ print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True
-                          ) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
 config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
 
 config.gpu_options.allocator_type='BFC'
