@@ -48,9 +48,9 @@ confusion_matrix = []
 normalised_confusion_matrix = []
 # AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
 #                momentum, keep_prob)
-fh = open(LOG_FILE, 'w')
-fh.write(name)
-print(name)
+#fh = open(LOG_FILE, 'w')
+#fh.write(name)
+#print(name)
 '''
 for i in range(0,n_splits):
 
