@@ -46,8 +46,8 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
-                momentum, keep_prob)
+# AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+#                momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 fh.write(name)
 print(name)
@@ -62,6 +62,8 @@ for i in range(0,n_splits):
     else:
         round_num = ''
 '''
+
+'''
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test2' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train2' + str(input_width) + round_num + ".h5")
@@ -73,7 +75,7 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
-
+'''
 tf.reset_default_graph()
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
 config = tf.ConfigProto(allow_soft_placement=True)
