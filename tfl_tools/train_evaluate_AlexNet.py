@@ -70,8 +70,8 @@ train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
 trainY = train_h5f['Y']
-print('trainX.shape ', type(trainX), trainX.shape, trainX[0])
-print('trainY.shape', type(trainY), trainY.shape, trainY[0])
+print('trainX.shape ', trainX.shape, trainX[0])
+print('trainY.shape', trainY.shape, trainY[0])
 
 testX = test_h5f['X']
 testY = test_h5f['Y']
