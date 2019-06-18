@@ -65,13 +65,13 @@ for i in range(0,n_splits):
 
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_testdb2_' + str(input_width) + round_num + ".h5")
-out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
-train_h5f = h5py.File(out_train_hd5, 'r+')
+#out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
+#train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
-trainX = train_h5f['X']
-trainY = train_h5f['Y']
-print('trainX.shape ', trainX.shape, trainX[0])
-print('trainY.shape', trainY.shape, trainY[0])
+#trainX = train_h5f['X']
+#trainY = train_h5f['Y']
+#print('trainX.shape ', trainX.shape, trainX[0])
+#print('trainY.shape', trainY.shape, trainY[0])
 
 testX = test_h5f['X']
 testY = test_h5f['Y']
@@ -104,6 +104,7 @@ myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 print("Saving model %f ..." % i)
 model.save(model_file)
 '''
+model.load(model_file)
 # Evaluate
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
     myNet.evaluate(model, testX, testY)
