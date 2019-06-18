@@ -21,10 +21,10 @@ WIN = ''                                                    # '_win' for windows
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
 
-input_width=227
-input_height=227
-input_channels=3
-num_classes=7
+#input_width=32
+#input_height=32
+#input_channels=3
+#num_classes=7
 IMSETTEST = 'image_set_test'                           # name of the test set file
 IMSETTRAIN = 'image_set_train'                         # name of the train set file
 
@@ -65,7 +65,7 @@ def split_CV(n_splits = 10, save_split = True):
             print('writing to train file ', train_filename)
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
-def build_hd5(test_file, train_file, round = ''):
+def build_hd5(test_file, train_file, input_width, input_height, round = ''):
     test_filename = IMSETTEST + str(input_width) + round + WIN + '.h5'
     print('Building hdf5 for the test set... ', test_filename)
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
@@ -85,12 +85,37 @@ def build_hd5(test_file, train_file, round = ''):
     print('Training set Output shape: ', train_h5f['Y'].shape)
 
 
-'''
+####################
+print('building h5 for DBII ...')
 # for one split: training - test sets 5% and 95%
-test_file = os.path.join(DATABASE_PATH, image_set_test + WIN + '.dat')
-train_file = os.path.join(DATABASE_PATH, image_set_train + WIN + '.dat')
-train_file, test_file = split_train_test()
-build_hd5(test_file, train_file)
+test_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+train_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+#train_file, test_file = split_train_test()
+print('building 32x32 dataset ...')
+build_hd5(test_file, train_file, input_width = 32, input_height = 32)
+print('done')
+print('building 64x64 dataset ...')
+build_hd5(test_file, train_file, input_width = 64, input_height = 64)
+print('done')
+print('building 128x128 dataset ...')
+build_hd5(test_file, train_file, input_width = 128, input_height = 128)
+print('done')
+
+print('building h5 for DBI ...')
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+# for one split: training - test sets 5% and 95%
+test_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+train_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+#train_file, test_file = split_train_test()
+print('building 32x32 dataset ...')
+build_hd5(test_file, train_file, input_width = 32, input_height = 32)
+print('done')
+print('building 64x64 dataset ...')
+build_hd5(test_file, train_file, input_width = 64, input_height = 64)
+print('done')
+print('building 128x128 dataset ...')
+build_hd5(test_file, train_file, input_width = 128, input_height = 128)
+print('done')
 '''
 # for cross validation splitting (default number of splits n_splits = 10)
 # split_CV(n_splits = 10, save_split = True)
@@ -115,3 +140,4 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
               'or \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files do not exist')
+'''
