@@ -26,10 +26,10 @@ input_height=224
 input_channels=3
 num_classes=7
 
-learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+learning_rate=0.0001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
-keep_prob=0.4  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
+keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET -- 0.4 for GoogLeNet
 
 n_epoch = 50  # 50
@@ -45,7 +45,7 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 fh.write(name)
@@ -68,8 +68,8 @@ out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_testdb2_' + str(input_width) 
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
-trainX = train_h5f['X']
-trainY = train_h5f['Y']
+#trainX = train_h5f['X']
+#trainY = train_h5f['Y']
 testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
@@ -84,20 +84,24 @@ config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.3
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
+
 round_num = 'AlexNetGPU'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-model, conv_arr = AlexNet.build_model(model_file)
+model, conv_arr = myNet.build_model(model_file)
+
 tf.get_variable_scope().reuse_variables()
+'''
 print("start training round ", round_num)
-AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
+'''
 # Evaluate
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-    AlexNet.evaluate(model, testX, testY)
+    myNet.evaluate(model, testX, testY)
 
 ## update summaries ###
 prediction.append(y_pred)

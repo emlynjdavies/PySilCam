@@ -8,7 +8,7 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 # -- PATHS ---------------------------
@@ -26,7 +26,7 @@ input_height=224
 input_channels=3
 num_classes=7
 
-learning_rate=0.0001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
@@ -84,7 +84,7 @@ config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.3
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
-round_num = 'VGGNetGPU'
+round_num = 'PlankNetGPU'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = AlexNet.build_model(model_file)
