@@ -90,12 +90,17 @@ model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 model, conv_arr = AlexNet.build_model(model_file)
 tf.get_variable_scope().reuse_variables()
 print("start training round ", round_num)
-AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+# def train(self,model, trainX, trainY, testX, testY,
+#               round_num='01', n_epoch=50, batch_size=128,
+#               model_name = 'plankton-classifier')
+model_name = MODEL_PATH + 'plankton-classifier'
+AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name=model_name)
 
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
 # Evaluate
+model.load(model_file)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
     AlexNet.evaluate(model, testX, testY)
 

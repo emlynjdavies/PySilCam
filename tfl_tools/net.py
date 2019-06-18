@@ -81,7 +81,9 @@ class Net:
         img_aug.add_random_blur(sigma_max=3.)
         return img_aug
 
-    def train(self,model, trainX, trainY, testX, testY, round_num='01', n_epoch=50, batch_size=128):
+    def train(self,model, trainX, trainY, testX, testY,
+              round_num='01', n_epoch=50, batch_size=128,
+              model_name = 'plankton-classifier'):
         '''
         Training the model
         :param model:       The model to be trained
@@ -97,7 +99,7 @@ class Net:
         model.fit(trainX, trainY, n_epoch=n_epoch, shuffle=True, validation_set=(testX, testY),
                   show_metric=True, batch_size=batch_size,
                   snapshot_epoch=True,
-                  run_id='plankton-classifier' + round_num)
+                  run_id=model_name + round_num)
 
 
 
@@ -594,7 +596,6 @@ class Net:
 
         conv_arr = [conv_1, conv_2, conv_3]
         return model, conv_arr
-
 
     def __build_PlankNet(self):
         '''
