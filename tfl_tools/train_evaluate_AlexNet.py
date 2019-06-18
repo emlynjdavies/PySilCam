@@ -68,8 +68,11 @@ out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_testdb2_' + str(input_width) 
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
-#trainX = train_h5f['X']
-#trainY = train_h5f['Y']
+trainX = train_h5f['X']
+trainY = train_h5f['Y']
+print('trainX.shape ', type(trainX), trainX.shape, trainX[0])
+print('trainY.shape', type(trainY), trainY.shape, trainY[0])
+
 testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])

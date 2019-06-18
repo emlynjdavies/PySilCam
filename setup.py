@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 from pysilcam import __version__
 from sphinx.setup_command import BuildDoc
-import sphinx.apidoc
+#import sphinx.apidoc
 import distutils.cmd
 
 REQUIRES = [

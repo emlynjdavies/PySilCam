@@ -1,31 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="3" tests="8" time="15.003"><testcase classname="pysilcam.tests.test_background" file="pysilcam\tests\test_background.py" line="6" name="test_background_aquire" time="3.7125613689422607"><system-out>using fakepymba
-configversion = 1
-SyncOutPolarity = Normal
-TriggerSource = FixedRate
-AcquisitionFrameRateAbs = 1
-StrobeDuration = 800
-PixelFormat = RGB8Packed
-SyncOutSelector = SyncOut1
-SyncOutSource = Strobe1
-GVSPPacketSize = 1500
-ExposureTimeAbs = 180
-StrobeDurationMode = Controlled
-StrobeDelay = 0
-StrobeSource = FrameTriggerReady
-AcquisitionMode = SingleFrame
-</system-out></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="5" name="test_config_parser" time="0.0010347366333007812"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="19" name="test_settings" time="0.004091024398803711"></testcase><testcase classname="pysilcam.tests.test_config" file="pysilcam\tests\test_config.py" line="32" name="test_camera_config_parser" time="0.0"></testcase><testcase classname="pysilcam.tests.test_process" file="pysilcam\tests\test_process.py" line="8" name="test_output_files" time="0.001020193099975586"><skipped message="test path not accessible" type="pytest.skip">C:\ProgramData\anaconda3\envs\ayasilcam\lib\site-packages\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_silcam-aquire" file="pysilcam\tests\test_silcam-aquire.py" line="5" name="test_acquire_five_frames" time="1.8258776664733887"><system-out>using fakepymba
-configversion = 1
-SyncOutPolarity = Normal
-TriggerSource = FixedRate
-AcquisitionFrameRateAbs = 1
-StrobeDuration = 800
-PixelFormat = RGB8Packed
-SyncOutSelector = SyncOut1
-SyncOutSource = Strobe1
-GVSPPacketSize = 1500
-ExposureTimeAbs = 180
-StrobeDurationMode = Controlled
-StrobeDelay = 0
-StrobeSource = FrameTriggerReady
-AcquisitionMode = SingleFrame
-</system-out></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="12" name="test_big_standards" time="0.0010540485382080078"><skipped message="test path not accessible" type="pytest.skip">C:\ProgramData\anaconda3\envs\ayasilcam\lib\site-packages\_pytest\nose.py:27: test path not accessible</skipped></testcase><testcase classname="pysilcam.tests.test_standards" file="pysilcam\tests\test_standards.py" line="55" name="test_small_standards" time="0.0"><skipped message="test path not accessible" type="pytest.skip">C:\ProgramData\anaconda3\envs\ayasilcam\lib\site-packages\_pytest\nose.py:27: test path not accessible</skipped></testcase></testsuite>
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="2" failures="0" name="pytest" skips="0" tests="2" time="1.943"><testcase classname="" file="pysilcam/tests/test_process.py" name="pysilcam.tests.test_process" time="0"><error message="collection failure">ImportError while importing test module &apos;C:\Users\ayas\Projects\AILARON\Implementation\PySilCam\pysilcam\tests\test_process.py&apos;.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+pysilcam\tests\test_process.py:5: in &lt;module&gt;
+    from pysilcam.__main__ import silcam_process
+pysilcam\__main__.py:11: in &lt;module&gt;
+    from pysilcam.process import statextract
+pysilcam\process.py:4: in &lt;module&gt;
+    from skimage import morphology
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\__init__.py:157: in &lt;module&gt;
+    from .util.dtype import *
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\util\__init__.py:8: in &lt;module&gt;
+    from .arraycrop import crop
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\util\arraycrop.py:8: in &lt;module&gt;
+    from numpy.lib.arraypad import _validate_lengths
+E   ImportError: cannot import name &apos;_validate_lengths&apos;</error></testcase><testcase classname="" file="pysilcam/tests/test_standards.py" name="pysilcam.tests.test_standards" time="0"><error message="collection failure">ImportError while importing test module &apos;C:\Users\ayas\Projects\AILARON\Implementation\PySilCam\pysilcam\tests\test_standards.py&apos;.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+pysilcam\tests\test_standards.py:5: in &lt;module&gt;
+    from pysilcam.__main__ import silcam_process
+pysilcam\__main__.py:11: in &lt;module&gt;
+    from pysilcam.process import statextract
+pysilcam\process.py:4: in &lt;module&gt;
+    from skimage import morphology
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\morphology\__init__.py:1: in &lt;module&gt;
+    from .binary import (binary_erosion, binary_dilation, binary_opening,
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\morphology\binary.py:6: in &lt;module&gt;
+    from .misc import default_selem
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\morphology\misc.py:5: in &lt;module&gt;
+    from .._shared.utils import warn
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\_shared\utils.py:10: in &lt;module&gt;
+    from ..util import img_as_float
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\util\__init__.py:8: in &lt;module&gt;
+    from .arraycrop import crop
+C:\ProgramData\anaconda3\envs\mysilcam\lib\site-packages\skimage\util\arraycrop.py:8: in &lt;module&gt;
+    from numpy.lib.arraypad import _validate_lengths
+E   ImportError: cannot import name &apos;_validate_lengths&apos;</error></testcase></testsuite>
