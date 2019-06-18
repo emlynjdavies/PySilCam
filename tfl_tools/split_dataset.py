@@ -65,7 +65,7 @@ def split_CV(n_splits = 10, save_split = True):
             print('writing to train file ', train_filename)
             np.savetxt(train_file, train, delimiter=' ', fmt='%s')
 
-def build_hd5(test_file, train_file, input_width, input_height, round = ''):
+def build_hd5(test_file, train_file, input_width, input_height, input_channels = 3, round = ''):
     test_filename = IMSETTEST + str(input_width) + round + WIN + '.h5'
     print('Building hdf5 for the test set... ', test_filename)
     out_test_hd5 = os.path.join(DATABASE_PATH, test_filename)
@@ -88,8 +88,8 @@ def build_hd5(test_file, train_file, input_width, input_height, round = ''):
 ####################
 print('building h5 for DBII ...')
 # for one split: training - test sets 5% and 95%
-test_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
-train_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db2' + WIN + '.dat')
+train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db2' + WIN + '.dat')
 #train_file, test_file = split_train_test()
 print('building 32x32 dataset ...')
 build_hd5(test_file, train_file, input_width = 32, input_height = 32)
@@ -104,8 +104,8 @@ print('done')
 print('building h5 for DBI ...')
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 # for one split: training - test sets 5% and 95%
-test_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
-train_file = os.path.join(DATABASE_PATH, IMSETTEST + WIN + '.dat')
+test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
+train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
 #train_file, test_file = split_train_test()
 print('building 32x32 dataset ...')
 build_hd5(test_file, train_file, input_width = 32, input_height = 32)
