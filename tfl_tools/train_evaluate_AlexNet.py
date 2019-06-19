@@ -8,7 +8,7 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 # -- PATHS ---------------------------
@@ -77,7 +77,7 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
-
+'''
 tf.reset_default_graph()
 
 #tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
@@ -90,7 +90,7 @@ config.gpu_options.allocator_type='BFC'
 config.gpu_options.per_process_gpu_memory_fraction=0.9
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
-
+'''
 round_num = 'AlexNetGPU'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
