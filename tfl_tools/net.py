@@ -124,7 +124,7 @@ class Net:
         y_pred = []
         #for pred in predictions:
         for x in testX:
-            pred = model.predict(x)
+            pred = model.predict([x])
             y_pred.append(np.argmax(pred))
             print("prediction x, np.argmax(pred): ", pred, np.argmax(pred))
         print(y_pred)
