@@ -8,7 +8,7 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 # -- PATHS ---------------------------
