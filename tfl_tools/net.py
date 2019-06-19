@@ -117,18 +117,22 @@ class Net:
         print("model evaluation ")
         print('testX.type',type(testX))
         print('testY.type', type(testY))
-        predictions = model.predict(testX)
+        #predictions = model.predict(testX)
         # predictions = [int(i) for i in model.predict(testX)]
-        print("predictions: ", predictions)
+        #print("predictions: ", predictions)
 
         y_pred = []
-        for pred in predictions:
+        #for pred in predictions:
+        for x in testX:
+            pred = model.predict(x)
             y_pred.append(np.argmax(pred))
+            print("prediction x, np.argmax(pred): ", pred, np.argmax(pred))
         print(y_pred)
         print("testY: ")
         y_true = []
         for ty in testY:
             y_true.append(ty.argmax(axis=0))
+            print("ty, y_true: ", ty, ty.argmax(axis=0))
         print(y_true)
 
         accuracy = metrics.accuracy_score(y_true, y_pred)
