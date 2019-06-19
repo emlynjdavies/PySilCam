@@ -99,7 +99,9 @@ model, conv_arr = myNet.build_model(model_file)
 tf.get_variable_scope().reuse_variables()
 
 print("start training round ", round_num)
-myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+model_name = MODEL_PATH + '/' + round_num + '/plankton-classifier'
+print('model_name ', model_name)
+myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name= model_name)
 
 # Save
 print("Saving model %f ..." % i)
