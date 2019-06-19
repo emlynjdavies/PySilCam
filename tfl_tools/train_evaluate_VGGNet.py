@@ -45,7 +45,7 @@ recall = []
 f1_score = []
 confusion_matrix = []
 normalised_confusion_matrix = []
-AlexNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
+myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate,
                 momentum, keep_prob)
 fh = open(LOG_FILE, 'w')
 fh.write(name)
@@ -76,28 +76,29 @@ print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
 #config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
 config = tf.ConfigProto(allow_soft_placement=True)
 
 config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.3
+config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
-round_num = 'PlankNetGPU'
+round_num = 'VGGNetGPU'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
-model, conv_arr = AlexNet.build_model(model_file)
+model, conv_arr = myNet.build_model(model_file)
 tf.get_variable_scope().reuse_variables()
 print("start training round ", round_num)
-AlexNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
+myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size)
 
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
 # Evaluate
+model.load(model_file)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-    AlexNet.evaluate(model, testX, testY)
+    myNet.evaluate(model, testX, testY)
 
 ## update summaries ###
 prediction.append(y_pred)
