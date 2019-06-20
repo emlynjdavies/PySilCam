@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_v32.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_k32.out')
 # -----------------------------
 
 name='CoapNet'
