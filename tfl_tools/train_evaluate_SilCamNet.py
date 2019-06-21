@@ -67,6 +67,8 @@ for i in range(0,n_splits):
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test_db1_' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train_db1_' + str(input_width) + round_num + ".h5")
+print(out_train_hd5)
+print(out_test_hd5)
 train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
 trainX = train_h5f['X']
