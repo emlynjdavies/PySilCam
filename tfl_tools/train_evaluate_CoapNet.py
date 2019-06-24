@@ -17,12 +17,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_75_64.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_75_128.out')
 # -----------------------------
 
 name='CoapNet'
-input_width=64  # 32 64 128
-input_height=64 # 32 64 128
+input_width=128  # 32 64 128
+input_height=128 # 32 64 128
 input_channels=3
 num_classes=7
 
@@ -93,7 +93,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'CoapNetdb1n75_64'
+round_num = 'CoapNetdb1n75_128'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)
