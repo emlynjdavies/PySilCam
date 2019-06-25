@@ -17,7 +17,7 @@ import pandas as pd
 import math
 import pysilcam.silcam_classify as sccl
 # -----------------------------
-DATABASE_PATH = 'Z:/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 
 HEADER_FILE = os.path.join(DATABASE_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 data_file = os.path.join(DATABASE_PATH,'imageset.dat')

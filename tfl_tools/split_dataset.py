@@ -109,18 +109,18 @@ set_file = os.path.join(DATABASE_PATH,"image_set_win.dat") # the file that conta
 # for one split: training - test sets 5% and 95%
 test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
 train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
-train_file, test_file = split_train_test()
+train_file, test_file = split_train_test(db_path=DATABASE_PATH, set_file=set_file)
 print('building 32x32 dataset ...')
 # def build_hd5(db_path, test_file, train_file, input_width, input_height, input_channels = 3, round = ''):
-build_hd5(DATABASE_PATH, test_file=test_file, train_file=train_file,
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 32, input_height = 32, round='_db1')
 print('done')
 print('building 64x64 dataset ...')
-build_hd5(DATABASE_PATH, test_file=test_file, train_file=train_file,
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 64, input_height = 64, round='_db1')
 print('done')
 print('building 128x128 dataset ...')
-build_hd5(DATABASE_PATH, test_file=test_file, train_file=train_file,
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 128, input_height = 128, round='_db1')
 print('done')
 '''
