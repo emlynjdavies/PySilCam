@@ -104,7 +104,7 @@ print('done')
 '''
 print('building h5 for DBI ...')
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-set_file = os.path.join(DATABASE_PATH,"image_set_win.dat") # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
 
 # for one split: training - test sets 5% and 95%
 test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
