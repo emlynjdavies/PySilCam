@@ -102,6 +102,8 @@ print('building 128x128 dataset ...')
 build_hd5(test_file, train_file, input_width = 128, input_height = 128, round='_db2')
 print('done')
 '''
+
+
 print('building h5 for DBI ...')
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
@@ -114,7 +116,18 @@ print('building 32x32 dataset ...')
 # def build_hd5(db_path, test_file, train_file, input_width, input_height, input_channels = 3, round = ''):
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 32, input_height = 32, round='_db1')
+
 print('done')
+print('building 224x224 dataset ...')
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+          input_width = 224, input_height = 224, round='_db1')
+print('done')
+print('building 227x227 dataset ...')
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+          input_width = 227, input_height = 227, round='_db1')
+print('done')
+
+'''
 print('building 64x64 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 64, input_height = 64, round='_db1')
@@ -124,8 +137,12 @@ build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 128, input_height = 128, round='_db1')
 print('done')
 '''
+
+print('building h5 for DBI ...')
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 # for cross validation splitting (default number of splits n_splits = 10)
-# split_CV(n_splits = 10, save_split = True)
+split_CV(db_path=DATABASE_PATH, set_file=set_file, n_splits = 10, save_split = True)
+
 for i in range(1,11):
     if i < 10:
         round_num = '0' + str(i)
@@ -147,4 +164,3 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
               'or \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files do not exist')
-'''

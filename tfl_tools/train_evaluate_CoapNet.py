@@ -113,7 +113,10 @@ tf.get_variable_scope().reuse_variables()
 print("start training round ", round_num)
 model_name = MODEL_PATH + '/' + round_num + '/plankton-classifier'
 print('model_name ', model_name)
-myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name= model_name)
+myNet.train(model, trainX=trainX, trainY=trainY,
+            testX=testX, testY=testY,
+            round_num=round_num, n_epoch=n_epoch, batch_size=batch_size,
+            model_name= model_name)
 
 # Save
 print("Saving model %f ..." % i)
@@ -123,7 +126,7 @@ model.save(model_file)
 # Evaluate
 model.load(model_file)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-    myNet.evaluate(model, testX, testY)
+    myNet.evaluate(model=model, testX=testX, testY=testY)
 
 ## update summaries ###
 prediction.append(y_pred)
