@@ -103,9 +103,10 @@ build_hd5(test_file, train_file, input_width = 128, input_height = 128, round='_
 print('done')
 '''
 
-
+'''
 print('building h5 for DBI ...')
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+
 set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
 
 # for one split: training - test sets 5% and 95%
@@ -127,7 +128,7 @@ build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 227, input_height = 227, round='_db1')
 print('done')
 
-'''
+
 print('building 64x64 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 64, input_height = 64, round='_db1')
@@ -141,7 +142,7 @@ print('done')
 print('building h5 for DBI ...')
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 # for cross validation splitting (default number of splits n_splits = 10)
-split_CV(db_path=DATABASE_PATH, set_file=set_file, n_splits = 10, save_split = True)
+#split_CV(db_path=DATABASE_PATH, set_file=set_file, n_splits = 10, save_split = True)
 
 for i in range(1,11):
     if i < 10:
@@ -158,7 +159,16 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
               ' and \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files exist')
-        build_hd5(test_file, train_file, round=round_num)
+        build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+                  input_width=32, input_height=32, round=round_num)
+        build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+                  input_width=64, input_height=64, round=round_num)
+        build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+                  input_width=128, input_height=128, round=round_num)
+        build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+                  input_width=224, input_height=224, round=round_num)
+
+        #build_hd5(test_file, train_file, round=round_num)
 
     else:
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
