@@ -17,12 +17,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelOrgNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'OrgNetDB1_k128.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'OrgNetDB1_k64.out')
 # -----------------------------
 
 name='OrgNet'
-input_width=128  # 32 64 128
-input_height=128 # 32 64 128
+input_width=64  # 32 64 128
+input_height=64 # 32 64 128
 input_channels=3
 num_classes=7
 
