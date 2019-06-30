@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
 MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_imgpre_64.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_64.out')
 # -----------------------------
 
 name='CoapNet'
@@ -63,7 +63,7 @@ for i in range(0,n_splits):
         round_num = ''
 '''
 
-'''
+
 round_num = ''
 out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test_db1_' + str(input_width) + round_num + ".h5")
 out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train_db1_' + str(input_width) + round_num + ".h5")
@@ -80,6 +80,7 @@ testX = test_h5f['X']
 testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
+
 '''
 print('Call image_preloader ....')
 round_num = ''
@@ -90,7 +91,7 @@ print(testset_file)
 
 testX, testY = image_preloader(testset_file, image_shape=(input_width, input_height, input_channels),   mode='file', categorical_labels=True, normalize=True)
 trainX, trainY = image_preloader(trainset_file, image_shape=(input_width, input_height, input_channels),   mode='file', categorical_labels=True, normalize=True)
-
+'''
 tf.reset_default_graph()
 
 tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
@@ -103,7 +104,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'CoapNetdb1imgpre_64'
+round_num = 'CoapNetdb1_64'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)
