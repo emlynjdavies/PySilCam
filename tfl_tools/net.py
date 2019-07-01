@@ -113,6 +113,7 @@ class Net:
                     accuracy, precision, recall, f1_score,
                     confusion_matrix, normalized_confusion_matrix
         '''
+
         # print("\nTest prediction for x = ", testX)
         print("model evaluation ")
         print('testX.type',type(testX))
@@ -120,6 +121,7 @@ class Net:
         #predictions = model.predict(testX)
         # predictions = [int(i) for i in model.predict(testX)]
         #print("predictions: ", predictions)
+        '''
 
         y_pred = []
         #for pred in predictions:
@@ -134,6 +136,9 @@ class Net:
             y_true.append(ty.argmax(axis=0))
             print("ty, y_true: ", ty, ty.argmax(axis=0))
         print(y_true)
+        '''
+        y_pred = model.predict(testX)
+        y_true = testY
 
         accuracy = metrics.accuracy_score(y_true, y_pred)
         print("Accuracy: {}%".format(100 * accuracy))
