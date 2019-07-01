@@ -137,12 +137,15 @@ class Net:
             print("ty, y_true: ", ty, ty.argmax(axis=0))
         print(y_true)
         '''
-        y_pred = model.predict(testX)
-        y_true = testY
-        for ty in y_pred:
+        y_pred = []
+        y_true = []
+        pred = model.predict(testX)
+        for ty in pred:
             print("ty, y_pred: ", ty, ty.argmax(axis=0))
+            y_pred.append(ty.argmax(axis=0))
         for ty in testY:
             print("ty, y_true: ", ty, ty.argmax(axis=0))
+            y_true.append(ty.argmax(axis=0))
 
         accuracy = metrics.accuracy_score(y_true, y_pred)
         print("Accuracy: {}%".format(100 * accuracy))
