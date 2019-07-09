@@ -110,7 +110,7 @@ model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 model, conv_arr = myNet.build_model(model_file)
 
 tf.get_variable_scope().reuse_variables()
-
+'''
 print("start training round ", round_num)
 model_name = MODEL_PATH + '/' + round_num + '/plankton-classifier'
 print('model_name ', model_name)
@@ -122,7 +122,7 @@ myNet.train(model, trainX=trainX, trainY=trainY,
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
-
+'''
 
 # Evaluate
 model.load(model_file)
