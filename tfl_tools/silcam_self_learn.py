@@ -7,13 +7,15 @@ import skimage.io as skio
 import os
 from shutil import copyfile
 
-DATABASE_PATH = '/mnt/ARRAY/silcam_classification_database'
-config_file = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/config_LowRes.ini'
-stats_csv_file = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/proc/STN05-STATS.csv'
-filepath = '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/export'
-model_path = '/mnt/ARRAY/classifier/model/'
+DATABASE_PATH = 'Z:/FieldWork/July2019/20190718/database' # '/mnt/ARRAY/silcam_classification_database'
+config_file = 'Z:/FieldWork/July2019/20190718/config20190718_win.ini' #'/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/config_LowRes.ini'
+stats_csv_file =  'Z:/FieldWork/July2019/20190718/proc/RAW_WIN-STATS.csv'
+#'/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/proc/STN05-STATS.csv'
+filepath = 'Z:/FieldWork/July2019/20190718/export'
+# '/mnt/nasdrive/Miljoteknologi/MK102013220_SILCAM_IPR_EJD/RUNDE_June2017/LowMag/export'
+model_path = 'Z:/FieldWork/July2019/20190718/model' # '/mnt/ARRAY/classifier/model/'
 
-confidence_threshold = [1, 1, 1, 1, 1, 1, 1]
+confidence_threshold = [0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
 
 DATABASE_selftaught_PATH = os.path.join(DATABASE_PATH,'../','silcam_self_taught_database')
 
