@@ -103,9 +103,9 @@ build_hd5(test_file, train_file, input_width = 128, input_height = 128, round='_
 print('done')
 '''
 
-'''
+
 print('building h5 for DBI ...')
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 
 set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
 
@@ -140,7 +140,7 @@ print('done')
 '''
 
 print('building h5 for DBI ...')
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 # for cross validation splitting (default number of splits n_splits = 10)
 #split_CV(db_path=DATABASE_PATH, set_file=set_file, n_splits = 10, save_split = True)
 
@@ -174,3 +174,4 @@ for i in range(1,11):
         print('Test: ' + DATABASE_PATH, IMSETTEST + round_num + WIN + '.dat' +
               'or \nTrain: ' + DATABASE_PATH, IMSETTRAIN + round_num + WIN + '.dat'
               + 'files do not exist')
+'''
