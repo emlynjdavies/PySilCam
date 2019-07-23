@@ -110,32 +110,32 @@ DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
 
 # for one split: training - test sets 5% and 95%
-test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
-train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db1' + WIN + '.dat')
+test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db3' + WIN + '.dat')
+train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db3' + WIN + '.dat')
 train_file, test_file = split_train_test(db_path=DATABASE_PATH, set_file=set_file)
 print('building 32x32 dataset ...')
 # def build_hd5(db_path, test_file, train_file, input_width, input_height, input_channels = 3, round = ''):
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 32, input_height = 32, round='_db1')
+          input_width = 32, input_height = 32, round='_db3')
 
 print('done')
 print('building 224x224 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 224, input_height = 224, round='_db1')
+          input_width = 224, input_height = 224, round='_db3')
 print('done')
 print('building 227x227 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 227, input_height = 227, round='_db1')
+          input_width = 227, input_height = 227, round='_db3')
 print('done')
 
 
 print('building 64x64 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 64, input_height = 64, round='_db1')
+          input_width = 64, input_height = 64, round='_db3')
 print('done')
 print('building 128x128 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 128, input_height = 128, round='_db1')
+          input_width = 128, input_height = 128, round='_db3')
 print('done')
 '''
 
