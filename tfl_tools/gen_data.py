@@ -1,27 +1,12 @@
-# Import tflearn and some helpers
-import matplotlib.pyplot as plt
-import tensorflow as tf
-import tflearn
-from tflearn.data_utils import shuffle, image_preloader
-from tflearn.layers.core import input_data, dropout, fully_connected
-from tflearn.layers.conv import conv_2d, max_pool_2d
-from tflearn.layers.estimator import regression
-from tflearn.data_preprocessing import ImagePreprocessing
-from tflearn.data_augmentation import ImageAugmentation
-import pickle
 import numpy as np
-import skimage.io
-import skimage.transform
 import os
 import pandas as pd
-import math
-import pysilcam.silcam_classify as sccl
+
 # -----------------------------
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 
 HEADER_FILE = os.path.join(DATABASE_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-data_file = os.path.join(DATABASE_PATH,'imageset.dat')
-SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
+data_file = os.path.join(DATABASE_PATH,'image_set.dat')
 
 # --- FUNCTION DEFINITION --------------------------
 def find_classes(d=DATABASE_PATH):
@@ -56,6 +41,6 @@ fileList = import_directory_structure(classList)
 # -- shuffle the dataset
 print('Shuffle dataset....')
 np.random.shuffle(fileList)
-print('Save into test and train files ....')
+print('Save into file ....')
 np.savetxt(data_file, fileList, delimiter=' ', fmt='%s')
 
