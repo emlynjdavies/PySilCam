@@ -15,16 +15,16 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-MODEL_PATH = '/mnt/DATA/model/modelCoapNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'CoapNetDB1_np128.out')
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
+MODEL_PATH = '/mnt/DATA/model/db3/CoapNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'CoapNet.out')
 # -----------------------------
 
 name='CoapNet'
-input_width=128  # 32 64 128
-input_height=128 # 32 64 128
+input_width=64  # 32 64 128
+input_height=64 # 32 64 128
 input_channels=3
-num_classes=7
+num_classes=6
 
 learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
@@ -65,8 +65,8 @@ for i in range(0,n_splits):
 
 
 round_num = ''
-out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test_db1_' + str(input_width) + round_num + ".h5")
-out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train_db1_' + str(input_width) + round_num + ".h5")
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) +'_db3' + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) +'_db3' + round_num + ".h5")
 print(out_train_hd5)
 print(out_test_hd5)
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -81,53 +81,39 @@ testY = test_h5f['Y']
 print('testX.shape ', type(testX), testX.shape, testX[0])
 print('testY.shape', type(testY), testY.shape, testY[0])
 
-'''
-print('Call image_preloader ....')
-round_num = ''
-testset_file = os.path.join(MODEL_PATH, 'image_set_test_db1.dat')
-trainset_file = os.path.join(MODEL_PATH, 'image_set_train_db1.dat')
-print(trainset_file)
-print(testset_file)
-
-testX, testY = image_preloader(testset_file, image_shape=(input_width, input_height, input_channels),   mode='file', categorical_labels=True, normalize=True)
-trainX, trainY = image_preloader(trainset_file, image_shape=(input_width, input_height, input_channels),   mode='file', categorical_labels=True, normalize=True)
-'''
 tf.reset_default_graph()
 
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
 #config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
 config = tf.ConfigProto(allow_soft_placement=True)
 
 
 config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.9
+config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'CoapNetdb1_np128'
+round_num = 'CoapNet64nd'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)
 
 tf.get_variable_scope().reuse_variables()
-'''
+
 print("start training round ", round_num)
 model_name = MODEL_PATH + '/' + round_num + '/plankton-classifier'
 print('model_name ', model_name)
-myNet.train(model, trainX=trainX, trainY=trainY,
-            testX=testX, testY=testY,
-            round_num=round_num, n_epoch=n_epoch, batch_size=batch_size,
-            model_name= model_name)
+myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name=model_name)
 
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
-'''
+
 
 # Evaluate
 model.load(model_file)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
-    myNet.evaluate(model=model, testX=testX, testY=testY)
+    myNet.evaluate(model, testX, testY)
 
 ## update summaries ###
 prediction.append(y_pred)

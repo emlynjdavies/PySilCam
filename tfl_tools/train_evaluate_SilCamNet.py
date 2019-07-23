@@ -15,21 +15,21 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
-DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-MODEL_PATH = '/mnt/DATA/model/modelOrgNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'OrgNetDB1_nd128.out')
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
+MODEL_PATH = '/mnt/DATA/model/db3/SilCamNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'SilCamNet.out')
 # -----------------------------
 
-name='OrgNet'
-input_width=128  # 32 64 128
-input_height=128 # 32 64 128
+name='SilCamNet'
+input_width=32  # 32 64 128
+input_height=32 # 32 64 128
 input_channels=3
-num_classes=7
+num_classes=6
 
 learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
-keep_prob=1.0  # 1.0 without dropout and 0.5 with dropout
+keep_prob=0.75  # 1.0 without dropout and 0.5 with dropout
                # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET -- 0.4 for GoogLeNet
 
@@ -65,8 +65,8 @@ for i in range(0,n_splits):
 
 
 round_num = ''
-out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test_db1_' + str(input_width) + round_num + ".h5")
-out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train_db1_' + str(input_width) + round_num + ".h5")
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) +'_db3' + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) +'_db3' + round_num + ".h5")
 print(out_train_hd5)
 print(out_test_hd5)
 train_h5f = h5py.File(out_train_hd5, 'r+')
@@ -93,7 +93,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'OrgNetdb1np128'
+round_num = 'SilCamNet3275'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)

@@ -184,8 +184,8 @@ class Net:
         print(self.name)
         self.model_file = model_file
         print(self.model_file)
-        if self.name == 'OrgNet':
-            return self.__build_OrgNet()
+        if self.name == 'SilCamNet':
+            return self.__build_SilCamNet()
         if self.name == 'LeNet':
             return self.__build_LeNet()
         elif self.name == 'MINST':
@@ -208,7 +208,7 @@ class Net:
             print(self.name)
             return self.__build_CoapNet()
 
-    def __build_OrgNet(self):
+    def __build_SilCamNet(self):
         '''
         Build the model based on LeCun proposed architecture
         :return: The model and and convolution array
