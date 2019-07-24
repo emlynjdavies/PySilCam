@@ -16,20 +16,20 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/dataset_balanced'
-MODEL_PATH = '/mnt/DATA/model/db3/VGGNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'VGGNet.out')
+MODEL_PATH = '/mnt/DATA/model/db3/GoogleNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'GoogleNet.out')
 # -----------------------------
 
-name='VGGNet'
+name='GoogleNet'
 input_width=224
 input_height=224
 input_channels=3
 num_classes=6
 
-learning_rate=0.0001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
-keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
+keep_prob=0.4  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
                 # 0.5 for VGGNET -- 0.4 for GoogLeNet
 
 n_epoch = 50  # 50
@@ -92,7 +92,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'VGGNet'
+round_num = 'GoogleNet'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)

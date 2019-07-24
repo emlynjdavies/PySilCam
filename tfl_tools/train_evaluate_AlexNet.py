@@ -14,19 +14,19 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 # -- PATHS ---------------------------
 #DATABASE_PATH = 'Z:/DATA/dataset_test'
 #MODEL_PATH = 'Z:/DATA/model/modelCV2'
-DATABASE_PATH = '/mnt/DATA/dataset'
-#DATABASE_PATH = '/mnt/DATA/silcam_classification_database'
-MODEL_PATH = '/mnt/DATA/model/modelAlexNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'AlexNetDB2_v1.out')
+#DATABASE_PATH = '/mnt/DATA/dataset'
+DATABASE_PATH = '/mnt/DATA/dataset_balanced'
+MODEL_PATH = '/mnt/DATA/model/db3/AlexNet'
+LOG_FILE = os.path.join(MODEL_PATH, 'AlexNet.out')
 # -----------------------------
 
 name='AlexNet'
 input_width=224
 input_height=224
 input_channels=3
-num_classes=7
+num_classes=6
 
-learning_rate=0.0001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
+learning_rate=0.001  # 0.001 for OrgNet -- 0.01 for MINST -- 0.001 for CIFAR10 -- 0.001 for AlexNet
                         # 0.0001 for VGGNet -- 0.001 for GoogLeNet
 momentum=0.9
 keep_prob=0.5  # 0.75 for OrgNet -- 0.8 for LeNet -- 0.5 for CIFAR10 -- 0.5 for AlexNet
@@ -64,14 +64,16 @@ for i in range(0,n_splits):
 
 
 round_num = ''
-out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_testdb2_' + str(input_width) + round_num + ".h5")
-#out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_traindb2_' + str(input_width) + round_num + ".h5")
-#train_h5f = h5py.File(out_train_hd5, 'r+')
+out_test_hd5 = os.path.join(MODEL_PATH, 'image_set_test' + str(input_width) +'_db3' + round_num + ".h5")
+out_train_hd5 = os.path.join(MODEL_PATH, 'image_set_train' + str(input_width) +'_db3' + round_num + ".h5")
+print(out_train_hd5)
+print(out_test_hd5)
+train_h5f = h5py.File(out_train_hd5, 'r+')
 test_h5f = h5py.File(out_test_hd5, 'r+')
-#trainX = train_h5f['X']
-#trainY = train_h5f['Y']
-#print('trainX.shape ', trainX.shape, trainX[0])
-#print('trainY.shape', trainY.shape, trainY[0])
+trainX = train_h5f['X']
+trainY = train_h5f['Y']
+print('trainX.shape ', trainX.shape, trainX[0])
+print('trainY.shape', trainY.shape, trainY[0])
 
 testX = test_h5f['X']
 testY = test_h5f['Y']
@@ -80,35 +82,35 @@ print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
 
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.3, soft_placement=True) # num_cores default is All
-#tflearn.config.init_graph(seed=8888, soft_placement=True) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
 #config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
 config = tf.ConfigProto(allow_soft_placement=True)
 
 
 config.gpu_options.allocator_type='BFC'
-config.gpu_options.per_process_gpu_memory_fraction=0.3
+config.gpu_options.per_process_gpu_memory_fraction=0.4
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'AlexNetGPU'
+round_num = 'AlexNet'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)
 
-# tf.get_variable_scope().reuse_variables()
-'''
+tf.get_variable_scope().reuse_variables()
+
 print("start training round ", round_num)
 model_name = MODEL_PATH + '/' + round_num + '/plankton-classifier'
 print('model_name ', model_name)
-myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name= model_name)
+myNet.train(model, trainX, trainY, testX, testY, round_num, n_epoch, batch_size, model_name=model_name)
 
 # Save
 print("Saving model %f ..." % i)
 model.save(model_file)
-'''
-model.load(model_file)
+
+
 # Evaluate
+model.load(model_file)
 y_pred, y_true, acc, pre, rec, f1sc, conf_matrix, norm_conf_matrix = \
     myNet.evaluate(model, testX, testY)
 
