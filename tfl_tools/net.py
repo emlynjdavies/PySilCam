@@ -263,8 +263,8 @@ class Net:
         net = fully_connected(net, 512, activation='relu')
 
         # Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
-        #print('Step 7: Dropout - throw away some data randomly during training to prevent over-fitting')
-        #net = dropout(net, self.keep_prob)
+        print('Step 7: Dropout - throw away some data randomly during training to prevent over-fitting')
+        net = dropout(net, self.keep_prob)
 
         # Step 8: Fully-connected neural network with outputs to make the final prediction
         net = fully_connected(net, self.num_classes+1, activation='softmax')
