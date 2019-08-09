@@ -20,6 +20,7 @@ MODEL_PATH = '/mnt/DATA/model/db3/CoapNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'CoapNet64nd2.out')
 # -----------------------------
 
+
 name='CoapNet'
 input_width=64  # 32 64 128
 input_height=64 # 32 64 128

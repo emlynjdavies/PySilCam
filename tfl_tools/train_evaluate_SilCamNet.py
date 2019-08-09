@@ -18,6 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 MODEL_PATH = '/mnt/DATA/model/db3/SilCamNet'
 LOG_FILE = os.path.join(MODEL_PATH, 'SilCamNet3225_2.out')
+
 # -----------------------------
 
 name='SilCamNet'
