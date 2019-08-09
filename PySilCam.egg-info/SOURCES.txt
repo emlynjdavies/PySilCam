@@ -21,14 +21,6 @@ pysilcam/plotting.py
 pysilcam/postprocess.py
 pysilcam/process.py
 pysilcam/process_images.py
-pysilcam/process_images_Alg1.py
 pysilcam/process_images_MOG.py
-pysilcam/process_images_MOG1.py
-pysilcam/process_images_MOG2.py
-pysilcam/process_images_OTSU.py
-pysilcam/process_images_ROI.py
-pysilcam/process_images_WS.py
-pysilcam/process_images_WS2.py
-pysilcam/process_images_bk.py
 pysilcam/silcam_classify.py
 pysilcam/silcreport.py
