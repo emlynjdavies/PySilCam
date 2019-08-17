@@ -87,7 +87,7 @@ def build_hd5(db_path, test_file, train_file, input_width, input_height, input_c
 
 ####################
 '''
-print('building h5 for DBII ...')
+print('building h5 for DBIII ...')
 # for one split: training - test sets 5% and 95%
 test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db2' + WIN + '.dat')
 train_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db2' + WIN + '.dat')
@@ -102,10 +102,8 @@ print('building 128x128 dataset ...')
 build_hd5(test_file, train_file, input_width = 128, input_height = 128, round='_db2')
 print('done')
 '''
-
-
-print('building h5 for DBI ...')
-DATABASE_PATH = '/mnt/DATA/dataset_balanced'
+print('building h5 for DBIII ...')
+DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
 
 set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
 
@@ -118,6 +116,15 @@ print('building 32x32 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 32, input_height = 32, round='_db3')
 
+print('building 64x64 dataset ...')
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+          input_width = 64, input_height = 64, round='_db3')
+print('done')
+print('building 128x128 dataset ...')
+build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
+          input_width = 128, input_height = 128, round='_db3')
+print('done')
+
 print('done')
 print('building 224x224 dataset ...')
 build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
@@ -128,15 +135,6 @@ build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
           input_width = 227, input_height = 227, round='_db3')
 print('done')
 
-
-print('building 64x64 dataset ...')
-build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 64, input_height = 64, round='_db3')
-print('done')
-print('building 128x128 dataset ...')
-build_hd5(db_path=DATABASE_PATH, test_file=test_file, train_file=train_file,
-          input_width = 128, input_height = 128, round='_db3')
-print('done')
 '''
 
 print('building h5 for DBI ...')

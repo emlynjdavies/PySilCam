@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # -----------------------------
-DATABASE_PATH = '/mnt/DATA/dataset_balanced'
+DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
 
 HEADER_FILE = os.path.join(DATABASE_PATH, "header.tfl.txt")         # the header file that contains the list of classes
 data_file = os.path.join(DATABASE_PATH,'image_set.dat')
@@ -40,6 +40,8 @@ print('Import directory structure....')
 fileList = import_directory_structure(classList)
 # -- shuffle the dataset
 print('Shuffle dataset....')
+np.random.shuffle(fileList)
+print('Shuffle again....')
 np.random.shuffle(fileList)
 print('Save into file ....')
 np.savetxt(data_file, fileList, delimiter=' ', fmt='%s')
