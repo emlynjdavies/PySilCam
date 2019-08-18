@@ -3,10 +3,11 @@ import os
 import pandas as pd
 
 # -----------------------------
-DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
+#DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
+DATABASE_PATH = 'Z:/DATA/dataset_balanced'
 
 HEADER_FILE = os.path.join(DATABASE_PATH, "header.tfl.txt")         # the header file that contains the list of classes
-data_file = os.path.join(DATABASE_PATH,'image_set.dat')
+data_file = os.path.join(DATABASE_PATH,'image_set_win.dat')
 
 # --- FUNCTION DEFINITION --------------------------
 def find_classes(d=DATABASE_PATH):

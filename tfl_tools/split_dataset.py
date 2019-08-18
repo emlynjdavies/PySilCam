@@ -3,6 +3,8 @@ import h5py
 import numpy as np
 from make_data import MakeData
 from tflearn.data_utils import build_hdf5_image_dataset
+import pandas as pd
+import cv2
 
 
 
@@ -16,7 +18,7 @@ from tflearn.data_utils import build_hdf5_image_dataset
 #DATABASE_PATH = 'Z:/DATA/dataset'                          # for windows running version large dataset
 
 #set_file = os.path.join(DATABASE_PATH,"image_set.dat")      # the file that contains the list of images of the testing dataset along with their classes
-WIN = ''                                                    # '_win' for windows running version
+WIN = '_win'                                                    # '_win' for windows running version
 #set_file = os.path.join(DATABASE_PATH,"image_set_win.dat") # the file that contains the list of images of the testing dataset along with their classes
 # -----------------------------
 SPLIT_PERCENT = 0.05   # split the train and test data i.e 0.05 is a 5% for the testing dataset and 95% for the training dataset
@@ -68,8 +70,19 @@ def split_CV(db_path, set_file, n_splits = 10, save_split = True):
 def build_hd5(db_path, test_file, train_file, input_width, input_height, input_channels = 3, round = ''):
     test_filename = IMSETTEST + str(input_width) + round + WIN + '.h5'
     print('Building hdf5 for the test set... ', test_filename)
+    df = np.loadtxt(test_file, dtype=str, delimiter=' ')
+
+    for f in df:
+        print(f[0], end=' ')
+        img = cv2.imread(f[0])
+        img.resize((32, 32, 3))
+        print(img.shape)
+
+
+
+
     out_test_hd5 = os.path.join(db_path, test_filename)
-    build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height, input_channels),
+    build_hdf5_image_dataset(test_file, image_shape=(input_width, input_height),
                              mode='file', output_path=out_test_hd5, categorical_labels=True, normalize=True)
     test_h5f = h5py.File(out_test_hd5, 'r')
     print('Test set input shape: ', test_h5f['X'].shape)
@@ -103,9 +116,10 @@ build_hd5(test_file, train_file, input_width = 128, input_height = 128, round='_
 print('done')
 '''
 print('building h5 for DBIII ...')
-DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
+#DATABASE_PATH = '/mnt/DATA/dataset_balanced_new'
+DATABASE_PATH = 'Z:/DATA/dataset_balanced'
 
-set_file = os.path.join(DATABASE_PATH,"image_set.dat") # the file that contains the list of images of the testing dataset along with their classes
+set_file = os.path.join(DATABASE_PATH,"image_set_win.dat") # the file that contains the list of images of the testing dataset along with their classes
 
 # for one split: training - test sets 5% and 95%
 test_file = os.path.join(DATABASE_PATH, IMSETTEST + '_db3' + WIN + '.dat')

@@ -8,7 +8,7 @@ from make_data import MakeData
 from net import Net
 import h5py
 import tflearn
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 # -- PATHS ---------------------------
@@ -84,7 +84,7 @@ print('testY.shape', type(testY), testY.shape, testY[0])
 
 tf.reset_default_graph()
 
-tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.4, soft_placement=True) # num_cores default is All
+tflearn.config.init_graph(seed=8888, gpu_memory_fraction=0.9, soft_placement=True) # num_cores default is All
 #config = tf.ConfigProto(allow_soft_placement=True, allow_growth = True, device_count = {'GPU':2})
 config = tf.ConfigProto(allow_soft_placement=True)
 
