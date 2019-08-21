@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 #DATABASE_PATH = '/mnt/DATA/dataset'
 DATABASE_PATH = '/mnt/DATA/dataset_balanced'
 MODEL_PATH = '/mnt/DATA/model/db3/SilCamNet'
-LOG_FILE = os.path.join(MODEL_PATH, 'SilCamNet224kp.out')
+LOG_FILE = os.path.join(MODEL_PATH, 'SilCamNet224kp2.out')
 
 # -----------------------------
 
@@ -94,7 +94,7 @@ config.gpu_options.per_process_gpu_memory_fraction=0.9
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 
-round_num = 'SilCamNet224kp'
+round_num = 'SilCamNet224kp2'
 model_file = os.path.join(MODEL_PATH, round_num + '/plankton-classifier.tfl')
 
 model, conv_arr = myNet.build_model(model_file)
