@@ -1,16 +1,11 @@
   # -*- coding: utf-8 -*-
-import tflearn
-from tflearn.layers.core import input_data, dropout, fully_connected
-from tflearn.layers.conv import conv_2d, max_pool_2d
-from tflearn.layers.estimator import regression
-from tflearn.data_preprocessing import ImagePreprocessing
-from tflearn.data_augmentation import ImageAugmentation
 import tensorflow as tf
 import scipy
 import numpy as np
 import pandas as pd
 import os
-
+from sklearn import metrics
+from pysilcam.net import Net,CoapNet
 '''
 SilCam TensorFlow analysis for classification of particle types
 '''
@@ -32,57 +27,45 @@ def get_class_labels(model_path='/mnt/ARRAY/classifier/model/particle-classifier
     class_labels = header.columns
     return class_labels
 
+def load_model(model_path='/mnt/ARRAY/classifier/model/plankton-classifier.tfl'):
 
-def load_model(model_path='/mnt/ARRAY/classifier/model/particle-classifier.tfl'):
-    '''
-    Load the trained tensorflow model
+    model, class_labels = build_model(model_path)
+    model.load(model_path)
 
-    Args:
-        model_path (str)        : path to particle-classifier e.g.
-                                  '/mnt/ARRAY/classifier/model/particle-classifier.tfl'
+    return model, class_labels
 
-    Returns:
-        model (tf model object) : loaded tfl model from load_model()
-    '''
+def build_model(model_path='/mnt/ARRAY/classifier/model/plankton-classifier.tfl'):
     path, filename = os.path.split(model_path)
+    print('path ',path)
+    print('model_path ', model_path)
+    print('filename', filename)
     header = pd.read_csv(os.path.join(path, 'header.tfl.txt'))
     OUTPUTS = len(header.columns)
     class_labels = header.columns
 
+    name = 'CoapNet'
+    input_width = 64
+    input_height = 64
+    input_channels = 3
+    num_classes = OUTPUTS
+
+    learning_rate = 0.001
+    #myNet = Net(name, input_width, input_height, input_channels, num_classes, learning_rate)
+    myNet = CoapNet(name, input_width=input_width, input_height=input_height, input_channels=input_channels,
+                      num_classes=num_classes, learning_rate=learning_rate)
     tf.reset_default_graph()
-
-    # Same network definition as in tfl_tools scripts
-    img_prep = ImagePreprocessing()
-    img_prep.add_featurewise_zero_center()
-    img_prep.add_featurewise_stdnorm()
-    img_aug = ImageAugmentation()
-    img_aug.add_random_flip_leftright()
-    img_aug.add_random_rotation(max_angle=25.)
-    img_aug.add_random_blur(sigma_max=3.)
-
-    network = input_data(shape=[None, 32, 32, 3],
-                         data_preprocessing=img_prep,
-                         data_augmentation=img_aug)
-    network = conv_2d(network, 32, 3, activation='relu')
-    network = max_pool_2d(network, 2)
-    network = conv_2d(network, 64, 3, activation='relu')
-    network = conv_2d(network, 64, 3, activation='relu')
-    network = conv_2d(network, 64, 3, activation='relu')
-    network = conv_2d(network, 64, 3, activation='relu')
-    network = conv_2d(network, 64, 3, activation='relu')
-    network = max_pool_2d(network, 2)
-    network = fully_connected(network, 512, activation='relu')
-    network = dropout(network, 0.75)
-    network = fully_connected(network, OUTPUTS, activation='softmax')
-    network = regression(network, optimizer='adam',
-                         loss='categorical_crossentropy',
-                         learning_rate=0.001)
-
-    model = tflearn.DNN(network, tensorboard_verbose=0,
-            checkpoint_path=model_path)
-    model.load(model_path)
+    #model_file = os.path.join(MODEL_PATH, '/plankton-classifier.tfl')
+    model, conv_arr = myNet.build_model(model_path)
 
     return model, class_labels
+
+def train_model(X, Y, X_val, Y_val, batch_size, n_epoch, model):
+    model.fit(X, Y, n_epoch, shuffle=True, validation_set=(X_val, Y_val),
+              show_metric=True, batch_size=batch_size,
+              snapshot_epoch=True,
+              run_id='plankton-classifier')
+    return model
+
 
 def predict(img, model):
     '''
@@ -98,9 +81,51 @@ def predict(img, model):
     '''
 
     # Scale it to 32x32
-    img = scipy.misc.imresize(img, (32, 32), interp="bicubic").astype(np.float32, casting='unsafe')
+    #img = scipy.misc.imresize(img, (32, 32), interp="bicubic").astype(np.float32, casting='unsafe')
+    img = scipy.misc.imresize(img, (64, 64), interp="bicubic").astype(np.float32, casting='unsafe')
 
     # Predict
     prediction = model.predict([img])
 
     return prediction
+
+
+def evaluate_model(model, X_test, Y_test):
+    y_pred = []
+    y_true = []
+    pred = model.predict(X_test)
+    for ty in pred:
+        print("ty, y_pred: ", ty, ty.argmax(axis=0))
+        y_pred.append(ty.argmax(axis=0))
+    for ty in Y_test:
+        print("ty, y_true: ", ty, ty.argmax(axis=0))
+        y_true.append(ty.argmax(axis=0))
+
+    accuracy = metrics.accuracy_score(y_true, y_pred)
+    print("Accuracy: {}%".format(100 * accuracy))
+
+    precision = metrics.precision_score(y_true, y_pred, average="weighted")
+    print("Precision: {}%".format(100 * precision))
+
+    recall = metrics.recall_score(y_true, y_pred, average="weighted")
+    print("Recall: {}%".format(100 * recall))
+
+    f1_score = metrics.f1_score(y_true, y_pred, average="weighted")
+    print("f1_score: {}%".format(100 * f1_score))
+
+    print("Confusion Matrix:")
+    confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
+    print(confusion_matrix)
+    normalized_confusion_matrix = np.array(confusion_matrix, dtype=np.float32) / np.sum(confusion_matrix) * 100
+    print("")
+    print("Confusion matrix (normalised to % of total test data):")
+    print(normalized_confusion_matrix)
+
+    print("\nAccuracy: {}%".format(100*accuracy))
+    print("Precision: {}%".format(100 * precision))
+    print("Recall: {}%".format(100 * recall))
+    print("F1_Score: {}%".format(100 * f1_score))
+    print("confusion_matrix: ", confusion_matrix)
+    print("Normalized_confusion_matrix: ", normalized_confusion_matrix)
+    # ------------------------------------
+    return y_pred, y_true, accuracy, precision, recall, f1_score, confusion_matrix, normalized_confusion_matrix
