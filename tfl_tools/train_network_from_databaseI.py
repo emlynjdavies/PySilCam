@@ -1,7 +1,9 @@
 # Import tflearn and some helpers
 import os
 import numpy as np
+from skimage import exposure
 import tensorflow as tf
+
 
 from tflearn.data_utils import image_preloader  # shuffle,
 from tflearn.data_utils import shuffle
@@ -15,13 +17,13 @@ import skimage.transform
 import pandas as pd
 
 import pysilcam.silcam_classify as sccl
-
+import cv2
 # -----------------------------
 IMXY = 64
-DATABASE_PATH = '/mnt/DATA/dbIII' #  '/mnt/DATA/silcam_classification_database'
+DATABASE_PATH = '/mnt/DATA/silcam_classification_database' # '/mnt/DATA/dbIII' #
 #DATABASE_PATH = 'C:/Users/ayas/Projects/AILARON/db'
 #DATABASE_PATH = 'Z:/DATA/dbIII'
-MODEL_PATH = '/mnt/DATA/model/COAPNetDBIII' #'/mnt/DATA/model/COAPNetDBIII'
+MODEL_PATH = '/mnt/DATA/model/COAPNetDBI' #'/mnt/DATA/model/COAPNetDBIII'
 #MODEL_PATH = 'C:/Users/ayas/Projects/AILARON/model/COAPNetTest'
 LOG_FILE = os.path.join(MODEL_PATH, 'CoapNet.out')
 
@@ -34,9 +36,27 @@ def find_classes(d=DATABASE_PATH):
 
 def add_im_to_stack(stack,im):
     blank = np.zeros([1, IMXY, IMXY, 3],dtype='uint8')
+    # 1. normalize
+    nmin = 0
+    nmax = 255
+    im = cv2.normalize(im, None, alpha=nmin, beta=nmax, norm_type=cv2.NORM_MINMAX)
+    # 2. blur
+    # 2. blur
+    im = im.astype('float32')
+    try:
+        # Use blur_limit 5 instead of default 7. So this augmentation will
+        # apply `cv2.medianBlur` using ksize=3 or ksize=5.
+        im = cv2.medianBlur(blur_limit=3)(image=im).get('image')
+    except Exception:
+        fail = 1
+        img = im
+    im = cv2.medianBlur(im, 3)
     imrs = skimage.transform.resize(im, (IMXY, IMXY, 3), mode='reflect',
             preserve_range=True)
-    imrs = np.uint8(imrs)
+    # Contrast stretching
+    #p2, p98 = np.percentile(imrs, (2, 98))
+    #imrs = exposure.rescale_intensity(imrs, in_range=(p2, p98))
+    #imrs = np.uint8(imrs)
             
     stack = np.vstack((stack, blank))
     stack[-1,:] = imrs

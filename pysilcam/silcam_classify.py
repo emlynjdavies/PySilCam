@@ -5,7 +5,10 @@ import numpy as np
 import pandas as pd
 import os
 from sklearn import metrics
+from skimage import exposure
 from pysilcam.net import Net,CoapNet
+import cv2
+
 '''
 SilCam TensorFlow analysis for classification of particle types
 '''
@@ -79,10 +82,27 @@ def predict(img, model):
     Returns:
         prediction (array)      : the probability of the roi belonging to each class
     '''
+    # 1. normalize
+    nmin = 0
+    nmax = 255
+    img = cv2.normalize(img, None, alpha=nmin, beta=nmax, norm_type=cv2.NORM_MINMAX)
+    # 2. blur
+    img = img.astype('float32')
+    try:
+        # Use blur_limit 5 instead of default 7. So this augmentation will
+        # apply `cv2.medianBlur` using ksize=3 or ksize=5.
+        img = cv2.medianBlur(blur_limit=3)(image=img).get('image')
+    except Exception:
+        fail = 1
+        img = img
+    #img = cv2.medianBlur(img, 3)
 
-    # Scale it to 32x32
+    # 3. Scale it to 32x32
     #img = scipy.misc.imresize(img, (32, 32), interp="bicubic").astype(np.float32, casting='unsafe')
     img = scipy.misc.imresize(img, (64, 64), interp="bicubic").astype(np.float32, casting='unsafe')
+    # Contrast stretching
+    #p2, p98 = np.percentile(img, (2, 98))
+    #img = exposure.rescale_intensity(img, in_range=(p2, p98))
 
     # Predict
     prediction = model.predict([img])
@@ -95,10 +115,10 @@ def evaluate_model(model, X_test, Y_test):
     y_true = []
     pred = model.predict(X_test)
     for ty in pred:
-        print("ty, y_pred: ", ty, ty.argmax(axis=0))
+        #print("ty, y_pred: ", ty, ty.argmax(axis=0))
         y_pred.append(ty.argmax(axis=0))
     for ty in Y_test:
-        print("ty, y_true: ", ty, ty.argmax(axis=0))
+        #print("ty, y_true: ", ty, ty.argmax(axis=0))
         y_true.append(ty.argmax(axis=0))
 
     accuracy = metrics.accuracy_score(y_true, y_pred)
