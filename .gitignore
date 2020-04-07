@@ -2,3 +2,6 @@
 .*.swp
 .*
 *.html
+test-report/
+PySilCam.egg-info/
+docs/build/
